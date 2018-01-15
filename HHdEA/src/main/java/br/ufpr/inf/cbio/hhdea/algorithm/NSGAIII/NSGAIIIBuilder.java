@@ -14,10 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package br.ufpr.inf.cbio.hhdea.algorithm.ThetaDEA;
+package br.ufpr.inf.cbio.hhdea.algorithm.NSGAIII;
 
 import org.uma.jmetal.operator.CrossoverOperator;
 import org.uma.jmetal.operator.MutationOperator;
+import org.uma.jmetal.operator.SelectionOperator;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.AlgorithmBuilder;
@@ -27,17 +28,17 @@ import org.uma.jmetal.util.AlgorithmBuilder;
  * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
  * @param <S>
  */
-public class ThetaDEABuilder<S extends Solution> implements AlgorithmBuilder<ThetaDEA<S>> {
+public class NSGAIIIBuilder<S extends Solution> implements AlgorithmBuilder<NSGAIII<S>> {
 
     private final Problem<S> problem;
     private int maxGenerations;
-    private double theta;
     private boolean normalize;
     private int populationSize;
     private CrossoverOperator crossover;
     private MutationOperator mutation;
+    private SelectionOperator selection;
 
-    ThetaDEABuilder(Problem<S> problem) {
+    NSGAIIIBuilder(Problem<S> problem) {
         this.problem = problem;
     }
 
@@ -45,47 +46,43 @@ public class ThetaDEABuilder<S extends Solution> implements AlgorithmBuilder<The
         return this.problem;
     }
 
-    public ThetaDEABuilder setMaxGenerations(int maxGenerations) {
+    public NSGAIIIBuilder setMaxGenerations(int maxGenerations) {
         this.maxGenerations = maxGenerations;
         return this;
     }
 
-    public ThetaDEABuilder setTheta(double theta) {
-        this.theta = theta;
-        return this;
-    }
-
-    public ThetaDEABuilder setNormalize(boolean normalize) {
+    public NSGAIIIBuilder setNormalize(boolean normalize) {
         this.normalize = normalize;
         return this;
     }
-    
-    public ThetaDEABuilder setCrossover(CrossoverOperator crossover) {
+
+    public NSGAIIIBuilder setCrossover(CrossoverOperator crossover) {
         this.crossover = crossover;
         return this;
     }
-    
-    public ThetaDEABuilder setMutation (MutationOperator mutation) {
+
+    public NSGAIIIBuilder setMutation(MutationOperator mutation) {
         this.mutation = mutation;
         return this;
     }
 
-    public ThetaDEABuilder setPopulationSize(int populationSize) {
+    public NSGAIIIBuilder setSelection(SelectionOperator selection) {
+        this.selection = selection;
+        return this;
+    }
+
+    public NSGAIIIBuilder setPopulationSize(int populationSize) {
         this.populationSize = populationSize;
         return this;
     }
 
     @Override
-    public ThetaDEA build() {
-        return new ThetaDEA(this);
+    public NSGAIII build() {
+        return new NSGAIII(this);
     }
 
     public int getMaxGenerations() {
         return this.maxGenerations;
-    }
-
-    public double getTheta() {
-        return this.theta;
     }
 
     public boolean getNormalize() {
@@ -100,7 +97,11 @@ public class ThetaDEABuilder<S extends Solution> implements AlgorithmBuilder<The
         return this.crossover;
     }
 
-    public MutationOperator getMutation(){
+    public MutationOperator getMutation() {
         return this.mutation;
+    }
+
+    public SelectionOperator getSelection() {
+        return this.selection;
     }
 }

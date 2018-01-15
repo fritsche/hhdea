@@ -16,6 +16,7 @@
  */
 package br.ufpr.inf.cbio.hhdea.algorithm.ThetaDEA;
 
+import br.ufpr.inf.cbio.hhdea.util.Permutation;
 import Jama.Matrix;
 import java.io.BufferedReader;
 import java.io.IOException;

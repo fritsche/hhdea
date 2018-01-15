@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package br.ufpr.inf.cbio.hhdea.algorithm.ThetaDEA;
+package br.ufpr.inf.cbio.hhdea.util;
 
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
