@@ -32,6 +32,7 @@ package br.ufpr.inf.cbio.hhdea.config;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+import br.ufpr.inf.cbio.hhdea.algorithm.MOEADD.MOEADDConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.NSGAIII.NSGAIIIConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.ThetaDEA.ThetaDEAConfiguration;
 import org.uma.jmetal.util.JMetalException;
@@ -48,6 +49,8 @@ public class AlgorithmConfigurationFactory {
                 return new ThetaDEAConfiguration();
             case "NSGAIII":
                 return new NSGAIIIConfiguration();
+            case "MOEADD":
+                return new MOEADDConfiguration();
             default:
                 throw new JMetalException("No configuration found for algorithm " + algorithm + "!");
         }
