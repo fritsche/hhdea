@@ -25,8 +25,9 @@ import org.uma.jmetal.util.AlgorithmBuilder;
 /**
  *
  * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
+ * @param <S>
  */
-class MOEADDBuilder<S extends Solution> implements AlgorithmBuilder<MOEADD<S>> {
+public class MOEADDBuilder<S extends Solution<?>> implements AlgorithmBuilder<MOEADD<S>> {
 
     private final Problem<S> problem;
     private CrossoverOperator crossover;

@@ -39,45 +39,45 @@ import org.uma.jmetal.util.solutionattribute.impl.DominanceRanking;
  * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
  * @param <S>
  */
-public class MOEADD<S extends Solution> implements Algorithm<List<S>> {
-    
+public class MOEADD<S extends Solution<?>> implements Algorithm<List<S>> {
+
     public enum MOEADD_ATTRIBUTES {
         Region, associateDist
     }
 
-    private int populationSize_;
+    protected int populationSize_;
 
-    private List<S> population_; // Pareto-based population
+    protected List<S> population_; // Pareto-based population
 
-    double[][] lambda_; 	// Lambda vectors
+    protected double[][] lambda_; 	// Lambda vectors
 
-    int T_; 				// neighborhood size
-    int evaluations_; 		// counter of evaluation times
-    double delta_; 			// probability that parent solutions are selected from neighborhood
-    int[][] neighborhood_;  // neighborhood structure
+    protected int T_; 				// neighborhood size
+    protected int evaluations_; 		// counter of evaluation times
+    protected double delta_; 			// probability that parent solutions are selected from neighborhood
+    protected int[][] neighborhood_;  // neighborhood structure
 
-    int[][] rankIdx_;			// index matrix for the non-domination levels
-    int[][] subregionIdx_;		// index matrix for subregion record
-    double[][] subregionDist_;	// distance matrix for perpendicular distance
+    protected int[][] rankIdx_;			// index matrix for the non-domination levels
+    protected int[][] subregionIdx_;		// index matrix for subregion record
+    protected double[][] subregionDist_;	// distance matrix for perpendicular distance
 
-    String functionType_;
+    protected String functionType_;
 
-    CrossoverOperator<S> crossover_;
-    MutationOperator<S> mutation_;
+    protected CrossoverOperator<S> crossover_;
+    protected MutationOperator<S> mutation_;
 
-    int numRanks;
+    protected int numRanks;
 
-    double[] zp_; 	// ideal point for Pareto-based population
-    double[] nzp_; 	// nadir point for Pareto-based population
+    protected double[] zp_; 	// ideal point for Pareto-based population
+    protected double[] nzp_; 	// nadir point for Pareto-based population
 
-    int maxEvaluations;
+    protected int maxEvaluations;
 
     protected final Problem<S> problem_;
 
-    private JMetalRandom randomGenerator = JMetalRandom.getInstance();
+    protected JMetalRandom randomGenerator = JMetalRandom.getInstance();
 
-    private Object dominanceRankingAttributeIdentifier;
-    
+    protected Object dominanceRankingAttributeIdentifier;
+
     public MOEADD(MOEADDBuilder<S> builder) {
 
         functionType_ = "_PBI";
@@ -90,7 +90,6 @@ public class MOEADD<S extends Solution> implements Algorithm<List<S>> {
         populationSize_ = builder.getPopulationSize();
 
     }
-    
 
     @Override
     public void run() {
@@ -482,7 +481,7 @@ public class MOEADD<S extends Solution> implements Algorithm<List<S>> {
                     rankIdx_[indivRank][targetIdx] = 1;
 
                     Solution targetSol = population_.get(targetIdx).copy();
-                            
+
                     population_.set(targetIdx, indiv);
                     subregionIdx_[parentLocation][targetIdx] = 0;
                     subregionIdx_[location][targetIdx] = 1;
@@ -565,7 +564,8 @@ public class MOEADD<S extends Solution> implements Algorithm<List<S>> {
                             if (regionArray[i] == crowdIdx) {
                                 list.add(i);
                             }
-                        }   if (list.isEmpty()) {
+                        }
+                        if (list.isEmpty()) {
                             System.out.println("Cannot happen!!!");
                         } else {
                             double maxFitness, curFitness;
@@ -594,17 +594,18 @@ public class MOEADD<S extends Solution> implements Algorithm<List<S>> {
                                 int targetRank = (int) population_.get(idxArray[targetIdx]).getAttribute(dominanceRankingAttributeIdentifier);
                                 rankIdx_[targetRank][idxArray[targetIdx]] = 0;
                                 rankIdx_[indivRank][idxArray[targetIdx]] = 1;
-                                
+
                                 Solution targetSol = population_.get(idxArray[targetIdx]).copy();
-                                
+
                                 population_.set(idxArray[targetIdx], indiv);
                                 subregionIdx_[crowdIdx][idxArray[targetIdx]] = 0;
                                 subregionIdx_[location][idxArray[targetIdx]] = 1;
-                                
+
                                 // update the non-domination level structure
                                 nondominated_sorting_delete(targetSol);
                             }
-                        }   break;
+                        }
+                        break;
                 }
             }
         }
@@ -946,10 +947,11 @@ public class MOEADD<S extends Solution> implements Algorithm<List<S>> {
                 for (int i = 0; i < tempSize; i++) {
                     curIdx = dominateList.get(i);
                     population_.get(curIdx).setAttribute(dominanceRankingAttributeIdentifier, level + 1);
-                    
+
                     rankIdx_[level][curIdx] = 0;
                     rankIdx_[level + 1][curIdx] = 1;
-                }   num_ranks++;
+                }
+                num_ranks++;
                 break;
             case 3:
                 indiv.setAttribute(dominanceRankingAttributeIdentifier, level + 1);
@@ -960,11 +962,12 @@ public class MOEADD<S extends Solution> implements Algorithm<List<S>> {
                 for (int i = 0; i < populationSize_; i++) {
                     if (rankIdx_[level][i] == 1) {
                         population_.get(i).setAttribute(dominanceRankingAttributeIdentifier, level + 1);
-                        
+
                         rankIdx_[level][i] = 0;
                         rankIdx_[level + 1][i] = 1;
                     }
-                }   num_ranks++;
+                }
+                num_ranks++;
                 break;
         }
 
@@ -1268,17 +1271,19 @@ public class MOEADD<S extends Solution> implements Algorithm<List<S>> {
                     if (subregionIdx_[location][targetIdx] == 1) {
                         break;
                     }
-                }   double prev_func = fitnessFunction(population_.get(targetIdx), lambda_[location]);
+                }
+                double prev_func = fitnessFunction(population_.get(targetIdx), lambda_[location]);
                 if (indivFitness < prev_func) {
                     population_.set(targetIdx, indiv);
-                }   break;
+                }
+                break;
             default:
                 if (location == crowdIdx) {	// if indiv's subregion is the most crowded one
                     deleteCrowdIndiv_same(location, nicheCount, indivFitness, indiv);
                 } else {
                     int curNC = countOnes(location);
                     int crowdNC = countOnes(crowdIdx);
-                    
+
                     if (crowdNC > (curNC + 1)) {	// if the crowdIdx subregion is more crowded, delete one from this subregion
                         deleteCrowdIndiv_diff(crowdIdx, location, crowdNC, indiv);
                     } else if (crowdNC < (curNC + 1)) { // crowdNC == curNC, delete one from indiv's subregion
@@ -1295,7 +1300,8 @@ public class MOEADD<S extends Solution> implements Algorithm<List<S>> {
                             }
                         }
                     }
-                }   break;
+                }
+                break;
         }
 
     }
@@ -1643,44 +1649,42 @@ public class MOEADD<S extends Solution> implements Algorithm<List<S>> {
         double fitness = 0;
 
         switch (functionType_) {
-            case "_TCHE1":
-                {
-                    double maxFun = -1.0e+30;
-                    for (int n = 0; n < problem_.getNumberOfObjectives(); n++) {
-                        double diff = Math.abs(indiv.getObjective(n) - zp_[n]);
-                        
-                        double feval;
-                        if (lambda[n] == 0) {
-                            feval = 0.0001 * diff;
-                        } else {
-                            feval = diff * lambda[n];
-                        }
-                        if (feval > maxFun) {
-                            maxFun = feval;
-                        }
-                    } // for
-                    fitness = maxFun;
-                    break;
-                }
-            case "_TCHE2":
-                {
-                    double maxFun = -1.0e+30;
-                    for (int i = 0; i < problem_.getNumberOfObjectives(); i++) {
-                        double diff = Math.abs(indiv.getObjective(i) - zp_[i]);
-                        
-                        double feval;
-                        if (lambda[i] == 0) {
-                            feval = diff / 0.000001;
-                        } else {
-                            feval = diff / lambda[i];
-                        }
-                        if (feval > maxFun) {
-                            maxFun = feval;
-                        }
-                    } // for
-                    fitness = maxFun;
-                    break;
-                }
+            case "_TCHE1": {
+                double maxFun = -1.0e+30;
+                for (int n = 0; n < problem_.getNumberOfObjectives(); n++) {
+                    double diff = Math.abs(indiv.getObjective(n) - zp_[n]);
+
+                    double feval;
+                    if (lambda[n] == 0) {
+                        feval = 0.0001 * diff;
+                    } else {
+                        feval = diff * lambda[n];
+                    }
+                    if (feval > maxFun) {
+                        maxFun = feval;
+                    }
+                } // for
+                fitness = maxFun;
+                break;
+            }
+            case "_TCHE2": {
+                double maxFun = -1.0e+30;
+                for (int i = 0; i < problem_.getNumberOfObjectives(); i++) {
+                    double diff = Math.abs(indiv.getObjective(i) - zp_[i]);
+
+                    double feval;
+                    if (lambda[i] == 0) {
+                        feval = diff / 0.000001;
+                    } else {
+                        feval = diff / lambda[i];
+                    }
+                    if (feval > maxFun) {
+                        maxFun = feval;
+                    }
+                } // for
+                fitness = maxFun;
+                break;
+            }
             case "_PBI":
                 double theta; // penalty parameter
                 theta = 5.0;
@@ -1688,7 +1692,8 @@ public class MOEADD<S extends Solution> implements Algorithm<List<S>> {
                 double nd = norm_vector(lambda);
                 for (int i = 0; i < problem_.getNumberOfObjectives(); i++) {
                     lambda[i] = lambda[i] / nd;
-                }   double[] realA = new double[problem_.getNumberOfObjectives()];
+                }
+                double[] realA = new double[problem_.getNumberOfObjectives()];
                 double[] realB = new double[problem_.getNumberOfObjectives()];
                 // difference between current point and reference point
                 for (int n = 0; n < problem_.getNumberOfObjectives(); n++) {
@@ -1698,7 +1703,8 @@ public class MOEADD<S extends Solution> implements Algorithm<List<S>> {
                 // distance to the line segment
                 for (int n = 0; n < problem_.getNumberOfObjectives(); n++) {
                     realB[n] = (indiv.getObjective(n) - (zp_[n] + d1 * lambda[n]));
-                }   double d2 = norm_vector(realB);
+                }
+                double d2 = norm_vector(realB);
                 fitness = d1 + theta * d2;
                 break;
             default:
