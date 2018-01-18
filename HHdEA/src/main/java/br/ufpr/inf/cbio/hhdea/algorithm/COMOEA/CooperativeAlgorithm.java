@@ -24,22 +24,17 @@ import org.uma.jmetal.solution.Solution;
  * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
  * @param <S>
  */
-
 public interface CooperativeAlgorithm<S extends Solution> {
 
-    /** 
-     * Initialize the specific characteristics of the algorithm.
-     * may be empty
-     */
-    public void init();
-
     /**
-     * Apply the MOEA reproduction to generate an offspring
+     * Performs one iteration of the MOEA.
+     * filter elite to size N
+     * reproduce and return offspring
+     * @param elite
+     * @param N
+     * @param lambda (optional) Weight Vectors for decompotision based MOEAs
      * @return offspring
      */
-    public List<S> generateOffspring();
-
-    public void updatePopulation(List<S> offspring);
-
+    public List<S> doIteration (List<S> elite, int N, double lambda[][]);
     
 }

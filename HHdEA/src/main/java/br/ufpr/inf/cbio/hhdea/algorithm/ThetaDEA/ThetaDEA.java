@@ -44,9 +44,9 @@ import org.uma.jmetal.util.SolutionListUtils;
  */
 public class ThetaDEA<S extends Solution> implements Algorithm<List<S>> {
 
-    private final int populationSize_;   // population size
+    protected int populationSize_;   // population size
 
-    private List<S> population_;   // current population
+    protected List<S> population_;   // current population
     List<S> offspringPopulation_;  // offspring population
 
     List<S> union_;    // the union of current population and offspring population

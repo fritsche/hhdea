@@ -41,9 +41,9 @@ import org.uma.jmetal.util.solutionattribute.impl.DominanceRanking;
  */
 public class NSGAIII<S extends Solution> implements Algorithm<List<S>> {
 
-    private int populationSize_;
+    protected int populationSize_;
 
-    private List<S> population_;
+    protected List<S> population_;
     List<S> offspringPopulation_;
     List<S> union_;
 
