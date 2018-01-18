@@ -14,9 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package br.ufpr.inf.cbio.hhdea.algorithm.COMOEA;
+package br.ufpr.inf.cbio.hhdea.algorithm.HHdEA;
 
 import java.util.List;
+import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.solution.Solution;
 
 /**
@@ -24,7 +25,7 @@ import org.uma.jmetal.solution.Solution;
  * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
  * @param <S>
  */
-public interface CooperativeAlgorithm<S extends Solution> {
+public interface CooperativeAlgorithm<S extends Solution> extends Algorithm<List<S>> {
 
     /**
      * Performs one iteration of the MOEA.

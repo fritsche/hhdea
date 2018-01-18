@@ -16,8 +16,7 @@
  */
 package br.ufpr.inf.cbio.hhdea.algorithm.ThetaDEA;
 
-import br.ufpr.inf.cbio.hhdea.algorithm.COMOEA.CooperativeAlgorithm;
-import java.util.ArrayList;
+import br.ufpr.inf.cbio.hhdea.algorithm.HHdEA.CooperativeAlgorithm;
 import java.util.List;
 import org.uma.jmetal.solution.Solution;
 

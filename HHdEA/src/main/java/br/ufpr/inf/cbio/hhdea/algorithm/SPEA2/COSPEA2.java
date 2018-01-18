@@ -16,7 +16,7 @@
  */
 package br.ufpr.inf.cbio.hhdea.algorithm.SPEA2;
 
-import br.ufpr.inf.cbio.hhdea.algorithm.COMOEA.CooperativeAlgorithm;
+import br.ufpr.inf.cbio.hhdea.algorithm.HHdEA.CooperativeAlgorithm;
 import java.util.ArrayList;
 import java.util.List;
 import org.uma.jmetal.algorithm.multiobjective.spea2.SPEA2;
