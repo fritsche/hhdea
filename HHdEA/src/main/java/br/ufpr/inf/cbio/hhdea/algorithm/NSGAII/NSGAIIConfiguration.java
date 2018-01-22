@@ -36,27 +36,48 @@ import org.uma.jmetal.util.comparator.RankingAndCrowdingDistanceComparator;
  */
 public class NSGAIIConfiguration implements AlgorithmConfiguration<DoubleSolution> {
 
-    @Override
-    public Algorithm cofigure(Problem<DoubleSolution> problem, int popSize, int generations) {
-        Algorithm<List<DoubleSolution>> algorithm;
-        CrossoverOperator<DoubleSolution> crossover;
-        MutationOperator<DoubleSolution> mutation;
-        SelectionOperator<List<DoubleSolution>, DoubleSolution> selection;
+    protected double crossoverProbability;
+    protected double crossoverDistributionIndex;
+    protected double mutationProbability;
+    protected double mutationDistributionIndex;
+    protected Problem problem;
+    protected int generations;
+    protected int popSize;
+    protected int maxEvaluations;
+    protected CrossoverOperator<DoubleSolution> crossover;
+    protected MutationOperator<DoubleSolution> mutation;
+    protected SelectionOperator<List<DoubleSolution>, DoubleSolution> selection;
 
-        double crossoverProbability = 0.9;
-        double crossoverDistributionIndex = 20.0;
+    @Override
+    public void setup() {
+
+        crossoverProbability = 0.9;
+        crossoverDistributionIndex = 20.0;
         crossover = new SBXCrossover(crossoverProbability, crossoverDistributionIndex);
 
-        double mutationProbability = 1.0 / problem.getNumberOfVariables();
-        double mutationDistributionIndex = 20.0;
+        mutationProbability = 1.0 / problem.getNumberOfVariables();
+        mutationDistributionIndex = 20.0;
         mutation = new PolynomialMutation(mutationProbability, mutationDistributionIndex);
 
         selection = new BinaryTournamentSelection<>(
                 new RankingAndCrowdingDistanceComparator<>());
 
+        maxEvaluations = popSize * generations;
+    }
+
+    @Override
+    public Algorithm cofigure(Problem<DoubleSolution> problem, int popSize, int generations) {
+
+        this.problem = problem;
+        this.generations = generations;
+        this.popSize = popSize;
+
+        setup();
+
+        Algorithm<List<DoubleSolution>> algorithm;
         algorithm = new NSGAIIBuilder<>(problem, crossover, mutation)
                 .setSelectionOperator(selection)
-                .setMaxEvaluations(popSize * generations)
+                .setMaxEvaluations(maxEvaluations)
                 .setPopulationSize(popSize)
                 .build();
 
