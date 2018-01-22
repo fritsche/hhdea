@@ -17,7 +17,6 @@
 package br.ufpr.inf.cbio.hhdea.algorithm.HHdEA;
 
 import java.util.List;
-import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.solution.Solution;
 
 /**
@@ -25,7 +24,7 @@ import org.uma.jmetal.solution.Solution;
  * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
  * @param <S>
  */
-public interface CooperativeAlgorithm<S extends Solution> extends Algorithm<List<S>> {
+public interface CooperativeAlgorithm<S extends Solution> {
 
     /**
      * Performs one iteration of the MOEA.

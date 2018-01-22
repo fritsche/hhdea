@@ -16,6 +16,7 @@
  */
 package br.ufpr.inf.cbio.hhdea.algorithm.HHdEA;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.problem.Problem;
@@ -25,23 +26,44 @@ import org.uma.jmetal.solution.Solution;
  *
  * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
  * @param <S>
- * @version 0.1 
- * - Every MOEA uses a complete population
- * - Decomposition based MOEAs uses all Weight Vectors
+ * @version 0.1 - Every MOEA uses a complete population - Decomposition based
+ * MOEAs uses all Weight Vectors
  */
 public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
 
     protected int maxEvaluations;
     protected Problem<S> problem;
-
+    private List<S> elite;
+    private final int populationSize;
+    
     protected List<CooperativeAlgorithm<S>> algorithms;
+
+    public HHdEA(int maxEvaluations, int populationSize, Problem<S> problem, List<S> elite) {
+        this.maxEvaluations = maxEvaluations;
+        this.problem = problem;
+        this.populationSize = populationSize;
+        
+        
+        
+    }
+    
+    
+    void initElitePopulation() {
+
+        elite = new ArrayList<>(populationSize);
+
+        for (int i = 0; i < populationSize; i++) {
+            S newSolution = problem.createSolution();
+            problem.evaluate(newSolution);
+            elite.add(newSolution);
+        }
+
+    }
 
     @Override
     public void run() {
-        
+
         int evaluations = 0;
-        
-        
 
     }
 
