@@ -18,6 +18,8 @@ package br.ufpr.inf.cbio.hhdea.algorithm.ThetaDEA;
 
 import br.ufpr.inf.cbio.hhdea.config.AlgorithmConfiguration;
 import org.uma.jmetal.algorithm.Algorithm;
+import org.uma.jmetal.operator.CrossoverOperator;
+import org.uma.jmetal.operator.MutationOperator;
 import org.uma.jmetal.operator.impl.crossover.SBXCrossover;
 import org.uma.jmetal.operator.impl.mutation.PolynomialMutation;
 import org.uma.jmetal.problem.Problem;
@@ -29,15 +31,41 @@ import org.uma.jmetal.solution.DoubleSolution;
  */
 public class ThetaDEAConfiguration implements AlgorithmConfiguration<DoubleSolution> {
 
+    protected double crossoverProbability;
+    protected double crossoverDistributionIndex;
+    protected double mutationProbability;
+    protected double mutationDistributionIndex;
+    protected Problem problem;
+    protected boolean normalize;
+    protected double theta;
+    protected CrossoverOperator<DoubleSolution> crossover;
+    protected MutationOperator<DoubleSolution> mutation;
+
+    @Override
+    public void setup() {
+        crossoverProbability = 1.0;
+        crossoverDistributionIndex = 30.0;
+        mutationProbability = 1.0 / problem.getNumberOfVariables();
+        mutationDistributionIndex = 20.0;
+        normalize = true;
+        theta = 5.0;
+        crossover = new SBXCrossover(crossoverProbability, crossoverDistributionIndex);
+        mutation = new PolynomialMutation(mutationProbability, mutationDistributionIndex);
+    }
+
     @Override
     public Algorithm cofigure(Problem<DoubleSolution> problem, int popSize, int generations) {
 
-        ThetaDEABuilder builder = new ThetaDEABuilder(problem);
+        this.problem = problem;
 
-        builder.setCrossover(new SBXCrossover(1.0, 30.0))
-                .setMutation(new PolynomialMutation(1.0 / problem.getNumberOfVariables(), 20.0))
-                .setNormalize(true)
-                .setTheta(5.0)
+        setup();
+
+        ThetaDEABuilder builder = new ThetaDEABuilder(problem);
+        
+        builder.setCrossover(crossover)
+                .setMutation(mutation)
+                .setNormalize(normalize)
+                .setTheta(theta)
                 .setMaxGenerations(generations)
                 .setPopulationSize(popSize);
 
