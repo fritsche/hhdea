@@ -14,29 +14,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package br.ufpr.inf.cbio.hhdea.algorithm.NSGAII;
+package br.ufpr.inf.cbio.hhdea.algorithm.NSGAIII;
 
-import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAIIBuilder;
-import org.uma.jmetal.operator.CrossoverOperator;
-import org.uma.jmetal.operator.MutationOperator;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
 
 /**
  *
  * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
- * @param <S>
  */
-public class CONSGAIIBuilder<S extends Solution<?>> extends NSGAIIBuilder<S> {
+public class CONSGAIIIBuilder extends NSGAIIIBuilder<Solution> {
 
-    public CONSGAIIBuilder(Problem<S> problem, CrossoverOperator<S> crossoverOperator, MutationOperator<S> mutationOperator) {
-        super(problem, crossoverOperator, mutationOperator);
+    public CONSGAIIIBuilder(Problem<Solution> problem) {
+        super(problem);
     }
 
     @Override
-    public CONSGAII<Solution<?>> build() {
-        return new CONSGAII(getProblem(), getMaxIterations(), getPopulationSize(), 
-                getCrossoverOperator(), getMutationOperator(), getSelectionOperator(), getSolutionListEvaluator());
+    public CONSGAIII build() {
+        return new CONSGAIII(this);
     }
 
 }

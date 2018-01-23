@@ -27,7 +27,7 @@ import org.uma.jmetal.solution.Solution;
  */
 public class COThetaDEA<S extends Solution> extends ThetaDEA implements CooperativeAlgorithm<S> {
 
-    public COThetaDEA(ThetaDEABuilder builder) {
+    public COThetaDEA(COThetaDEABuilder builder) {
         super(builder);
     }
 

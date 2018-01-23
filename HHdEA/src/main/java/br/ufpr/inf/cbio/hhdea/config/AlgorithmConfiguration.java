@@ -34,16 +34,15 @@ package br.ufpr.inf.cbio.hhdea.config;
  */
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.problem.Problem;
-import org.uma.jmetal.solution.Solution;
 
 /**
  * Defines a default algorithm configuration
  *
  * @author Gian M. Fritsche <gmfritsche@inf.ufpr.br>
- * @param <S>
+ * @param <A>
  */
-public interface AlgorithmConfiguration<S extends Solution<?>> {
+public interface AlgorithmConfiguration<A extends Algorithm<?>> {
 
-    public Algorithm cofigure(Problem<S> problem, int popSize, int generations);
+    public A cofigure(Problem problem, int popSize, int generations);
     public void setup();
 }

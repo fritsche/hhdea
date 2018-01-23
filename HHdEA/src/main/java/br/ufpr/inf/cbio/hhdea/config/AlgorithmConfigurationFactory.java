@@ -16,6 +16,7 @@
  */
 package br.ufpr.inf.cbio.hhdea.config;
 
+import br.ufpr.inf.cbio.hhdea.algorithm.HHdEA.HHdEAConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.MOEADD.MOEADDConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.NSGAII.NSGAIIConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.NSGAIII.NSGAIIIConfiguration;
@@ -41,6 +42,8 @@ public class AlgorithmConfigurationFactory {
                 return new NSGAIIConfiguration();
             case "SPEA2":
                 return new SPEA2Configuration();
+            case "HHdEA":
+                return new HHdEAConfiguration();
             default:
                 throw new JMetalException("No configuration found for algorithm " + algorithm + "!");
         }

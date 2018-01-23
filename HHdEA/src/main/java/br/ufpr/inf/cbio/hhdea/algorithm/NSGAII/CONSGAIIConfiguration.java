@@ -16,27 +16,28 @@
  */
 package br.ufpr.inf.cbio.hhdea.algorithm.NSGAII;
 
-import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAIIBuilder;
-import org.uma.jmetal.operator.CrossoverOperator;
-import org.uma.jmetal.operator.MutationOperator;
 import org.uma.jmetal.problem.Problem;
-import org.uma.jmetal.solution.Solution;
 
 /**
  *
  * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
- * @param <S>
  */
-public class CONSGAIIBuilder<S extends Solution<?>> extends NSGAIIBuilder<S> {
-
-    public CONSGAIIBuilder(Problem<S> problem, CrossoverOperator<S> crossoverOperator, MutationOperator<S> mutationOperator) {
-        super(problem, crossoverOperator, mutationOperator);
-    }
+public class CONSGAIIConfiguration extends NSGAIIConfiguration {
 
     @Override
-    public CONSGAII<Solution<?>> build() {
-        return new CONSGAII(getProblem(), getMaxIterations(), getPopulationSize(), 
-                getCrossoverOperator(), getMutationOperator(), getSelectionOperator(), getSolutionListEvaluator());
+    public CONSGAII cofigure(Problem problem, int popSize, int generations) {
+
+        this.problem = problem;
+        this.generations = generations;
+        this.popSize = popSize;
+
+        setup();
+
+        return ((CONSGAIIBuilder) new CONSGAIIBuilder(problem, crossover, mutation)
+                .setSelectionOperator(selection)
+                .setMaxEvaluations(maxEvaluations)
+                .setPopulationSize(popSize))
+                .build();
     }
 
 }

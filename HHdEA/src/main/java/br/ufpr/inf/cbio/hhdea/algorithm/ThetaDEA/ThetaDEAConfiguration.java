@@ -17,7 +17,6 @@
 package br.ufpr.inf.cbio.hhdea.algorithm.ThetaDEA;
 
 import br.ufpr.inf.cbio.hhdea.config.AlgorithmConfiguration;
-import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.operator.CrossoverOperator;
 import org.uma.jmetal.operator.MutationOperator;
 import org.uma.jmetal.operator.impl.crossover.SBXCrossover;
@@ -29,7 +28,7 @@ import org.uma.jmetal.solution.DoubleSolution;
  *
  * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
  */
-public class ThetaDEAConfiguration implements AlgorithmConfiguration<DoubleSolution> {
+public class ThetaDEAConfiguration implements AlgorithmConfiguration<ThetaDEA<?>> {
 
     protected double crossoverProbability;
     protected double crossoverDistributionIndex;
@@ -54,22 +53,18 @@ public class ThetaDEAConfiguration implements AlgorithmConfiguration<DoubleSolut
     }
 
     @Override
-    public Algorithm cofigure(Problem<DoubleSolution> problem, int popSize, int generations) {
+    public ThetaDEA cofigure(Problem problem, int popSize, int generations) {
 
         this.problem = problem;
 
         setup();
 
-        ThetaDEABuilder builder = new ThetaDEABuilder(problem);
-        
-        builder.setCrossover(crossover)
+        return new ThetaDEABuilder(problem).setCrossover(crossover)
                 .setMutation(mutation)
                 .setNormalize(normalize)
                 .setTheta(theta)
                 .setMaxGenerations(generations)
-                .setPopulationSize(popSize);
-
-        return builder.build();
+                .setPopulationSize(popSize).build();
     }
 
 }

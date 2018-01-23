@@ -19,6 +19,7 @@ package br.ufpr.inf.cbio.hhdea.algorithm.NSGAII;
 import br.ufpr.inf.cbio.hhdea.config.AlgorithmConfiguration;
 import java.util.List;
 import org.uma.jmetal.algorithm.Algorithm;
+import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAII;
 import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAIIBuilder;
 import org.uma.jmetal.operator.CrossoverOperator;
 import org.uma.jmetal.operator.MutationOperator;
@@ -34,7 +35,7 @@ import org.uma.jmetal.util.comparator.RankingAndCrowdingDistanceComparator;
  *
  * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
  */
-public class NSGAIIConfiguration implements AlgorithmConfiguration<DoubleSolution> {
+public class NSGAIIConfiguration implements AlgorithmConfiguration<NSGAII<?>> {
 
     protected double crossoverProbability;
     protected double crossoverDistributionIndex;
@@ -66,7 +67,7 @@ public class NSGAIIConfiguration implements AlgorithmConfiguration<DoubleSolutio
     }
 
     @Override
-    public Algorithm cofigure(Problem<DoubleSolution> problem, int popSize, int generations) {
+    public NSGAII cofigure(Problem problem, int popSize, int generations) {
 
         this.problem = problem;
         this.generations = generations;
@@ -74,14 +75,11 @@ public class NSGAIIConfiguration implements AlgorithmConfiguration<DoubleSolutio
 
         setup();
 
-        Algorithm<List<DoubleSolution>> algorithm;
-        algorithm = new NSGAIIBuilder<>(problem, crossover, mutation)
+        return new NSGAIIBuilder<>(problem, crossover, mutation)
                 .setSelectionOperator(selection)
                 .setMaxEvaluations(maxEvaluations)
                 .setPopulationSize(popSize)
                 .build();
-
-        return algorithm;
     }
 
 }

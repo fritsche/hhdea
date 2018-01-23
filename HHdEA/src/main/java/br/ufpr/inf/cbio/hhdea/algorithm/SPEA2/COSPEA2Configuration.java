@@ -14,29 +14,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package br.ufpr.inf.cbio.hhdea.algorithm.NSGAII;
+package br.ufpr.inf.cbio.hhdea.algorithm.SPEA2;
 
-import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAIIBuilder;
-import org.uma.jmetal.operator.CrossoverOperator;
-import org.uma.jmetal.operator.MutationOperator;
 import org.uma.jmetal.problem.Problem;
-import org.uma.jmetal.solution.Solution;
 
 /**
  *
  * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
- * @param <S>
  */
-public class CONSGAIIBuilder<S extends Solution<?>> extends NSGAIIBuilder<S> {
-
-    public CONSGAIIBuilder(Problem<S> problem, CrossoverOperator<S> crossoverOperator, MutationOperator<S> mutationOperator) {
-        super(problem, crossoverOperator, mutationOperator);
-    }
+public class COSPEA2Configuration extends SPEA2Configuration {
 
     @Override
-    public CONSGAII<Solution<?>> build() {
-        return new CONSGAII(getProblem(), getMaxIterations(), getPopulationSize(), 
-                getCrossoverOperator(), getMutationOperator(), getSelectionOperator(), getSolutionListEvaluator());
+    public COSPEA2 cofigure(Problem problem, int popSize, int generations) {
+
+        this.problem = problem;
+
+        setup();
+
+        return ((COSPEA2Builder) new COSPEA2Builder(problem, crossover, mutation)
+                .setSelectionOperator(selection)
+                .setMaxIterations(generations)
+                .setPopulationSize(popSize))
+                .build();
     }
 
 }

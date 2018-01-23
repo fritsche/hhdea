@@ -36,7 +36,7 @@ import org.uma.jmetal.util.SolutionListUtils;
  * @version 0.1 - Every MOEA uses a complete population - Decomposition based
  * MOEAs uses all Weight Vectors
  */
-public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
+public class HHdEA<S extends Solution> implements Algorithm<List<S>> {
 
     protected int maxEvaluations;
     protected Problem<S> problem;
@@ -45,10 +45,11 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
     private final int populationSize;
     private double[][] lambda;
 
-    public HHdEA(List<CooperativeAlgorithm<S>> algorithms, int populationSize, int maxEvaluations) {
+    public HHdEA(List<CooperativeAlgorithm<S>> algorithms, int populationSize, int maxEvaluations, Problem problem) {
         this.algorithms = algorithms;
         this.populationSize = populationSize;
         this.maxEvaluations = maxEvaluations;
+        this.problem = problem;
     }
 
     @Override

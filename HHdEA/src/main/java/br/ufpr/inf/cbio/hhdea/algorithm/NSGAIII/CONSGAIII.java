@@ -30,7 +30,7 @@ import org.uma.jmetal.util.solutionattribute.impl.DominanceRanking;
  */
 public class CONSGAIII<S extends Solution> extends NSGAIII implements CooperativeAlgorithm<S> {
 
-    public CONSGAIII(NSGAIIIBuilder builder) {
+    public CONSGAIII(CONSGAIIIBuilder builder) {
         super(builder);
     }
 

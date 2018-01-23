@@ -17,7 +17,6 @@
 package br.ufpr.inf.cbio.hhdea.algorithm.MOEADD;
 
 import br.ufpr.inf.cbio.hhdea.config.AlgorithmConfiguration;
-import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.operator.CrossoverOperator;
 import org.uma.jmetal.operator.MutationOperator;
 import org.uma.jmetal.operator.impl.crossover.SBXCrossover;
@@ -29,7 +28,7 @@ import org.uma.jmetal.solution.DoubleSolution;
  *
  * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
  */
-public class MOEADDConfiguration implements AlgorithmConfiguration<DoubleSolution> {
+public class MOEADDConfiguration implements AlgorithmConfiguration<MOEADD<?>> {
 
     protected double crossoverProbability;
     protected double crossoverDistributionIndex;
@@ -54,7 +53,7 @@ public class MOEADDConfiguration implements AlgorithmConfiguration<DoubleSolutio
     }
 
     @Override
-    public Algorithm cofigure(Problem<DoubleSolution> problem, int popSize, int generations) {
+    public MOEADD cofigure(Problem problem, int popSize, int generations) {
 
         this.problem = problem;
         this.generations = generations;
@@ -62,14 +61,10 @@ public class MOEADDConfiguration implements AlgorithmConfiguration<DoubleSolutio
 
         setup();
 
-        MOEADDBuilder builder = new MOEADDBuilder(problem);
-
-        builder.setCrossover(crossover)
+        return new MOEADDBuilder(problem).setCrossover(crossover)
                 .setMutation(mutation)
                 .setMaxEvaluations(maxEvaluations)
-                .setPopulationSize(popSize);
-
-        return builder.build();
+                .setPopulationSize(popSize).build();
     }
 
 }

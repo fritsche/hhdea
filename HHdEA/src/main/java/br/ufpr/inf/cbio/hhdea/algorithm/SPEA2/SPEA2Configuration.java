@@ -17,8 +17,8 @@
 package br.ufpr.inf.cbio.hhdea.algorithm.SPEA2;
 
 import br.ufpr.inf.cbio.hhdea.config.AlgorithmConfiguration;
-import java.util.List;
 import org.uma.jmetal.algorithm.Algorithm;
+import org.uma.jmetal.algorithm.multiobjective.spea2.SPEA2;
 import org.uma.jmetal.algorithm.multiobjective.spea2.SPEA2Builder;
 import org.uma.jmetal.operator.CrossoverOperator;
 import org.uma.jmetal.operator.MutationOperator;
@@ -27,23 +27,22 @@ import org.uma.jmetal.operator.impl.crossover.SBXCrossover;
 import org.uma.jmetal.operator.impl.mutation.PolynomialMutation;
 import org.uma.jmetal.operator.impl.selection.BinaryTournamentSelection;
 import org.uma.jmetal.problem.Problem;
-import org.uma.jmetal.solution.DoubleSolution;
 import org.uma.jmetal.util.comparator.RankingAndCrowdingDistanceComparator;
 
 /**
  *
  * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
  */
-public class SPEA2Configuration implements AlgorithmConfiguration<DoubleSolution> {
+public class SPEA2Configuration implements AlgorithmConfiguration<SPEA2<?>> {
 
     protected double crossoverProbability;
     protected double crossoverDistributionIndex;
     protected double mutationProbability;
     protected double mutationDistributionIndex;
     protected Problem problem;
-    protected CrossoverOperator<DoubleSolution> crossover;
-    protected MutationOperator<DoubleSolution> mutation;
-    protected SelectionOperator<List<DoubleSolution>, DoubleSolution> selection;
+    protected CrossoverOperator crossover;
+    protected MutationOperator mutation;
+    protected SelectionOperator selection;
 
     @Override
     public void setup() {
@@ -61,20 +60,17 @@ public class SPEA2Configuration implements AlgorithmConfiguration<DoubleSolution
     }
 
     @Override
-    public Algorithm cofigure(Problem<DoubleSolution> problem, int popSize, int generations) {
+    public SPEA2 cofigure(Problem problem, int popSize, int generations) {
 
         this.problem = problem;
 
         setup();
 
-        Algorithm<List<DoubleSolution>> algorithm;
-        algorithm = new SPEA2Builder<>(problem, crossover, mutation)
+        return new SPEA2Builder<>(problem, crossover, mutation)
                 .setSelectionOperator(selection)
                 .setMaxIterations(generations)
                 .setPopulationSize(popSize)
                 .build();
-
-        return algorithm;
     }
 
 }
