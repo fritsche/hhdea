@@ -153,6 +153,8 @@ public class ThetaDEA<S extends Solution> implements Algorithm<List<S>> {
         front = ranking.getSubfront(index);
 
         sets[0] = front;
+        
+        System.out.println(front.size());
 
         while ((remain > 0) && (remain >= front.size())) {
 
@@ -288,6 +290,12 @@ public class ThetaDEA<S extends Solution> implements Algorithm<List<S>> {
     }
 
     void updateIdealPoint(List<S> pop) {
+
+        if (zideal_ == null) {
+            initIdealPoint();
+            return;
+        }
+
         for (int j = 0; j < problem_.getNumberOfObjectives(); j++) {
             for (int i = 0; i < pop.size(); i++) {
                 if (pop.get(i).getObjective(j) < zideal_[j]) {
@@ -312,6 +320,12 @@ public class ThetaDEA<S extends Solution> implements Algorithm<List<S>> {
     }
 
     void updateNadirPoint(List<S> pop) {
+
+        if (znadir_ == null) {
+            initNadirPoint();
+            initExtremePoints();
+            return;
+        }
 
         updateExtremePoints(pop);
 
@@ -428,7 +442,7 @@ public class ThetaDEA<S extends Solution> implements Algorithm<List<S>> {
                 + populationSize_ + ".dat";
 
         lambda_ = new double[populationSize_][problem_.getNumberOfObjectives()];
-        
+
         try {
             InputStream in = getClass().getResourceAsStream("/WeightVectors/" + dataFileName);
             InputStreamReader isr = new InputStreamReader(in);

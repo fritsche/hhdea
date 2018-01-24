@@ -59,22 +59,38 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
         initializeUniformWeight();
         int evaluations = population.size();
 
+        algorithms.forEach((alg) -> {
+            alg.setProbability((float) (1.0 / (float) algorithms.size()));
+        });
+
         while (evaluations < maxEvaluations) {
 
             List<List<S>> offspring = new ArrayList<>();
+            int remainingPopulation = populationSize;
+            float remainingProbability = 1.0f;
             for (int moea = 0; moea < algorithms.size() && evaluations < maxEvaluations; moea++) {
+
+                CooperativeAlgorithm alg = algorithms.get(moea);
+
+                int subpopsize = alg.getPopulationSize(remainingPopulation, remainingProbability);
+                remainingPopulation = remainingPopulation - subpopsize;
+                remainingProbability = remainingProbability - alg.getProbability();
+
                 List<S> copy = new ArrayList<>(population.size());
                 population.forEach((s) -> {
                     copy.add((S) s.copy());
                 });
-                offspring.add(algorithms.get(moea).doIteration(copy, populationSize, lambda));
+                List<S> subpop = alg.environmentalSelection(copy, subpopsize, lambda);
+
+                offspring.add(alg.generateOffspring(subpop, subpopsize, lambda));
+
                 evaluations += offspring.get(moea).size();
             }
             /**
              * @TODO extract metrics from offspring
              */
             /**
-             * @TODO make decisions based on metrics
+             * @TODO make decisions based on metrics and change probabilities
              */
             population.clear();
             offspring.forEach((l) -> {
@@ -133,11 +149,6 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
     @Override
     public List<S> getResult() {
         population = SolutionListUtils.getNondominatedSolutions(population);
-        /**
-         * @TODO use the distribution criteria of TwoArch2 to reduce population
-         * to populationSize solutions
-         * http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=6883177
-         */
         return population;
     }
 

@@ -18,7 +18,6 @@ package br.ufpr.inf.cbio.hhdea.algorithm.NSGAII;
 
 import br.ufpr.inf.cbio.hhdea.config.AlgorithmConfiguration;
 import java.util.List;
-import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAII;
 import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAIIBuilder;
 import org.uma.jmetal.operator.CrossoverOperator;
@@ -71,14 +70,14 @@ public class NSGAIIConfiguration implements AlgorithmConfiguration<NSGAII<?>> {
 
         this.problem = problem;
         this.generations = generations;
-        this.popSize = popSize;
+        this.popSize = (popSize % 2 == 0) ? (popSize) : (popSize + 1);
 
         setup();
 
         return new NSGAIIBuilder<>(problem, crossover, mutation)
                 .setSelectionOperator(selection)
                 .setMaxEvaluations(maxEvaluations)
-                .setPopulationSize(popSize)
+                .setPopulationSize(this.popSize)
                 .build();
     }
 

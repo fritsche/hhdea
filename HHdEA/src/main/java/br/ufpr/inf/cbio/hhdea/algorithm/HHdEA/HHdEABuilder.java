@@ -27,12 +27,12 @@ import org.uma.jmetal.util.AlgorithmBuilder;
  * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
  * @param <S>
  */
-public class HHdEABuilder<S extends Solution> implements AlgorithmBuilder<HHdEA<S>> {
+public class HHdEABuilder<S extends Solution<?>> implements AlgorithmBuilder<HHdEA<S>> {
 
     private List<CooperativeAlgorithm> algorithms;
     private int populationSize;
     private int maxEvaluations;
-    private Problem problem;
+    private final Problem problem;
 
     public HHdEABuilder(Problem problem) {
         this.problem = problem;

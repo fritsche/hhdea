@@ -83,6 +83,11 @@ public class CONSGAIII<S extends Solution<?>> extends NSGAIII implements Coopera
     }
 
     @Override
+    public float getProbability() {
+        return probability;
+    }
+    
+    @Override
     public int getPopulationSize(int remainingPopulation, float remainingProbability) {
         return roundEven(remainingPopulation * (probability / remainingProbability));
     }

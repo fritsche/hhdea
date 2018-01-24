@@ -37,6 +37,12 @@ public class COThetaDEA<S extends Solution<?>> extends ThetaDEA implements Coope
     public void setProbability(float probability) {
         this.probability = probability;
     }
+    
+    
+    @Override
+    public float getProbability() {
+        return probability;
+    }
 
     @Override
     public int getPopulationSize(int remainingPopulation, float remainingProbability) {
@@ -49,11 +55,13 @@ public class COThetaDEA<S extends Solution<?>> extends ThetaDEA implements Coope
         this.lambda_ = lambda;
         this.populationSize_ = outputSize;
 
-        initIdealPoint();  // initialize the ideal point
-        initNadirPoint();    // initialize the nadir point
-        initExtremePoints(); // initialize the extreme points
+        this.population_ = union;
+        
+        // initIdealPoint();  // initialize the ideal point
+        // initNadirPoint();    // initialize the nadir point
+        // initExtremePoints(); // initialize the extreme points
 
-        union_ = union;
+        this.union_ = this.population_;
 
         List<S>[] sets = getParetoFronts();
 

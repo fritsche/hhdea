@@ -50,6 +50,11 @@ public class CONSGAII<S extends Solution<?>> extends NSGAII implements Cooperati
     }
 
     @Override
+    public float getProbability() {
+        return probability;
+    }
+
+    @Override
     public int getPopulationSize(int remainingPopulation, float remainingProbability) {
         return roundEven(remainingPopulation * (probability / remainingProbability));
     }
