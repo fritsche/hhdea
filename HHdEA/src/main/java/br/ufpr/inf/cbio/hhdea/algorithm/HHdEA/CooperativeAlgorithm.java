@@ -26,15 +26,38 @@ import org.uma.jmetal.solution.Solution;
  */
 public interface CooperativeAlgorithm<S extends Solution<?>> {
 
+    public void setProbability(float probability);
+
     /**
-     * Performs one iteration of the MOEA.
-     * filter elite to size N
-     * reproduce and return offspring
-     * @param elite
+     * Return the population size given a probability. Algorithms that needs
+     * even population size must check it here.
+     *
+     * @param remainingPopulation
+     * @param remainingProbability
+     * @return subPopulationSize
+     */
+    public int getPopulationSize(int remainingPopulation, float remainingProbability);
+
+    /**
+     * Filter the set of solutions using the MOEA environmental selection
+     * strategy.
+     *
+     * @param union
+     * @param outputSize
+     * @param lambda
+     * @return subset of solutions of size outputSize
+     */
+    public List<S> environmentalSelection(List<S> union, int outputSize, double[][] lambda);
+
+    /**
+     * Generate offspring using the MOEA reproduction strategy. Reproduce and
+     * return offspring.
+     *
+     * @param population
      * @param N
      * @param lambda (optional) Weight Vectors for decompotision based MOEAs
      * @return offspring
      */
-    public List<S> doIteration (List<S> elite, int N, double lambda[][]);
-    
+    public List<S> generateOffspring(List<S> population, int N, double lambda[][]);
+
 }

@@ -27,40 +27,57 @@ import org.uma.jmetal.solution.Solution;
  */
 public class COThetaDEA<S extends Solution<?>> extends ThetaDEA implements CooperativeAlgorithm<S> {
 
+    private float probability;
+
     public COThetaDEA(COThetaDEABuilder builder) {
         super(builder);
     }
 
     @Override
-    public List<S> doIteration(List<S> elite, int N, double[][] lambda) {
+    public void setProbability(float probability) {
+        this.probability = probability;
+    }
+
+    @Override
+    public int getPopulationSize(int remainingPopulation, float remainingProbability) {
+        return Math.round(remainingPopulation * (probability / remainingProbability));
+    }
+
+    @Override
+    public List<S> environmentalSelection(List<S> union, int outputSize, double[][] lambda) {
 
         this.lambda_ = lambda;
-        this.populationSize_ = N;
-        this.population_ = elite;
+        this.populationSize_ = outputSize;
 
         initIdealPoint();  // initialize the ideal point
         initNadirPoint();    // initialize the nadir point
         initExtremePoints(); // initialize the extreme points
 
-        union_ = population_;
+        union_ = union;
 
         List<S>[] sets = getParetoFronts();
 
         List<S> firstFront = sets[0];   // the first non-dominated front
         List<S> stPopulation = sets[1]; // the population used in theta-non-dominated ranking
 
-        // updateIdealPoint(firstFront);  // update the ideal point
+        updateIdealPoint(firstFront);  // update the ideal point
         if (normalize_) {
-            // updateNadirPoint(firstFront);  // update the nadir point
+            updateNadirPoint(firstFront);  // update the nadir point
             normalizePopulation(stPopulation);  // normalize the population using ideal point and nadir point
         }
 
         getNextPopulation(stPopulation);  // select the next population using theta-non-dominated ranking
 
-        createOffSpringPopulation();  // create the offspring population
+        return population_;
+    }
 
+    @Override
+    public List<S> generateOffspring(List<S> population, int N, double[][] lambda) {
+        this.lambda_ = lambda;
+        this.populationSize_ = N;
+        this.population_ = population;
+        createOffSpringPopulation();
         return offspringPopulation_;
-
     }
 
 }

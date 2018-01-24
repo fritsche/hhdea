@@ -34,15 +34,36 @@ import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
  */
 public class CONSGAII<S extends Solution<?>> extends NSGAII implements CooperativeAlgorithm<S> {
 
+    private float probability;
+
     public CONSGAII(Problem problem, int maxEvaluations, int populationSize, CrossoverOperator crossoverOperator, MutationOperator mutationOperator, SelectionOperator selectionOperator, SolutionListEvaluator evaluator) {
         super(problem, maxEvaluations, populationSize, crossoverOperator, mutationOperator, selectionOperator, evaluator);
     }
 
+    public static int roundEven(float d) {
+        return Math.round(d / 2) * 2;
+    }
+
     @Override
-    public List<S> doIteration(List<S> elite, int N, double lambda[][]) {
+    public void setProbability(float probability) {
+        this.probability = probability;
+    }
+
+    @Override
+    public int getPopulationSize(int remainingPopulation, float remainingProbability) {
+        return roundEven(remainingPopulation * (probability / remainingProbability));
+    }
+
+    @Override
+    public List<S> environmentalSelection(List<S> union, int outputSize, double[][] lambda) {
+        setMaxPopulationSize(outputSize);
+        return replacement(new ArrayList<>(), union);
+    }
+
+    @Override
+    public List<S> generateOffspring(List<S> population, int N, double[][] lambda) {
         setMaxPopulationSize(N);
-        population = new ArrayList<>(getMaxPopulationSize());
-        return evaluatePopulation(reproduction(selection(replacement(population, elite))));
+        return evaluatePopulation(reproduction(selection(population)));
     }
 
 }

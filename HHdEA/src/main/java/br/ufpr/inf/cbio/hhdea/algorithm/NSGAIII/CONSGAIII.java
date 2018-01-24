@@ -30,6 +30,8 @@ import org.uma.jmetal.util.solutionattribute.impl.DominanceRanking;
  */
 public class CONSGAIII<S extends Solution<?>> extends NSGAIII implements CooperativeAlgorithm<S> {
 
+    private float probability;
+
     public CONSGAIII(CONSGAIIIBuilder builder) {
         super(builder);
     }
@@ -71,14 +73,31 @@ public class CONSGAIII<S extends Solution<?>> extends NSGAIII implements Coopera
         return population_;
     }
 
-    @Override
-    public List<S> doIteration(List<S> elite, int N, double lambda[][]) {
+    public static int roundEven(float d) {
+        return Math.round(d / 2) * 2;
+    }
 
+    @Override
+    public void setProbability(float probability) {
+        this.probability = probability;
+    }
+
+    @Override
+    public int getPopulationSize(int remainingPopulation, float remainingProbability) {
+        return roundEven(remainingPopulation * (probability / remainingProbability));
+    }
+
+    @Override
+    public List<S> environmentalSelection(List<S> union, int outputSize, double[][] lambda) {
+        this.lambda_ = lambda;
+        this.populationSize_ = outputSize;
+        return replacement(union);
+    }
+
+    @Override
+    public List<S> generateOffspring(List<S> population, int N, double[][] lambda) {
         this.lambda_ = lambda;
         this.populationSize_ = N;
-
-        population_ = replacement(elite);
-
         offspringPopulation_ = new ArrayList<>(populationSize_);
         for (int i = 0; i < (populationSize_ / 2); i++) {
             // obtain parents

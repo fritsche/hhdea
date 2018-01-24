@@ -17,7 +17,6 @@
 package br.ufpr.inf.cbio.hhdea.algorithm.SPEA2;
 
 import br.ufpr.inf.cbio.hhdea.algorithm.HHdEA.CooperativeAlgorithm;
-import java.util.ArrayList;
 import java.util.List;
 import org.uma.jmetal.algorithm.multiobjective.spea2.SPEA2;
 import org.uma.jmetal.algorithm.multiobjective.spea2.util.EnvironmentalSelection;
@@ -35,17 +34,33 @@ import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
  */
 public class COSPEA2<S extends Solution<?>> extends SPEA2 implements CooperativeAlgorithm<S> {
 
+    private float probability;
+
     public COSPEA2(Problem problem, int maxIterations, int populationSize, CrossoverOperator crossoverOperator, MutationOperator mutationOperator, SelectionOperator selectionOperator, SolutionListEvaluator evaluator) {
         super(problem, maxIterations, populationSize, crossoverOperator, mutationOperator, selectionOperator, evaluator);
     }
 
     @Override
-    public List<S> doIteration(List<S> elite, int N, double lambda[][]) {
-        setMaxPopulationSize(N);
-        population = new ArrayList<>(getMaxPopulationSize());
-        List<S> union = elite;
-        strenghtRawFitness.computeDensityEstimator(union);
-        return evaluatePopulation(reproduction(new EnvironmentalSelection<>(N).execute((List<Solution<?>>) union)));
+    public void setProbability(float probability) {
+        this.probability = probability;
     }
-    
+
+    @Override
+    public int getPopulationSize(int remainingPopulation, float remainingProbability) {
+        return Math.round(remainingPopulation * (probability / remainingProbability));
+    }
+
+    @Override
+    public List<S> environmentalSelection(List<S> union, int outputSize, double[][] lambda) {
+        setMaxPopulationSize(outputSize);
+        strenghtRawFitness.computeDensityEstimator(union);
+        return (List<S>) new EnvironmentalSelection<>(outputSize).execute((List<Solution<?>>) union);
+    }
+
+    @Override
+    public List<S> generateOffspring(List<S> population, int N, double[][] lambda) {
+        setMaxPopulationSize(N);
+        return evaluatePopulation(reproduction(population));
+    }
+
 }
