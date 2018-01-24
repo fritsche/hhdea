@@ -20,6 +20,7 @@ import br.ufpr.inf.cbio.hhdea.algorithm.HHdEA.CooperativeAlgorithm;
 import java.util.ArrayList;
 import java.util.List;
 import org.uma.jmetal.algorithm.multiobjective.spea2.SPEA2;
+import org.uma.jmetal.algorithm.multiobjective.spea2.util.EnvironmentalSelection;
 import org.uma.jmetal.operator.CrossoverOperator;
 import org.uma.jmetal.operator.MutationOperator;
 import org.uma.jmetal.operator.SelectionOperator;
@@ -32,7 +33,7 @@ import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
  * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
  * @param <S>
  */
-public class COSPEA2<S extends Solution> extends SPEA2 implements CooperativeAlgorithm<S> {
+public class COSPEA2<S extends Solution<?>> extends SPEA2 implements CooperativeAlgorithm<S> {
 
     public COSPEA2(Problem problem, int maxIterations, int populationSize, CrossoverOperator crossoverOperator, MutationOperator mutationOperator, SelectionOperator selectionOperator, SolutionListEvaluator evaluator) {
         super(problem, maxIterations, populationSize, crossoverOperator, mutationOperator, selectionOperator, evaluator);
@@ -42,7 +43,9 @@ public class COSPEA2<S extends Solution> extends SPEA2 implements CooperativeAlg
     public List<S> doIteration(List<S> elite, int N, double lambda[][]) {
         setMaxPopulationSize(N);
         population = new ArrayList<>(getMaxPopulationSize());
-        return evaluatePopulation(reproduction(selection(replacement(population, elite))));
+        List<S> union = elite;
+        strenghtRawFitness.computeDensityEstimator(union);
+        return evaluatePopulation(reproduction(new EnvironmentalSelection<>(N).execute((List<Solution<?>>) union)));
     }
     
 }

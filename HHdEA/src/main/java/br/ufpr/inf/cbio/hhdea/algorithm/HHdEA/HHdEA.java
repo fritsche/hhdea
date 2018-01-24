@@ -36,7 +36,7 @@ import org.uma.jmetal.util.SolutionListUtils;
  * @version 0.1 - Every MOEA uses a complete population - Decomposition based
  * MOEAs uses all Weight Vectors
  */
-public class HHdEA<S extends Solution> implements Algorithm<List<S>> {
+public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
 
     protected int maxEvaluations;
     protected Problem<S> problem;
@@ -56,13 +56,18 @@ public class HHdEA<S extends Solution> implements Algorithm<List<S>> {
     public void run() {
 
         initPopulation();
+        initializeUniformWeight();
         int evaluations = population.size();
 
         while (evaluations < maxEvaluations) {
 
             List<List<S>> offspring = new ArrayList<>();
             for (int moea = 0; moea < algorithms.size() && evaluations < maxEvaluations; moea++) {
-                offspring.set(moea, algorithms.get(moea).doIteration(population, populationSize, lambda));
+                List<S> copy = new ArrayList<>(population.size());
+                population.forEach((s) -> {
+                    copy.add((S) s.copy());
+                });
+                offspring.add(algorithms.get(moea).doIteration(copy, populationSize, lambda));
                 evaluations += offspring.get(moea).size();
             }
             /**
@@ -72,15 +77,16 @@ public class HHdEA<S extends Solution> implements Algorithm<List<S>> {
              * @TODO make decisions based on metrics
              */
             population.clear();
-            for (int moea = 0; moea < algorithms.size(); moea++) {
-                population.addAll(offspring.get(moea));
-            }
+            offspring.forEach((l) -> {
+                population.addAll(l);
+            });
+            offspring.clear();
         }
     }
 
     protected void initializeUniformWeight() {
         String dataFileName;
-        dataFileName = "W" + problem.getNumberOfObjectives() + "D"
+        dataFileName = "W" + problem.getNumberOfObjectives() + "D_"
                 + populationSize + ".dat";
 
         lambda = new double[populationSize][problem.getNumberOfObjectives()];
@@ -128,7 +134,7 @@ public class HHdEA<S extends Solution> implements Algorithm<List<S>> {
     public List<S> getResult() {
         population = SolutionListUtils.getNondominatedSolutions(population);
         /**
-         * @TODO use the distribution criteria of Two_Arch2 to reduce population
+         * @TODO use the distribution criteria of TwoArch2 to reduce population
          * to populationSize solutions
          * http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=6883177
          */

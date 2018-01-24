@@ -28,7 +28,7 @@ import org.uma.jmetal.util.solutionattribute.impl.DominanceRanking;
  * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
  * @param <S>
  */
-public class CONSGAIII<S extends Solution> extends NSGAIII implements CooperativeAlgorithm<S> {
+public class CONSGAIII<S extends Solution<?>> extends NSGAIII implements CooperativeAlgorithm<S> {
 
     public CONSGAIII(CONSGAIIIBuilder builder) {
         super(builder);
@@ -41,7 +41,7 @@ public class CONSGAIII<S extends Solution> extends NSGAIII implements Cooperativ
         int remain = populationSize_;
         int index = 0;
         List<S> front;
-        population_.clear();
+        population_ = new ArrayList<>();
 
         // Obtain the next front
         front = ranking.getSubfront(index);
@@ -81,25 +81,23 @@ public class CONSGAIII<S extends Solution> extends NSGAIII implements Cooperativ
 
         offspringPopulation_ = new ArrayList<>(populationSize_);
         for (int i = 0; i < (populationSize_ / 2); i++) {
-            if (generations_ < maxGenerations_) {
-                // obtain parents
+            // obtain parents
 
-                List<S> parents = new ArrayList<>();
-                parents.add((S) selection_.execute(population_));
-                parents.add((S) selection_.execute(population_));
+            List<S> parents = new ArrayList<>();
+            parents.add((S) selection_.execute(population_));
+            parents.add((S) selection_.execute(population_));
 
-                List<S> offSpring = (List<S>) crossover_.execute(parents);
+            List<S> offSpring = (List<S>) crossover_.execute(parents);
 
-                mutation_.execute(offSpring.get(0));
-                mutation_.execute(offSpring.get(1));
+            mutation_.execute(offSpring.get(0));
+            mutation_.execute(offSpring.get(1));
 
-                problem_.evaluate(offSpring.get(0));
-                problem_.evaluate(offSpring.get(1));
+            problem_.evaluate(offSpring.get(0));
+            problem_.evaluate(offSpring.get(1));
 
-                offspringPopulation_.add(offSpring.get(0));
-                offspringPopulation_.add(offSpring.get(1));
+            offspringPopulation_.add(offSpring.get(0));
+            offspringPopulation_.add(offSpring.get(1));
 
-            } // if
         } // for
 
         return offspringPopulation_;

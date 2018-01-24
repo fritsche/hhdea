@@ -25,7 +25,7 @@ import org.uma.jmetal.solution.Solution;
  * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
  * @param <S>
  */
-public class COThetaDEA<S extends Solution> extends ThetaDEA implements CooperativeAlgorithm<S> {
+public class COThetaDEA<S extends Solution<?>> extends ThetaDEA implements CooperativeAlgorithm<S> {
 
     public COThetaDEA(COThetaDEABuilder builder) {
         super(builder);
@@ -33,31 +33,33 @@ public class COThetaDEA<S extends Solution> extends ThetaDEA implements Cooperat
 
     @Override
     public List<S> doIteration(List<S> elite, int N, double[][] lambda) {
-        
+
         this.lambda_ = lambda;
         this.populationSize_ = N;
+        this.population_ = elite;
 
         initIdealPoint();  // initialize the ideal point
         initNadirPoint();    // initialize the nadir point
         initExtremePoints(); // initialize the extreme points
 
-        union_ = elite;
+        union_ = population_;
 
         List<S>[] sets = getParetoFronts();
 
         List<S> firstFront = sets[0];   // the first non-dominated front
         List<S> stPopulation = sets[1]; // the population used in theta-non-dominated ranking
 
-        updateIdealPoint(firstFront);  // update the ideal point
-
+        // updateIdealPoint(firstFront);  // update the ideal point
         if (normalize_) {
-            updateNadirPoint(firstFront);  // update the nadir point
+            // updateNadirPoint(firstFront);  // update the nadir point
             normalizePopulation(stPopulation);  // normalize the population using ideal point and nadir point
         }
 
         getNextPopulation(stPopulation);  // select the next population using theta-non-dominated ranking
 
-        return population_;
+        createOffSpringPopulation();  // create the offspring population
+
+        return offspringPopulation_;
 
     }
 

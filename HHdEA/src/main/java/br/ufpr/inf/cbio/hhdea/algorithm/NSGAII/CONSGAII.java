@@ -32,7 +32,7 @@ import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
  * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
  * @param <S>
  */
-public class CONSGAII<S extends Solution> extends NSGAII implements CooperativeAlgorithm<S> {
+public class CONSGAII<S extends Solution<?>> extends NSGAII implements CooperativeAlgorithm<S> {
 
     public CONSGAII(Problem problem, int maxEvaluations, int populationSize, CrossoverOperator crossoverOperator, MutationOperator mutationOperator, SelectionOperator selectionOperator, SolutionListEvaluator evaluator) {
         super(problem, maxEvaluations, populationSize, crossoverOperator, mutationOperator, selectionOperator, evaluator);

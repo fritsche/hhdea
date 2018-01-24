@@ -24,7 +24,7 @@ import org.uma.jmetal.solution.Solution;
  * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
  * @param <S>
  */
-public interface CooperativeAlgorithm<S extends Solution> {
+public interface CooperativeAlgorithm<S extends Solution<?>> {
 
     /**
      * Performs one iteration of the MOEA.

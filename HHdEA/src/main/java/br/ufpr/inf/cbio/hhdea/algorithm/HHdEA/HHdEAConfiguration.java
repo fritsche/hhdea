@@ -37,7 +37,7 @@ public class HHdEAConfiguration<S extends Solution> implements AlgorithmConfigur
         
         setup();
         
-        return new HHdEABuilder<>(problem).addAlgorithm(new CONSGAIIConfiguration().cofigure(problem, 0, 0))
+        return new HHdEABuilder<>(problem)//.addAlgorithm(new CONSGAIIConfiguration().cofigure(problem, 0, 0))
                 .addAlgorithm(new CONSGAIIIConfiguration().cofigure(problem, 0, 0))
                 .addAlgorithm(new COSPEA2Configuration().cofigure(problem, 0, 0))
                 .addAlgorithm(new COThetaDEAConfiguration().cofigure(problem, 0, 0))
