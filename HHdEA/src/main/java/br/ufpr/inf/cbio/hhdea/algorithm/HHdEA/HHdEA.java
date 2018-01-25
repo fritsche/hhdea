@@ -40,8 +40,9 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
 
     protected int maxEvaluations;
     protected Problem<S> problem;
-    protected List<S> population;
+    protected List<List<S>> population;
     protected List<CooperativeAlgorithm<S>> algorithms;
+    protected List<Integer> subpopsize;
     private final int populationSize;
     private double[][] lambda;
 
@@ -55,48 +56,60 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
     @Override
     public void run() {
 
-        initPopulation();
         initializeUniformWeight();
-        int evaluations = population.size();
 
-        algorithms.forEach((alg) -> {
+        population = new ArrayList<>(algorithms.size());
+        int remainingPopulation = populationSize;
+        float remainingProbability = 1.0f;
+        subpopsize = new ArrayList<>(algorithms.size());
+        int evaluations = 0;
+        for (int moea = 0; moea < algorithms.size(); moea++) {
+            CooperativeAlgorithm alg = algorithms.get(moea);
             alg.setProbability((float) (1.0 / (float) algorithms.size()));
-        });
+            subpopsize.add(alg.getPopulationSize(remainingPopulation, remainingProbability));
+            remainingPopulation = remainingPopulation - subpopsize.get(moea);
+            remainingProbability = remainingProbability - alg.getProbability();
+            initPopulation(moea, subpopsize.get(moea));
+            evaluations = subpopsize.get(moea);
+        }
 
         while (evaluations < maxEvaluations) {
 
+            /**
+             * Generate offspring.
+             */
             List<List<S>> offspring = new ArrayList<>();
-            int remainingPopulation = populationSize;
-            float remainingProbability = 1.0f;
             for (int moea = 0; moea < algorithms.size() && evaluations < maxEvaluations; moea++) {
-
                 CooperativeAlgorithm alg = algorithms.get(moea);
-
-                int subpopsize = alg.getPopulationSize(remainingPopulation, remainingProbability);
-                remainingPopulation = remainingPopulation - subpopsize;
-                remainingProbability = remainingProbability - alg.getProbability();
-
-                List<S> copy = new ArrayList<>(population.size());
-                population.forEach((s) -> {
-                    copy.add((S) s.copy());
-                });
-                List<S> subpop = alg.environmentalSelection(copy, subpopsize, lambda);
-
-                offspring.add(alg.generateOffspring(subpop, subpopsize, lambda));
-
+                offspring.add(alg.generateOffspring(population.get(moea), subpopsize.get(moea), lambda));
                 evaluations += offspring.get(moea).size();
             }
+
             /**
              * @TODO extract metrics from offspring
              */
             /**
              * @TODO make decisions based on metrics and change probabilities
              */
-            population.clear();
-            offspring.forEach((l) -> {
-                population.addAll(l);
-            });
-            offspring.clear();
+            /**
+             * Update population.
+             */
+            remainingPopulation = populationSize;
+            remainingProbability = 1.0f;
+            for (int moea = 0; moea < algorithms.size() && evaluations < maxEvaluations; moea++) {
+                CooperativeAlgorithm alg = algorithms.get(moea);
+                List<S> union = new ArrayList<>();
+                population.forEach((pop) -> {
+                    union.addAll(pop);
+                });
+                offspring.forEach((off) -> {
+                    union.addAll(off);
+                });
+                subpopsize.set(moea, alg.getPopulationSize(remainingPopulation, remainingProbability));
+                remainingPopulation = remainingPopulation - subpopsize.get(moea);
+                remainingProbability = remainingProbability - alg.getProbability();
+                population.set(moea, alg.environmentalSelection(union, subpopsize.get(moea), lambda));
+            }
         }
     }
 
@@ -133,23 +146,30 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
 
     /**
      * Initialize the population
+     *
+     * @param moea
+     * @param popsize
      */
-    protected void initPopulation() {
+    protected void initPopulation(int moea, int popsize) {
 
-        population = new ArrayList<>(populationSize);
+        List<S> subpop = new ArrayList<>(popsize);
 
-        for (int i = 0; i < populationSize; i++) {
+        for (int i = 0; i < popsize; i++) {
             S newSolution = problem.createSolution();
             problem.evaluate(newSolution);
-            population.add(newSolution);
+            subpop.add(newSolution);
         }
+        population.add(subpop);
 
     }
 
     @Override
     public List<S> getResult() {
-        population = SolutionListUtils.getNondominatedSolutions(population);
-        return population;
+        List<S> union = new ArrayList<>();
+        population.forEach((pop) -> {
+            union.addAll(pop);
+        });
+        return SolutionListUtils.getNondominatedSolutions(union);
     }
 
     @Override
