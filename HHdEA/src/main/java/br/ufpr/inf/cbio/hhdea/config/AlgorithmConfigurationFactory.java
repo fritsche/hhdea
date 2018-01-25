@@ -42,10 +42,8 @@ public class AlgorithmConfigurationFactory {
                 return new NSGAIIConfiguration();
             case "SPEA2":
                 return new SPEA2Configuration();
-            case "HHdEA":
-                return new HHdEAConfiguration();
             default:
-                throw new JMetalException("No configuration found for algorithm " + algorithm + "!");
+                return new HHdEAConfiguration(algorithm);
         }
     }
 

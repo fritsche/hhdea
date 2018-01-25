@@ -18,9 +18,7 @@ package br.ufpr.inf.cbio.hhdea.runner;
 
 import br.ufpr.inf.cbio.hhdea.config.AlgorithmConfigurationFactory;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import org.uma.jmetal.problem.multiobjective.dtlz.DTLZ1;
 import org.uma.jmetal.problem.multiobjective.dtlz.DTLZ2;

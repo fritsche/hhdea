@@ -152,11 +152,7 @@ public class ThetaDEA<S extends Solution> implements Algorithm<List<S>> {
 
         front = ranking.getSubfront(index);
 
-        System.out.println(front.size());
-
         sets[0] = front;
-
-        System.out.println(front.size());
 
         while ((remain > 0) && (remain >= front.size())) {
 

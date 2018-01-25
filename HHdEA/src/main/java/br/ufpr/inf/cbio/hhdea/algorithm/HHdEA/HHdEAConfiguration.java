@@ -32,15 +32,21 @@ import org.uma.jmetal.solution.Solution;
  */
 public class HHdEAConfiguration<S extends Solution> implements AlgorithmConfiguration<Algorithm<S>> {
 
+    private final String name;
+
+    public HHdEAConfiguration(String name) {
+        this.name = name;
+    }
+
     @Override
     public Algorithm<S> cofigure(Problem problem, int popSize, int generations) {
 
         setup();
 
-        return new HHdEABuilder<>(problem)
-                // .addAlgorithm(new CONSGAIIConfiguration().cofigure(problem, 0, 0))
-                // .addAlgorithm(new CONSGAIIIConfiguration().cofigure(problem, 0, 0))
-                // .addAlgorithm(new COSPEA2Configuration().cofigure(problem, 0, 0))
+        return new HHdEABuilder<>(problem).setName(name)
+                .addAlgorithm(new CONSGAIIConfiguration().cofigure(problem, 0, 0))
+                .addAlgorithm(new CONSGAIIIConfiguration().cofigure(problem, 0, 0))
+                .addAlgorithm(new COSPEA2Configuration().cofigure(problem, 0, 0))
                 .addAlgorithm(new COThetaDEAConfiguration().cofigure(problem, 0, 0))
                 .setMaxEvaluations(popSize * generations)
                 .setPopulationSize(popSize).build();

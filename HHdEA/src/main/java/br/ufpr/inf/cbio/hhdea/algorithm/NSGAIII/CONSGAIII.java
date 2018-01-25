@@ -108,8 +108,8 @@ public class CONSGAIII<S extends Solution<?>> extends NSGAIII implements Coopera
             // obtain parents
 
             List<S> parents = new ArrayList<>();
-            parents.add((S) selection_.execute(population_));
-            parents.add((S) selection_.execute(population_));
+            parents.add((S) selection_.execute(population));
+            parents.add((S) selection_.execute(population));
 
             List<S> offSpring = (List<S>) crossover_.execute(parents);
 

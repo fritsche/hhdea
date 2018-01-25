@@ -45,12 +45,14 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
     protected List<Integer> subpopsize;
     private final int populationSize;
     private double[][] lambda;
+    private final String name;
 
-    public HHdEA(List<CooperativeAlgorithm<S>> algorithms, int populationSize, int maxEvaluations, Problem problem) {
+    public HHdEA(List<CooperativeAlgorithm<S>> algorithms, int populationSize, int maxEvaluations, Problem problem, String name) {
         this.algorithms = algorithms;
         this.populationSize = populationSize;
         this.maxEvaluations = maxEvaluations;
         this.problem = problem;
+        this.name = name;
     }
 
     @Override
@@ -174,7 +176,7 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
 
     @Override
     public String getName() {
-        return "HHdEA";
+        return name;
     }
 
     @Override

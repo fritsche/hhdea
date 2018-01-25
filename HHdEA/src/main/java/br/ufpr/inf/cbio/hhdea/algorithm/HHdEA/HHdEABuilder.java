@@ -33,11 +33,22 @@ public class HHdEABuilder<S extends Solution<?>> implements AlgorithmBuilder<HHd
     private int populationSize;
     private int maxEvaluations;
     private final Problem problem;
+    private String name;
 
     public HHdEABuilder(Problem problem) {
         this.problem = problem;
+        name = "HHdEA"; // default name
     }
-    
+
+    public String getName() {
+        return name;
+    }
+
+    public HHdEABuilder setName(String name) {
+        this.name = name;
+        return this;
+    }
+
     public List<CooperativeAlgorithm> getAlgorithms() {
         return algorithms;
     }
@@ -46,15 +57,15 @@ public class HHdEABuilder<S extends Solution<?>> implements AlgorithmBuilder<HHd
         this.algorithms = algorithms;
         return this;
     }
-    
+
     public HHdEABuilder addAlgorithm(CooperativeAlgorithm algorithm) {
         if (algorithms == null) {
-            algorithms =  new ArrayList<>();
+            algorithms = new ArrayList<>();
         }
         algorithms.add(algorithm);
         return this;
     }
-    
+
     public int getPopulationSize() {
         return populationSize;
     }
@@ -75,7 +86,7 @@ public class HHdEABuilder<S extends Solution<?>> implements AlgorithmBuilder<HHd
 
     @Override
     public HHdEA build() {
-        return new HHdEA(algorithms, populationSize, maxEvaluations, problem);
+        return new HHdEA(algorithms, populationSize, maxEvaluations, problem, name);
     }
 
 }
