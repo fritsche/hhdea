@@ -17,6 +17,7 @@
 package br.ufpr.inf.cbio.hhdea.algorithm.SPEA2;
 
 import br.ufpr.inf.cbio.hhdea.algorithm.HHdEA.CooperativeAlgorithm;
+import java.util.ArrayList;
 import java.util.List;
 import org.uma.jmetal.algorithm.multiobjective.spea2.SPEA2;
 import org.uma.jmetal.algorithm.multiobjective.spea2.util.EnvironmentalSelection;
@@ -44,8 +45,7 @@ public class COSPEA2<S extends Solution<?>> extends SPEA2 implements Cooperative
     public void setProbability(float probability) {
         this.probability = probability;
     }
-    
-    
+
     @Override
     public float getProbability() {
         return probability;
@@ -58,6 +58,9 @@ public class COSPEA2<S extends Solution<?>> extends SPEA2 implements Cooperative
 
     @Override
     public List<S> environmentalSelection(List<S> union, int outputSize, double[][] lambda) {
+        if (outputSize == 0) {
+            return new ArrayList<>(0);
+        }
         setMaxPopulationSize(outputSize);
         strenghtRawFitness.computeDensityEstimator(union);
         return (List<S>) new EnvironmentalSelection<>(outputSize).execute((List<Solution<?>>) union);
@@ -65,6 +68,9 @@ public class COSPEA2<S extends Solution<?>> extends SPEA2 implements Cooperative
 
     @Override
     public List<S> generateOffspring(List<S> population, int N, double[][] lambda) {
+        if (N == 0) {
+            return new ArrayList<>(0);
+        }
         setMaxPopulationSize(N);
         return evaluatePopulation(reproduction(population));
     }

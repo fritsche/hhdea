@@ -86,7 +86,7 @@ public class CONSGAIII<S extends Solution<?>> extends NSGAIII implements Coopera
     public float getProbability() {
         return probability;
     }
-    
+
     @Override
     public int getPopulationSize(int remainingPopulation, float remainingProbability) {
         return roundEven(remainingPopulation * (probability / remainingProbability));
@@ -94,6 +94,9 @@ public class CONSGAIII<S extends Solution<?>> extends NSGAIII implements Coopera
 
     @Override
     public List<S> environmentalSelection(List<S> union, int outputSize, double[][] lambda) {
+        if (outputSize == 0) {
+            return new ArrayList<>(0);
+        }
         this.lambda_ = lambda;
         this.populationSize_ = outputSize;
         return replacement(union);
@@ -101,6 +104,9 @@ public class CONSGAIII<S extends Solution<?>> extends NSGAIII implements Coopera
 
     @Override
     public List<S> generateOffspring(List<S> population, int N, double[][] lambda) {
+        if (N == 0) {
+            return new ArrayList<>(0);
+        }
         this.lambda_ = lambda;
         this.populationSize_ = N;
         offspringPopulation_ = new ArrayList<>(populationSize_);

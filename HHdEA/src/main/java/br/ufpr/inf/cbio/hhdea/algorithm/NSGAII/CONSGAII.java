@@ -61,12 +61,18 @@ public class CONSGAII<S extends Solution<?>> extends NSGAII implements Cooperati
 
     @Override
     public List<S> environmentalSelection(List<S> union, int outputSize, double[][] lambda) {
+        if (outputSize == 0) {
+            return new ArrayList<>(0);
+        }
         setMaxPopulationSize(outputSize);
         return replacement(new ArrayList<>(), union);
     }
 
     @Override
     public List<S> generateOffspring(List<S> population, int N, double[][] lambda) {
+        if (N == 0) {
+            return new ArrayList<>(0);
+        }
         setMaxPopulationSize(N);
         return evaluatePopulation(reproduction(selection(population)));
     }

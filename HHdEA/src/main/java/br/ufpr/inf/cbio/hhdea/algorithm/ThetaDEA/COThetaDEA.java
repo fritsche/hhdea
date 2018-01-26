@@ -17,6 +17,7 @@
 package br.ufpr.inf.cbio.hhdea.algorithm.ThetaDEA;
 
 import br.ufpr.inf.cbio.hhdea.algorithm.HHdEA.CooperativeAlgorithm;
+import java.util.ArrayList;
 import java.util.List;
 import org.uma.jmetal.solution.Solution;
 
@@ -37,8 +38,7 @@ public class COThetaDEA<S extends Solution<?>> extends ThetaDEA implements Coope
     public void setProbability(float probability) {
         this.probability = probability;
     }
-    
-    
+
     @Override
     public float getProbability() {
         return probability;
@@ -52,15 +52,17 @@ public class COThetaDEA<S extends Solution<?>> extends ThetaDEA implements Coope
     @Override
     public List<S> environmentalSelection(List<S> union, int outputSize, double[][] lambda) {
 
+        if (outputSize == 0) {
+            return new ArrayList<>(0);
+        }
         this.lambda_ = lambda;
         this.populationSize_ = outputSize;
 
         this.population_ = union;
-        
+
         // initIdealPoint();  // initialize the ideal point
         // initNadirPoint();    // initialize the nadir point
         // initExtremePoints(); // initialize the extreme points
-
         this.union_ = this.population_;
 
         List<S>[] sets = getParetoFronts();
@@ -81,6 +83,9 @@ public class COThetaDEA<S extends Solution<?>> extends ThetaDEA implements Coope
 
     @Override
     public List<S> generateOffspring(List<S> population, int N, double[][] lambda) {
+        if (N == 0) {
+            return new ArrayList<>(0);
+        }
         this.lambda_ = lambda;
         this.populationSize_ = N;
         this.population_ = population;
