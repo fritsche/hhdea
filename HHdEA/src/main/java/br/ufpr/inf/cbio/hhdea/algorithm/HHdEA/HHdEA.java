@@ -16,6 +16,7 @@
  */
 package br.ufpr.inf.cbio.hhdea.algorithm.HHdEA;
 
+import br.ufpr.inf.cbio.hhdea.metrics.MetricsEvaluator;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -73,10 +74,10 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
             remainingPopulation = remainingPopulation - subpopsize.get(moea);
             remainingProbability = remainingProbability - alg.getProbability();
             initPopulation(moea, subpopsize.get(moea));
-            evaluations = subpopsize.get(moea);
+            evaluations += subpopsize.get(moea);
         }
 
-        this.metrics = new MetricsEvaluator(algorithms.size(), population);
+        this.metrics = new MetricsEvaluator(algorithms.size(), population, lambda);
         
         while (evaluations < maxEvaluations) {
 
@@ -91,8 +92,11 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
             }
 
             /**
-             * @TODO extract metrics from offspring
+             * Extract metrics.
              */
+            metrics.extractMetrics(population, offspring);
+            metrics.log();
+            
             /**
              * @TODO make decisions based on metrics and change probabilities
              */
@@ -101,7 +105,7 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
              */
             remainingPopulation = populationSize;
             remainingProbability = 1.0f;
-            for (int moea = 0; moea < algorithms.size() && evaluations < maxEvaluations; moea++) {
+            for (int moea = 0; moea < algorithms.size(); moea++) {
                 CooperativeAlgorithm alg = algorithms.get(moea);
                 List<S> union = new ArrayList<>();
                 population.forEach((pop) -> {
