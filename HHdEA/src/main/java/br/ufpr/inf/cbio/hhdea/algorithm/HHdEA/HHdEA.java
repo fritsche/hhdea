@@ -46,6 +46,7 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
     private final int populationSize;
     private double[][] lambda;
     private final String name;
+    private MetricsEvaluator metrics;
 
     public HHdEA(List<CooperativeAlgorithm<S>> algorithms, int populationSize, int maxEvaluations, Problem problem, String name) {
         this.algorithms = algorithms;
@@ -75,6 +76,8 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
             evaluations = subpopsize.get(moea);
         }
 
+        this.metrics = new MetricsEvaluator(algorithms.size(), population);
+        
         while (evaluations < maxEvaluations) {
 
             /**

@@ -27,6 +27,7 @@ import org.uma.jmetal.solution.Solution;
 public interface CooperativeAlgorithm<S extends Solution<?>> {
 
     public void setProbability(float probability);
+
     public float getProbability();
 
     /**
