@@ -23,6 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.uma.jmetal.qualityindicator.impl.R2;
 import org.uma.jmetal.solution.Solution;
+import org.uma.jmetal.util.comparator.DominanceComparator;
 import org.uma.jmetal.util.front.Front;
 import org.uma.jmetal.util.front.imp.ArrayFront;
 
@@ -37,6 +38,8 @@ public class MetricsEvaluator<S extends Solution<?>> {
     private List<S> initialPopulation;
     private List<List<S>> lastPopulation;
     private String file;
+    private int currentIteration;
+    private DominanceComparator comparator = new DominanceComparator();
 
     public enum Metrics {
         LANDMARKING, EVOLVABILITY, ADAPTIVE_WALK
@@ -48,7 +51,7 @@ public class MetricsEvaluator<S extends Solution<?>> {
         this.t = numberOfMOEAs;
         this.metrics = new double[this.t][Metrics.values().length];
         this.file = file;
-
+        this.currentIteration = 1;
         this.initialPopulation = new ArrayList<>();
         this.lastPopulation = new ArrayList<>(t);
         population.forEach((l) -> {
@@ -82,10 +85,25 @@ public class MetricsEvaluator<S extends Solution<?>> {
                 double landmarking = ((r2initialFront - r2moeaFront) / (r2initialFront));
                 metrics[moea][Metrics.LANDMARKING.ordinal()] = landmarking;
                 /**
-                 * Adaptive walk. How many iterations since the previous r2 was
+                 * Adaptive walk. How many iterations since the previous R2 was
                  * best or equal the current one.
                  */
-
+                double adaptivewalk = 0;
+                if (r2moeaFront < r2lastFront) {
+                    adaptivewalk = metrics[moea][Metrics.ADAPTIVE_WALK.ordinal()] + 1;
+                }
+                metrics[moea][Metrics.ADAPTIVE_WALK.ordinal()] = adaptivewalk;
+                lastPopulation.set(moea, new ArrayList<>(union));
+                /**
+                 * Evolvability. Percentage of parents dominated by offspring.
+                 */
+                int count = 0;
+                for (S p : parents.get(moea)) {
+                    int dominated = -1;
+                    for (S o : offspring.get(moea)) {
+                        
+                    }
+                }
             } catch (IOException ex) {
                 Logger.getLogger(MetricsEvaluator.class.getName()).log(Level.SEVERE, "Weight Vectors file not found [" + file + "]!", ex);
             }
