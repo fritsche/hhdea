@@ -39,15 +39,33 @@ public class HHdEAConfiguration<S extends Solution> implements AlgorithmConfigur
     }
 
     @Override
-    public Algorithm<S> cofigure(Problem problem, int popSize, int generations) {
+    public Algorithm<S> configure(Problem problem, int popSize, int generations) {
 
         setup();
 
-        return new HHdEABuilder<>(problem).setName(name)
-                .addAlgorithm(new CONSGAIIConfiguration().cofigure(problem, 0, 0))
-                .addAlgorithm(new CONSGAIIIConfiguration().cofigure(problem, 0, 0))
-                .addAlgorithm(new COSPEA2Configuration().cofigure(problem, 0, 0))
-                .addAlgorithm(new COThetaDEAConfiguration().cofigure(problem, 0, 0))
+        HHdEABuilder builder = new HHdEABuilder(problem);
+
+        switch (name) {
+            case "CONSGAII":
+                builder.addAlgorithm(new CONSGAIIConfiguration().configure(problem, 0, 0));
+                break;
+            case "CONSGAIII":
+                builder.addAlgorithm(new CONSGAIIIConfiguration().configure(problem, 0, 0));
+                break;
+            case "COSPEA2":
+                builder.addAlgorithm(new COSPEA2Configuration().configure(problem, 0, 0));
+                break;
+            case "COThetaDEA":
+                builder.addAlgorithm(new COThetaDEAConfiguration().configure(problem, 0, 0));
+                break;
+            default: // ALL
+                builder.addAlgorithm(new CONSGAIIConfiguration().configure(problem, 0, 0))
+                        .addAlgorithm(new CONSGAIIIConfiguration().configure(problem, 0, 0))
+                        .addAlgorithm(new COSPEA2Configuration().configure(problem, 0, 0))
+                        .addAlgorithm(new COThetaDEAConfiguration().configure(problem, 0, 0));
+        }
+
+        return builder.setName(name)
                 .setMaxEvaluations(popSize * generations)
                 .setPopulationSize(popSize).build();
     }

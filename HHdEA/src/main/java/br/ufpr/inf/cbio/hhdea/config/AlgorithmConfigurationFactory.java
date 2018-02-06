@@ -22,7 +22,6 @@ import br.ufpr.inf.cbio.hhdea.algorithm.NSGAII.NSGAIIConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.NSGAIII.NSGAIIIConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.SPEA2.SPEA2Configuration;
 import br.ufpr.inf.cbio.hhdea.algorithm.ThetaDEA.ThetaDEAConfiguration;
-import org.uma.jmetal.util.JMetalException;
 
 /**
  *

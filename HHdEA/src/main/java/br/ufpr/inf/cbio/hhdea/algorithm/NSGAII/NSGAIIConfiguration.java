@@ -66,7 +66,7 @@ public class NSGAIIConfiguration implements AlgorithmConfiguration<NSGAII<?>> {
     }
 
     @Override
-    public NSGAII cofigure(Problem problem, int popSize, int generations) {
+    public NSGAII configure(Problem problem, int popSize, int generations) {
 
         this.problem = problem;
         this.generations = generations;

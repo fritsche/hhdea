@@ -60,7 +60,7 @@ public class SPEA2Configuration implements AlgorithmConfiguration<SPEA2<?>> {
     }
 
     @Override
-    public SPEA2 cofigure(Problem problem, int popSize, int generations) {
+    public SPEA2 configure(Problem problem, int popSize, int generations) {
 
         this.problem = problem;
 

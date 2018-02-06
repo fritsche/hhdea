@@ -25,7 +25,7 @@ import org.uma.jmetal.problem.Problem;
 public class CONSGAIIConfiguration extends NSGAIIConfiguration {
 
     @Override
-    public CONSGAII cofigure(Problem problem, int popSize, int generations) {
+    public CONSGAII configure(Problem problem, int popSize, int generations) {
 
         this.problem = problem;
         this.generations = generations;

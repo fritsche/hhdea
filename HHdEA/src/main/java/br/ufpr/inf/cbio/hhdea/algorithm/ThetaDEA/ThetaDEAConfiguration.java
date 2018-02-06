@@ -53,7 +53,7 @@ public class ThetaDEAConfiguration implements AlgorithmConfiguration<ThetaDEA<?>
     }
 
     @Override
-    public ThetaDEA cofigure(Problem problem, int popSize, int generations) {
+    public ThetaDEA configure(Problem problem, int popSize, int generations) {
 
         this.problem = problem;
 

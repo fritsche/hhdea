@@ -53,7 +53,7 @@ public class MOEADDConfiguration implements AlgorithmConfiguration<MOEADD<?>> {
     }
 
     @Override
-    public MOEADD cofigure(Problem problem, int popSize, int generations) {
+    public MOEADD configure(Problem problem, int popSize, int generations) {
 
         this.problem = problem;
         this.generations = generations;

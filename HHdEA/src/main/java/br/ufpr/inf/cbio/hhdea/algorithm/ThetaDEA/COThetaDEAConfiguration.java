@@ -26,7 +26,7 @@ public class COThetaDEAConfiguration extends ThetaDEAConfiguration {
     
     
     @Override
-    public COThetaDEA cofigure(Problem problem, int popSize, int generations) {
+    public COThetaDEA configure(Problem problem, int popSize, int generations) {
 
         this.problem = problem;
 

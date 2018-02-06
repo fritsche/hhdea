@@ -43,6 +43,6 @@ import org.uma.jmetal.problem.Problem;
  */
 public interface AlgorithmConfiguration<A extends Algorithm<?>> {
 
-    public A cofigure(Problem problem, int popSize, int generations);
+    public A configure(Problem problem, int popSize, int generations);
     public void setup();
 }

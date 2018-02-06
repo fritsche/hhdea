@@ -109,7 +109,7 @@ public class MainRunner<S extends Solution<?>, Result> extends ExecuteAlgorithms
         algorithms.add(
                 new ExperimentAlgorithm<>(AlgorithmConfigurationFactory
                         .getAlgorithmConfiguration(algorithm)
-                        .cofigure(problemList.get(0).getProblem(), popSize, generations), 
+                        .configure(problemList.get(0).getProblem(), popSize, generations), 
                         problemList.get(0).getTag()));
 
         ExperimentBuilder<DoubleSolution, List<DoubleSolution>> study = new ExperimentBuilder<>(Integer.toString(m));

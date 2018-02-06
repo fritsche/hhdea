@@ -25,7 +25,7 @@ import org.uma.jmetal.problem.Problem;
 public class COSPEA2Configuration extends SPEA2Configuration {
 
     @Override
-    public COSPEA2 cofigure(Problem problem, int popSize, int generations) {
+    public COSPEA2 configure(Problem problem, int popSize, int generations) {
 
         this.problem = problem;
 
