@@ -39,7 +39,7 @@ import org.uma.jmetal.util.SolutionListUtils;
  */
 public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
 
-    protected int maxEvaluations;
+    protected int maxGenerations;
     protected Problem<S> problem;
     protected List<List<S>> population;
     protected List<CooperativeAlgorithm<S>> algorithms;
@@ -49,10 +49,10 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
     private final String name;
     private MetricsEvaluator metrics;
 
-    public HHdEA(List<CooperativeAlgorithm<S>> algorithms, int populationSize, int maxEvaluations, Problem problem, String name) {
+    public HHdEA(List<CooperativeAlgorithm<S>> algorithms, int populationSize, int maxGenerations, Problem problem, String name) {
         this.algorithms = algorithms;
         this.populationSize = populationSize;
-        this.maxEvaluations = maxEvaluations;
+        this.maxGenerations = maxGenerations;
         this.problem = problem;
         this.name = name;
     }
@@ -66,7 +66,7 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
         int remainingPopulation = populationSize;
         float remainingProbability = 1.0f;
         subpopsize = new ArrayList<>(algorithms.size());
-        int evaluations = 0;
+
         for (int moea = 0; moea < algorithms.size(); moea++) {
             CooperativeAlgorithm alg = algorithms.get(moea);
             alg.setProbability((float) (1.0 / (float) algorithms.size()));
@@ -74,21 +74,19 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
             remainingPopulation = remainingPopulation - subpopsize.get(moea);
             remainingProbability = remainingProbability - alg.getProbability();
             initPopulation(moea, subpopsize.get(moea));
-            evaluations += subpopsize.get(moea);
         }
 
         this.metrics = new MetricsEvaluator(algorithms.size(), population, lambda);
-        
-        while (evaluations < maxEvaluations) {
+
+        for (int generations = 1; generations <= maxGenerations; generations++) {
 
             /**
              * Generate offspring.
              */
             List<List<S>> offspring = new ArrayList<>();
-            for (int moea = 0; moea < algorithms.size() && evaluations < maxEvaluations; moea++) {
+            for (int moea = 0; moea < algorithms.size() && generations < maxGenerations; moea++) {
                 CooperativeAlgorithm alg = algorithms.get(moea);
                 offspring.add(alg.generateOffspring(population.get(moea), subpopsize.get(moea), lambda));
-                evaluations += offspring.get(moea).size();
             }
 
             /**
@@ -96,7 +94,7 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
              */
             metrics.extractMetrics(population, offspring);
             metrics.log();
-            
+
             /**
              * @TODO make decisions based on metrics and change probabilities
              */

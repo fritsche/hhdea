@@ -16,6 +16,7 @@
  */
 package br.ufpr.inf.cbio.hhdea.algorithm.HHdEA;
 
+import br.ufpr.inf.cbio.hhdea.algorithm.NSGAII.CONSGAII;
 import br.ufpr.inf.cbio.hhdea.algorithm.NSGAII.CONSGAIIConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.NSGAIII.CONSGAIIIConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.SPEA2.COSPEA2Configuration;
@@ -66,7 +67,7 @@ public class HHdEAConfiguration<S extends Solution> implements AlgorithmConfigur
         }
 
         return builder.setName(name)
-                .setMaxEvaluations(popSize * generations)
+                .setMaxGenerations(generations)
                 .setPopulationSize(popSize).build();
     }
 
