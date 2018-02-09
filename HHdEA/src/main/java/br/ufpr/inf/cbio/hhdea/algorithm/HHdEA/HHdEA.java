@@ -97,7 +97,7 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
              * Generate offspring.
              */
             List<List<S>> offspring = new ArrayList<>();
-            for (int moea = 0; moea < algorithms.size() && generations < maxGenerations; moea++) {
+            for (int moea = 0; moea < algorithms.size(); moea++) {
                 CooperativeAlgorithm alg = algorithms.get(moea);
                 offspring.add(alg.generateOffspring(population.get(moea), subpopsize.get(moea), lambda));
             }
