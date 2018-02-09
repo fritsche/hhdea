@@ -67,9 +67,17 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
         float remainingProbability = 1.0f;
         subpopsize = new ArrayList<>(algorithms.size());
 
+//        for (int moea = 0; moea < algorithms.size(); moea++) {
+//            CooperativeAlgorithm alg = algorithms.get(moea);
+//            alg.setProbability((float) (1.0 / (float) algorithms.size()));
+//        }
+        algorithms.get(0).setProbability(0); // NSGAII
+        algorithms.get(1).setProbability(1); // NSGAIII
+        algorithms.get(2).setProbability(0); // SPEA2
+        algorithms.get(3).setProbability(0); // ThetaDEA
+
         for (int moea = 0; moea < algorithms.size(); moea++) {
             CooperativeAlgorithm alg = algorithms.get(moea);
-            alg.setProbability((float) (1.0 / (float) algorithms.size()));
             subpopsize.add(alg.getPopulationSize(remainingPopulation, remainingProbability));
             remainingPopulation = remainingPopulation - subpopsize.get(moea);
             remainingProbability = remainingProbability - alg.getProbability();
@@ -98,6 +106,20 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
             /**
              * @TODO make decisions based on metrics and change probabilities
              */
+            algorithms.get(0).setProbability(0); // NSGAII
+            algorithms.get(1).setProbability(0); // NSGAIII
+            algorithms.get(2).setProbability(0); // SPEA2
+            algorithms.get(3).setProbability(0); // ThetaDEA
+            if (generations < 250) {
+                algorithms.get(1).setProbability(1); // NSGAIII            
+            } else if (generations < 500) {
+                algorithms.get(0).setProbability(1); // NSGAII
+            } else if (generations < 750) {
+                algorithms.get(2).setProbability(1); // SPEA2
+            } else {
+                algorithms.get(3).setProbability(1); // ThetaDEA
+            }
+
             /**
              * Update population.
              */

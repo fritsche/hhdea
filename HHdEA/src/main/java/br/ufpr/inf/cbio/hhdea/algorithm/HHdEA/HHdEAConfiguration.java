@@ -16,7 +16,6 @@
  */
 package br.ufpr.inf.cbio.hhdea.algorithm.HHdEA;
 
-import br.ufpr.inf.cbio.hhdea.algorithm.NSGAII.CONSGAII;
 import br.ufpr.inf.cbio.hhdea.algorithm.NSGAII.CONSGAIIConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.NSGAIII.CONSGAIIIConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.SPEA2.COSPEA2Configuration;

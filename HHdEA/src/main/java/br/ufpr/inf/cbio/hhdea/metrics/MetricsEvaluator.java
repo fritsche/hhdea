@@ -32,7 +32,7 @@ public class MetricsEvaluator<S extends Solution<?>> {
 
     private final int t;
     private List<S> initialPopulation;
-    private List<List<S>> lastPopulation;
+    private List<S> lastPopulation;
     private final double[][] lambda;
     private final DominanceComparator comparator = new DominanceComparator();
 
@@ -62,15 +62,20 @@ public class MetricsEvaluator<S extends Solution<?>> {
         this.lastPopulation = new ArrayList<>(t);
         population.forEach((l) -> {
             initialPopulation.addAll(l);
-            lastPopulation.add(new ArrayList<>(l));
+            lastPopulation.addAll(l);
         });
     }
 
     public void extractMetrics(List<List<S>> parents, List<List<S>> offspring) {
 
+        Front lastFront = new ArrayFront(lastPopulation);
+
         for (int moea = 0; moea < offspring.size(); moea++) {
 
             if (offspring.get(moea).isEmpty()) {
+                for (Metrics m : Metrics.values()) {
+                    metrics[moea][m.ordinal()] = 0.0;
+                }
                 continue;
             }
 
@@ -83,7 +88,6 @@ public class MetricsEvaluator<S extends Solution<?>> {
             Front referenceFront = new ArrayFront(all);
             Front initialFront = new ArrayFront(initialPopulation);
             Front moeaFront = new ArrayFront(union);
-            Front lastFront = new ArrayFront(lastPopulation.get(moea));
             R2 r2 = new R2(lambda, referenceFront);
             double r2initialFront = r2.r2(initialFront);
             double r2moeaFront = r2.r2(moeaFront);
@@ -103,7 +107,6 @@ public class MetricsEvaluator<S extends Solution<?>> {
                 adaptivewalk = metrics[moea][Metrics.ADAPTIVE_WALK.ordinal()] + 1;
             }
             metrics[moea][Metrics.ADAPTIVE_WALK.ordinal()] = adaptivewalk;
-            lastPopulation.set(moea, new ArrayList<>(union));
             /**
              * Evolvability. Percentage of parents dominated by offspring.
              */
@@ -118,6 +121,14 @@ public class MetricsEvaluator<S extends Solution<?>> {
             }
             metrics[moea][Metrics.EVOLVABILITY.ordinal()] = count / (double) parents.get(moea).size();
         }
+        lastPopulation.clear();
+        parents.forEach((p) -> {
+            lastPopulation.addAll(p);
+        });
+        offspring.forEach((o) -> {
+            lastPopulation.addAll(o);
+        });
+
     }
 
     public void log() {
