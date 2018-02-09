@@ -29,6 +29,7 @@ import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.JMetalException;
 import org.uma.jmetal.util.SolutionListUtils;
+import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
 /**
  *
@@ -64,23 +65,27 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
 
         population = new ArrayList<>(algorithms.size());
         int remainingPopulation = populationSize;
-        float remainingProbability = 1.0f;
+        float remainingQuota = 1.0f;
         subpopsize = new ArrayList<>(algorithms.size());
 
 //        for (int moea = 0; moea < algorithms.size(); moea++) {
 //            CooperativeAlgorithm alg = algorithms.get(moea);
-//            alg.setProbability((float) (1.0 / (float) algorithms.size()));
+//            alg.setQuota((float) (1.0 / (float) algorithms.size()));
 //        }
-        algorithms.get(0).setProbability(0); // NSGAII
-        algorithms.get(1).setProbability(1); // NSGAIII
-        algorithms.get(2).setProbability(0); // SPEA2
-        algorithms.get(3).setProbability(0); // ThetaDEA
+        algorithms.get(0).setQuota(0); // NSGAII
+        algorithms.get(1).setQuota(0); // NSGAIII
+        algorithms.get(2).setQuota(0); // SPEA2
+        algorithms.get(3).setQuota(0); // ThetaDEA
+
+        JMetalRandom random = JMetalRandom.getInstance();
+        int active = random.nextInt(0, algorithms.size() - 1);
+        algorithms.get(active).setQuota(1);
 
         for (int moea = 0; moea < algorithms.size(); moea++) {
             CooperativeAlgorithm alg = algorithms.get(moea);
-            subpopsize.add(alg.getPopulationSize(remainingPopulation, remainingProbability));
+            subpopsize.add(alg.getPopulationSize(remainingPopulation, remainingQuota));
             remainingPopulation = remainingPopulation - subpopsize.get(moea);
-            remainingProbability = remainingProbability - alg.getProbability();
+            remainingQuota = remainingQuota - alg.getQuota();
             initPopulation(moea, subpopsize.get(moea));
         }
 
@@ -104,27 +109,19 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
             metrics.log();
 
             /**
-             * @TODO make decisions based on metrics and change probabilities
+             * Make decisions based on metrics and change quotas.
              */
-            algorithms.get(0).setProbability(0); // NSGAII
-            algorithms.get(1).setProbability(0); // NSGAIII
-            algorithms.get(2).setProbability(0); // SPEA2
-            algorithms.get(3).setProbability(0); // ThetaDEA
-            if (generations < 250) {
-                algorithms.get(1).setProbability(1); // NSGAIII            
-            } else if (generations < 500) {
-                algorithms.get(0).setProbability(1); // NSGAII
-            } else if (generations < 750) {
-                algorithms.get(3).setProbability(1); // ThetaDEA
-            } else {
-                algorithms.get(2).setProbability(1); // SPEA2
+            if (metrics.getMetric(active, MetricsEvaluator.Metrics.ADAPTIVE_WALK) == 0) {
+                algorithms.get(active).setQuota(0);
+                active = random.nextInt(0, algorithms.size() - 1);
+                algorithms.get(active).setQuota(1);
             }
 
             /**
              * Update population.
              */
             remainingPopulation = populationSize;
-            remainingProbability = 1.0f;
+            remainingQuota = 1.0f;
             for (int moea = 0; moea < algorithms.size(); moea++) {
                 CooperativeAlgorithm alg = algorithms.get(moea);
                 List<S> union = new ArrayList<>();
@@ -134,9 +131,9 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
                 offspring.forEach((off) -> {
                     union.addAll(off);
                 });
-                subpopsize.set(moea, alg.getPopulationSize(remainingPopulation, remainingProbability));
+                subpopsize.set(moea, alg.getPopulationSize(remainingPopulation, remainingQuota));
                 remainingPopulation = remainingPopulation - subpopsize.get(moea);
-                remainingProbability = remainingProbability - alg.getProbability();
+                remainingQuota = remainingQuota - alg.getQuota();
                 population.set(moea, alg.environmentalSelection(union, subpopsize.get(moea), lambda));
             }
         }

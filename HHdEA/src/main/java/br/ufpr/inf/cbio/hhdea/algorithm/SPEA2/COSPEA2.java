@@ -42,12 +42,12 @@ public class COSPEA2<S extends Solution<?>> extends SPEA2 implements Cooperative
     }
 
     @Override
-    public void setProbability(float probability) {
+    public void setQuota(float probability) {
         this.probability = probability;
     }
 
     @Override
-    public float getProbability() {
+    public float getQuota() {
         return probability;
     }
 

@@ -35,12 +35,12 @@ public class COThetaDEA<S extends Solution<?>> extends ThetaDEA implements Coope
     }
 
     @Override
-    public void setProbability(float probability) {
+    public void setQuota(float probability) {
         this.probability = probability;
     }
 
     @Override
-    public float getProbability() {
+    public float getQuota() {
         return probability;
     }
 

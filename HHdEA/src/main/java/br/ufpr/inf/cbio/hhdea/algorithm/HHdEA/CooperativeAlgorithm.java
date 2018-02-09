@@ -26,19 +26,19 @@ import org.uma.jmetal.solution.Solution;
  */
 public interface CooperativeAlgorithm<S extends Solution<?>> {
 
-    public void setProbability(float probability);
+    public void setQuota(float quota);
 
-    public float getProbability();
+    public float getQuota();
 
     /**
      * Return the population size given a probability. Algorithms that needs
      * even population size must check it here.
      *
      * @param remainingPopulation
-     * @param remainingProbability
+     * @param remainingQuota
      * @return subPopulationSize
      */
-    public int getPopulationSize(int remainingPopulation, float remainingProbability);
+    public int getPopulationSize(int remainingPopulation, float remainingQuota);
 
     /**
      * Filter the set of solutions using the MOEA environmental selection

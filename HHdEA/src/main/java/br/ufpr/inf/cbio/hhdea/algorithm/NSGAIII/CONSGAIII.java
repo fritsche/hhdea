@@ -78,12 +78,12 @@ public class CONSGAIII<S extends Solution<?>> extends NSGAIII implements Coopera
     }
 
     @Override
-    public void setProbability(float probability) {
+    public void setQuota(float probability) {
         this.probability = probability;
     }
 
     @Override
-    public float getProbability() {
+    public float getQuota() {
         return probability;
     }
 
