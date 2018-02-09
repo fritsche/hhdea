@@ -89,7 +89,7 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
             initPopulation(moea, subpopsize.get(moea));
         }
 
-        this.metrics = new MetricsEvaluator(algorithms.size(), population, lambda);
+        this.metrics = new MetricsEvaluator(algorithms.size(), population, lambda, problem.getNumberOfObjectives());
 
         for (int generations = 1; generations <= maxGenerations; generations++) {
 
@@ -111,7 +111,7 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
             /**
              * Make decisions based on metrics and change quotas.
              */
-            if (metrics.getMetric(active, MetricsEvaluator.Metrics.ADAPTIVE_WALK) == 0) {
+            if (metrics.getMetric(active, MetricsEvaluator.Metrics.IMPROVEMENTCOUNT) == 0) {
                 algorithms.get(active).setQuota(0);
                 active = random.nextInt(0, algorithms.size() - 1);
                 algorithms.get(active).setQuota(1);

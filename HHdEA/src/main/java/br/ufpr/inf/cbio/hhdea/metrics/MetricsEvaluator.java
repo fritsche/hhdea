@@ -35,9 +35,11 @@ public class MetricsEvaluator<S extends Solution<?>> {
     private List<S> lastPopulation;
     private final double[][] lambda;
     private final DominanceComparator comparator = new DominanceComparator();
+    protected double[] zp_; 	// ideal point for Pareto-based population
+    protected int m;
 
     public enum Metrics {
-        LANDMARKING, EVOLVABILITY, ADAPTIVE_WALK
+        R2IMPROVEMENT, DOMINANCERATIO, IMPROVEMENTCOUNT, PBIDIFFERENCE//, IMPROVEMENTDISTANCE
     };
 
     private double[][] metrics;
@@ -54,7 +56,10 @@ public class MetricsEvaluator<S extends Solution<?>> {
         this.metrics = metrics;
     }
 
-    public MetricsEvaluator(int numberOfMOEAs, List<List<S>> population, double[][] lambda) {
+    public MetricsEvaluator(int numberOfMOEAs, List<List<S>> population, double[][] lambda, int m) {
+        this.m = m;
+        this.zp_ = new double[m]; // ideal point for Pareto-based population
+        initIdealPoint();
         this.t = numberOfMOEAs;
         this.metrics = new double[this.t][Metrics.values().length];
         this.lambda = lambda;
@@ -63,18 +68,51 @@ public class MetricsEvaluator<S extends Solution<?>> {
         population.forEach((l) -> {
             initialPopulation.addAll(l);
             lastPopulation.addAll(l);
+            l.forEach((p) -> {
+                updateReference(p, zp_);
+            });
         });
     }
 
+    public void updateReference(Solution indiv, double[] z_) {
+        for (int i = 0; i < m; i++) {
+            if (indiv.getObjective(i) < z_[i]) {
+                z_[i] = indiv.getObjective(i);
+            }
+        }
+    } // updateReference
+
+    private void initIdealPoint() {
+        for (int i = 0; i < m; i++) {
+            zp_[i] = 1.0e+30;
+        }
+    } // initIdealPoint
+
+    /**
+     * Fitness Landscape Analysis (FLA) inspired metrics for MOP.
+     *
+     * @param parents
+     * @param offspring
+     */
     public void extractMetrics(List<List<S>> parents, List<List<S>> offspring) {
 
         Front lastFront = new ArrayFront(lastPopulation);
+        parents.forEach((l) -> {
+            l.forEach((p) -> {
+                updateReference(p, zp_);
+            });
+        });
+        offspring.forEach((l) -> {
+            l.forEach((p) -> {
+                updateReference(p, zp_);
+            });
+        });
 
         for (int moea = 0; moea < offspring.size(); moea++) {
 
             if (offspring.get(moea).isEmpty()) {
-                for (Metrics m : Metrics.values()) {
-                    metrics[moea][m.ordinal()] = 0.0;
+                for (Metrics metric : Metrics.values()) {
+                    metrics[moea][metric.ordinal()] = 0.0;
                 }
                 continue;
             }
@@ -93,22 +131,25 @@ public class MetricsEvaluator<S extends Solution<?>> {
             double r2moeaFront = r2.r2(moeaFront);
             double r2lastFront = r2.r2(lastFront);
             /**
-             * Landmarking. Difference between current R2 and the R2 of the
-             * initial population.
+             * R2IMPROVEMENT. Difference between current R2 and the R2 of the
+             * initial population. (Inspired on the FLA concept of
+             * *Searchability*).
              */
             double landmarking = ((r2initialFront - r2moeaFront) / (r2initialFront));
-            metrics[moea][Metrics.LANDMARKING.ordinal()] = landmarking;
+            metrics[moea][Metrics.R2IMPROVEMENT.ordinal()] = landmarking;
             /**
-             * Adaptive walk. How many iterations since the previous R2 was best
-             * or equal the current one.
+             * IMPROVEMENTCOUNT. How many iterations since the previous R2 was
+             * best or equal the current one. (Inspired on the FLA concept of
+             * *Adaptive Walk*).
              */
             double adaptivewalk = 0;
             if (r2moeaFront < r2lastFront) {
-                adaptivewalk = metrics[moea][Metrics.ADAPTIVE_WALK.ordinal()] + 1;
+                adaptivewalk = metrics[moea][Metrics.IMPROVEMENTCOUNT.ordinal()] + 1;
             }
-            metrics[moea][Metrics.ADAPTIVE_WALK.ordinal()] = adaptivewalk;
+            metrics[moea][Metrics.IMPROVEMENTCOUNT.ordinal()] = adaptivewalk;
             /**
-             * Evolvability. Percentage of parents dominated by offspring.
+             * DOMINANCERATIO. Percentage of parents dominated by offspring.
+             * (Inspired on the FLA concept of *Evolvability*).
              */
             int count = 0;
             for (S p : parents.get(moea)) {
@@ -119,7 +160,37 @@ public class MetricsEvaluator<S extends Solution<?>> {
                     }
                 }
             }
-            metrics[moea][Metrics.EVOLVABILITY.ordinal()] = count / (double) parents.get(moea).size();
+            metrics[moea][Metrics.DOMINANCERATIO.ordinal()] = count / (double) parents.get(moea).size();
+            /**
+             * PBIDIFFERENCE. Difference between the average PBI of the current
+             * population and the average PBI from the previous one. (Inspired
+             * on the FLA concept of *Evolvability*).
+             */
+            double uavg = .0;
+            for (S u : union) {
+                double min = PBI(u, lambda[0]);
+                for (int w = 1; w < lambda.length; w++) {
+                    double pbi = PBI(u, lambda[w]);
+                    if (pbi < min) {
+                        min = pbi;
+                    }
+                }
+                uavg += min;
+            }
+            uavg /= union.size();
+            double pavg = .0;
+            for (S p : lastPopulation) {
+                double min = PBI(p, lambda[0]);
+                for (int w = 1; w < lambda.length; w++) {
+                    double pbi = PBI(p, lambda[w]);
+                    if (pbi < min) {
+                        min = pbi;
+                    }
+                }
+                pavg += min;
+            }
+            pavg /= lastPopulation.size();
+            metrics[moea][Metrics.PBIDIFFERENCE.ordinal()] = (pavg - uavg) / pavg;
         }
         lastPopulation.clear();
         parents.forEach((p) -> {
@@ -132,13 +203,55 @@ public class MetricsEvaluator<S extends Solution<?>> {
     }
 
     public void log() {
-        for (Metrics m : Metrics.values()) {
-            System.out.print(m + ":\t");
+        for (Metrics metric : Metrics.values()) {
+            System.out.print(metric + ":\t");
             for (int moea = 0; moea < t; moea++) {
-                System.out.print(metrics[moea][m.ordinal()] + "\t");
+                System.out.print(metrics[moea][metric.ordinal()] + "\t");
             }
             System.out.println();
         }
+    }
+
+    public double norm_vector(double[] z, int m) {
+        double sum = 0;
+        for (int i = 0; i < m; i++) {
+            sum += z[i] * z[i];
+        }
+        return Math.sqrt(sum);
+    }
+
+    public double innerproduct(double[] vec1, double[] vec2) {
+        double sum = 0;
+        for (int i = 0; i < vec1.length; i++) {
+            sum += vec1[i] * vec2[i];
+        }
+        return sum;
+    }
+
+    public double PBI(Solution indiv, double[] lambda) {
+        double fitness;
+
+        double theta; // penalty parameter
+        theta = 5.0;
+        // normalize the weight vector (line segment)
+        double nd = norm_vector(lambda, m);
+        for (int i = 0; i < m; i++) {
+            lambda[i] = lambda[i] / nd;
+        }
+        double[] realA = new double[m];
+        double[] realB = new double[m];
+        // difference between current point and reference point
+        for (int n = 0; n < m; n++) {
+            realA[n] = (indiv.getObjective(n) - zp_[n]);
+        }   // distance along the line segment
+        double d1 = Math.abs(innerproduct(realA, lambda));
+        // distance to the line segment
+        for (int n = 0; n < m; n++) {
+            realB[n] = (indiv.getObjective(n) - (zp_[n] + d1 * lambda[n]));
+        }
+        double d2 = norm_vector(realB, m);
+        fitness = d1 + theta * d2;
+        return fitness;
     }
 
 }
