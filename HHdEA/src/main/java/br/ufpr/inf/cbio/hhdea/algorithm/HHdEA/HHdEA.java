@@ -115,9 +115,9 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
             } else if (generations < 500) {
                 algorithms.get(0).setProbability(1); // NSGAII
             } else if (generations < 750) {
-                algorithms.get(2).setProbability(1); // SPEA2
-            } else {
                 algorithms.get(3).setProbability(1); // ThetaDEA
+            } else {
+                algorithms.get(2).setProbability(1); // SPEA2
             }
 
             /**
