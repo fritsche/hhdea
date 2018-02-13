@@ -141,7 +141,7 @@ public class MetricsEvaluator<S extends Solution<?>> {
              * R2FIR. Fitness Improvement Rate between current and last front.
              * Similar to HHMOPSO (Castro, 2014).
              */
-            double r2fir = ((r2lastFront - r2moeaFront) / (r2lastFront));
+            double r2fir = ((r2lastFront - r2moeaFront) / (r2moeaFront));
             metrics[moea][Metrics.R2FIR.ordinal()] = r2fir;
             /**
              * IMPROVEMENTCOUNT. How many iterations since the previous R2 was

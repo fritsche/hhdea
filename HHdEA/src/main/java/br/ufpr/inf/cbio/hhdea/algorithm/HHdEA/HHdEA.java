@@ -17,7 +17,8 @@
 package br.ufpr.inf.cbio.hhdea.algorithm.HHdEA;
 
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.SelectionFunction;
-import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.SimpleRoulette;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.CastroRoulette;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.FRRMAB;
 import br.ufpr.inf.cbio.hhdea.metrics.MetricsEvaluator;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -68,7 +69,7 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
         int remainingPopulation = populationSize;
         float remainingQuota = 1.0f;
         subpopsize = new ArrayList<>(algorithms.size());
-        SelectionFunction<Integer> selection = new SimpleRoulette<>();
+        SelectionFunction<Integer> selection = new FRRMAB<>();
 
         for (int moea = 0; moea < algorithms.size(); moea++) {
             algorithms.get(moea).setQuota(0);
@@ -105,13 +106,13 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
              * Extract metrics.
              */
             metrics.extractMetrics(population, offspring);
-            //metrics.log();
+            metrics.log();
 
             /**
              * Make decisions based on metrics and change quotas.
              */
             algorithms.get(active).setQuota(0);
-            double reward = metrics.getMetric(active, MetricsEvaluator.Metrics.PBIDIFFERENCE);
+            double reward = metrics.getMetric(active, MetricsEvaluator.Metrics.R2IMPROVEMENT);
             selection.creditAssignment(reward);
             active = selection.getNext();
             algorithms.get(active).setQuota(1);

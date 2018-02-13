@@ -17,7 +17,6 @@
 package br.ufpr.inf.cbio.hhdea.algorithm.SPEA2;
 
 import br.ufpr.inf.cbio.hhdea.config.AlgorithmConfiguration;
-import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.multiobjective.spea2.SPEA2;
 import org.uma.jmetal.algorithm.multiobjective.spea2.SPEA2Builder;
 import org.uma.jmetal.operator.CrossoverOperator;

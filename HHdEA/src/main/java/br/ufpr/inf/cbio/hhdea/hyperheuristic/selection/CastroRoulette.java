@@ -16,8 +16,6 @@
  */
 package br.ufpr.inf.cbio.hhdea.hyperheuristic.selection;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
 /**
@@ -25,10 +23,9 @@ import org.uma.jmetal.util.pseudorandom.JMetalRandom;
  * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
  * @param <T>
  */
-public class SimpleRoulette<T> implements SelectionFunction<T> {
+public class CastroRoulette<T> extends SelectionFunction<T> {
 
     private final JMetalRandom random;
-    private final List<T> lowlevelheuristcs;
     private int size;
     private double[] probabilities;
     private int s; // last lowLeveHeuristic selected
@@ -36,14 +33,13 @@ public class SimpleRoulette<T> implements SelectionFunction<T> {
     private final double x = 10.0;
     private double increment;
 
-    public SimpleRoulette() {
+    public CastroRoulette() {
         random = JMetalRandom.getInstance();
-        lowlevelheuristcs = new ArrayList<>();
     }
 
     @Override
     public void init() {
-        size = lowlevelheuristcs.size();
+        size = lowlevelheuristics.size();
         probabilities = new double[size];
 
         double dsize = (double) size;
@@ -58,11 +54,6 @@ public class SimpleRoulette<T> implements SelectionFunction<T> {
     }
 
     @Override
-    public void add(T t) {
-        lowlevelheuristcs.add(t);
-    }
-
-    @Override
     public T getNext() {
         double rand = random.nextDouble();
         double sum = probabilities[0];
@@ -70,7 +61,7 @@ public class SimpleRoulette<T> implements SelectionFunction<T> {
         for (int i = 1; i < size && rand > sum; ++i, s++) {
             sum += probabilities[i];
         }
-        return lowlevelheuristcs.get(s);
+        return lowlevelheuristics.get(s);
     }
 
     @Override

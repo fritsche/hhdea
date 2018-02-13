@@ -16,24 +16,36 @@
  */
 package br.ufpr.inf.cbio.hhdea.hyperheuristic.selection;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
  * @param <T>
  */
-public interface SelectionFunction<T> {
+public abstract class SelectionFunction<T> {
 
-    public void init();
+    protected List<T> lowlevelheuristics;
 
-    public void add(T t);
+    public SelectionFunction() {
+        lowlevelheuristics = new ArrayList<>();
+    }
 
-    public T getNext();
+    public abstract void init();
+
+    public void add(T t) {
+        lowlevelheuristics.add(t);
+    }
+
+    public abstract T getNext();
 
     /**
      * Assign credit to the last given low-level heuristic positive fitness
      * value means improvement negative fitness value means worsens zero fitness
      * value means no improvement or worsens
+     *
      * @param reward
      */
-    public void creditAssignment(double reward);
+    public abstract void creditAssignment(double reward);
 }
