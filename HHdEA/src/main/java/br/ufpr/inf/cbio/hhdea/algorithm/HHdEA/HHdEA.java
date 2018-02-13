@@ -16,6 +16,8 @@
  */
 package br.ufpr.inf.cbio.hhdea.algorithm.HHdEA;
 
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.SelectionFunction;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.SimpleRoulette;
 import br.ufpr.inf.cbio.hhdea.metrics.MetricsEvaluator;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,7 +31,6 @@ import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.JMetalException;
 import org.uma.jmetal.util.SolutionListUtils;
-import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
 /**
  *
@@ -67,18 +68,16 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
         int remainingPopulation = populationSize;
         float remainingQuota = 1.0f;
         subpopsize = new ArrayList<>(algorithms.size());
+        SelectionFunction<Integer> selection = new SimpleRoulette<>();
 
-//        for (int moea = 0; moea < algorithms.size(); moea++) {
-//            CooperativeAlgorithm alg = algorithms.get(moea);
-//            alg.setQuota((float) (1.0 / (float) algorithms.size()));
-//        }
-        algorithms.get(0).setQuota(0); // NSGAII
-        algorithms.get(1).setQuota(0); // NSGAIII
-        algorithms.get(2).setQuota(0); // SPEA2
-        algorithms.get(3).setQuota(0); // ThetaDEA
+        for (int moea = 0; moea < algorithms.size(); moea++) {
+            algorithms.get(moea).setQuota(0);
+            selection.add(moea);
+        }
 
-        JMetalRandom random = JMetalRandom.getInstance();
-        int active = random.nextInt(0, algorithms.size() - 1);
+        selection.init();
+
+        int active = selection.getNext();
         algorithms.get(active).setQuota(1);
 
         for (int moea = 0; moea < algorithms.size(); moea++) {
@@ -106,16 +105,17 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
              * Extract metrics.
              */
             metrics.extractMetrics(population, offspring);
-            metrics.log();
+            //metrics.log();
 
             /**
              * Make decisions based on metrics and change quotas.
              */
-            if (metrics.getMetric(active, MetricsEvaluator.Metrics.IMPROVEMENTCOUNT) == 0) {
-                algorithms.get(active).setQuota(0);
-                active = random.nextInt(0, algorithms.size() - 1);
-                algorithms.get(active).setQuota(1);
-            }
+            algorithms.get(active).setQuota(0);
+            double reward = metrics.getMetric(active, MetricsEvaluator.Metrics.PBIDIFFERENCE);
+            selection.creditAssignment(reward);
+            active = selection.getNext();
+            algorithms.get(active).setQuota(1);
+            System.out.println(algorithms.get(active));
 
             /**
              * Update population.

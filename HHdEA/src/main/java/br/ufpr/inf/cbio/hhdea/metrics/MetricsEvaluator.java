@@ -39,7 +39,7 @@ public class MetricsEvaluator<S extends Solution<?>> {
     protected int m;
 
     public enum Metrics {
-        R2IMPROVEMENT, DOMINANCERATIO, IMPROVEMENTCOUNT, PBIDIFFERENCE//, IMPROVEMENTDISTANCE
+        R2IMPROVEMENT, DOMINANCERATIO, IMPROVEMENTCOUNT, PBIDIFFERENCE, R2FIR//, IMPROVEMENTDISTANCE
     };
 
     private double[][] metrics;
@@ -137,6 +137,12 @@ public class MetricsEvaluator<S extends Solution<?>> {
              */
             double landmarking = ((r2initialFront - r2moeaFront) / (r2initialFront));
             metrics[moea][Metrics.R2IMPROVEMENT.ordinal()] = landmarking;
+            /**
+             * R2FIR. Fitness Improvement Rate between current and last front.
+             * Similar to HHMOPSO (Castro, 2014).
+             */
+            double r2fir = ((r2lastFront - r2moeaFront) / (r2lastFront));
+            metrics[moea][Metrics.R2FIR.ordinal()] = r2fir;
             /**
              * IMPROVEMENTCOUNT. How many iterations since the previous R2 was
              * best or equal the current one. (Inspired on the FLA concept of
