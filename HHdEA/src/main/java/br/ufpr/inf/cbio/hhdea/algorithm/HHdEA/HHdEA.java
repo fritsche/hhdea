@@ -16,9 +16,6 @@
  */
 package br.ufpr.inf.cbio.hhdea.algorithm.HHdEA;
 
-import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.SelectionFunction;
-import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.CastroRoulette;
-import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.FRRMAB;
 import br.ufpr.inf.cbio.hhdea.metrics.MetricsEvaluator;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -67,25 +64,23 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
 
         population = new ArrayList<>(algorithms.size());
         int remainingPopulation = populationSize;
-        float remainingQuota = 1.0f;
+        float remainingProbability = 1.0f;
         subpopsize = new ArrayList<>(algorithms.size());
-        SelectionFunction<Integer> selection = new FRRMAB<>();
 
-        for (int moea = 0; moea < algorithms.size(); moea++) {
-            algorithms.get(moea).setQuota(0);
-            selection.add(moea);
-        }
-
-        selection.init();
-
-        int active = selection.getNext();
-        algorithms.get(active).setQuota(1);
+//        for (int moea = 0; moea < algorithms.size(); moea++) {
+//            CooperativeAlgorithm alg = algorithms.get(moea);
+//            alg.setQuota((float) (1.0 / (float) algorithms.size()));
+//        }
+        algorithms.get(0).setQuota(0); // NSGAII
+        algorithms.get(1).setQuota(1); // NSGAIII
+        algorithms.get(2).setQuota(0); // SPEA2
+        algorithms.get(3).setQuota(0); // ThetaDEA
 
         for (int moea = 0; moea < algorithms.size(); moea++) {
             CooperativeAlgorithm alg = algorithms.get(moea);
-            subpopsize.add(alg.getPopulationSize(remainingPopulation, remainingQuota));
+            subpopsize.add(alg.getPopulationSize(remainingPopulation, remainingProbability));
             remainingPopulation = remainingPopulation - subpopsize.get(moea);
-            remainingQuota = remainingQuota - alg.getQuota();
+            remainingProbability = remainingProbability - alg.getQuota();
             initPopulation(moea, subpopsize.get(moea));
         }
 
@@ -97,7 +92,7 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
              * Generate offspring.
              */
             List<List<S>> offspring = new ArrayList<>();
-            for (int moea = 0; moea < algorithms.size(); moea++) {
+            for (int moea = 0; moea < algorithms.size() && generations < maxGenerations; moea++) {
                 CooperativeAlgorithm alg = algorithms.get(moea);
                 offspring.add(alg.generateOffspring(population.get(moea), subpopsize.get(moea), lambda));
             }
@@ -109,20 +104,27 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
             metrics.log();
 
             /**
-             * Make decisions based on metrics and change quotas.
+             * @TODO make decisions based on metrics and change probabilities
              */
-            algorithms.get(active).setQuota(0);
-            double reward = metrics.getMetric(active, MetricsEvaluator.Metrics.R2IMPROVEMENT);
-            selection.creditAssignment(reward);
-            active = selection.getNext();
-            algorithms.get(active).setQuota(1);
-            System.out.println(algorithms.get(active));
+            algorithms.get(0).setQuota(0); // NSGAII
+            algorithms.get(1).setQuota(0); // NSGAIII
+            algorithms.get(2).setQuota(0); // SPEA2
+            algorithms.get(3).setQuota(0); // ThetaDEA
+            if (generations < 250) {
+                algorithms.get(1).setQuota(1); // NSGAIII            
+            } else if (generations < 500) {
+                algorithms.get(0).setQuota(1); // NSGAII
+            } else if (generations < 750) {
+                algorithms.get(2).setQuota(1); // SPEA2
+            } else {
+                algorithms.get(3).setQuota(1); // ThetaDEA
+            }
 
             /**
              * Update population.
              */
             remainingPopulation = populationSize;
-            remainingQuota = 1.0f;
+            remainingProbability = 1.0f;
             for (int moea = 0; moea < algorithms.size(); moea++) {
                 CooperativeAlgorithm alg = algorithms.get(moea);
                 List<S> union = new ArrayList<>();
@@ -132,9 +134,9 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
                 offspring.forEach((off) -> {
                     union.addAll(off);
                 });
-                subpopsize.set(moea, alg.getPopulationSize(remainingPopulation, remainingQuota));
+                subpopsize.set(moea, alg.getPopulationSize(remainingPopulation, remainingProbability));
                 remainingPopulation = remainingPopulation - subpopsize.get(moea);
-                remainingQuota = remainingQuota - alg.getQuota();
+                remainingProbability = remainingProbability - alg.getQuota();
                 population.set(moea, alg.environmentalSelection(union, subpopsize.get(moea), lambda));
             }
         }
