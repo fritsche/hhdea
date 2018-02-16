@@ -67,9 +67,17 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
         float remainingProbability = 1.0f;
         subpopsize = new ArrayList<>(algorithms.size());
 
+//        for (int moea = 0; moea < algorithms.size(); moea++) {
+//            CooperativeAlgorithm alg = algorithms.get(moea);
+//            alg.setQuota((float) (1.0 / (float) algorithms.size()));
+//        }
+        algorithms.get(0).setQuota(1); // NSGAII
+        algorithms.get(1).setQuota(0); // NSGAIII
+        algorithms.get(2).setQuota(0); // SPEA2
+        algorithms.get(3).setQuota(0); // ThetaDEA
+
         for (int moea = 0; moea < algorithms.size(); moea++) {
             CooperativeAlgorithm alg = algorithms.get(moea);
-            alg.setQuota((float) (1.0 / (float) algorithms.size()));
             subpopsize.add(alg.getPopulationSize(remainingPopulation, remainingProbability));
             remainingPopulation = remainingPopulation - subpopsize.get(moea);
             remainingProbability = remainingProbability - alg.getQuota();
@@ -98,6 +106,31 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
             /**
              * @TODO make decisions based on metrics and change probabilities
              */
+            algorithms.get(0).setQuota(0); // NSGAII
+            algorithms.get(1).setQuota(0); // NSGAIII
+            algorithms.get(2).setQuota(0); // SPEA2
+            algorithms.get(3).setQuota(0); // ThetaDEA
+
+            if (generations <= 12) {
+                algorithms.get(0).setQuota(1); // NSGAII
+            } else if (generations <= 66) {
+                algorithms.get(1).setQuota(1); // NSGAIII
+            } else if (generations <= 409) {
+                algorithms.get(3).setQuota(1); // ThetaDEA
+            } else if (generations <= 443) {
+                algorithms.get(1).setQuota(1); // NSGAIII
+            } else if (generations <= 643) {
+                algorithms.get(3).setQuota(1); // ThetaDEA
+            } else if (generations <= 708) {
+                algorithms.get(1).setQuota(1); // NSGAIII
+            } else if (generations <= 719) {
+                algorithms.get(3).setQuota(1); // ThetaDEA
+            } else if (generations <= 975) {
+                algorithms.get(1).setQuota(1); // NSGAIII
+            } else {
+                algorithms.get(3).setQuota(1); // ThetaDEA
+            }
+
             /**
              * Update population.
              */
