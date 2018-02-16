@@ -20,13 +20,13 @@ import br.ufpr.inf.cbio.hhdea.algorithm.HHdEA.CooperativeAlgorithm;
 import java.util.ArrayList;
 import java.util.List;
 import org.uma.jmetal.algorithm.multiobjective.spea2.SPEA2;
-import org.uma.jmetal.algorithm.multiobjective.spea2.util.EnvironmentalSelection;
 import org.uma.jmetal.operator.CrossoverOperator;
 import org.uma.jmetal.operator.MutationOperator;
 import org.uma.jmetal.operator.SelectionOperator;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
+import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
 /**
  *
@@ -35,44 +35,43 @@ import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
  */
 public class COSPEA2<S extends Solution<?>> extends SPEA2 implements CooperativeAlgorithm<S> {
 
-    private float probability;
+    private int maxIterationsOverride;
 
     public COSPEA2(Problem problem, int maxIterations, int populationSize, CrossoverOperator crossoverOperator, MutationOperator mutationOperator, SelectionOperator selectionOperator, SolutionListEvaluator evaluator) {
         super(problem, maxIterations, populationSize, crossoverOperator, mutationOperator, selectionOperator, evaluator);
     }
 
     @Override
-    public void setQuota(float probability) {
-        this.probability = probability;
-    }
+    public List<S> run(List<S> initialPopulation, int maxEvaluations, double lambda[][], List<S> extremeSolutions) {
 
-    @Override
-    public float getQuota() {
-        return probability;
-    }
+        List<S> offspringPopulation;
+        List<S> matingPopulation;
 
-    @Override
-    public int getPopulationSize(int remainingPopulation, float remainingProbability) {
-        return Math.round(remainingPopulation * (probability / remainingProbability));
-    }
+        maxIterationsOverride = maxEvaluations / initialPopulation.size();
 
-    @Override
-    public List<S> environmentalSelection(List<S> union, int outputSize, double[][] lambda) {
-        if (outputSize == 0) {
-            return new ArrayList<>(0);
+        initProgress();
+        population = initialPopulation;
+
+        while (!isStoppingConditionReached()) {
+            matingPopulation = selection(population);
+            offspringPopulation = reproduction(matingPopulation);
+            offspringPopulation = evaluatePopulation(offspringPopulation);
+            population = replacement(population, offspringPopulation);
+            updateProgress();
         }
-        setMaxPopulationSize(outputSize);
-        strenghtRawFitness.computeDensityEstimator(union);
-        return (List<S>) new EnvironmentalSelection<>(outputSize).execute((List<Solution<?>>) union);
+
+        return population;
+
     }
 
     @Override
-    public List<S> generateOffspring(List<S> population, int N, double[][] lambda) {
-        if (N == 0) {
-            return new ArrayList<>(0);
-        }
-        setMaxPopulationSize(N);
-        return evaluatePopulation(reproduction(population));
+    protected void initProgress() {
+        iterations = 0;
+    }
+
+    @Override
+    protected boolean isStoppingConditionReached() {
+        return iterations >= maxIterationsOverride;
     }
 
 }

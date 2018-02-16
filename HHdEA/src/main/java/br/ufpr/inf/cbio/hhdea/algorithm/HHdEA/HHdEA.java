@@ -17,7 +17,6 @@
 package br.ufpr.inf.cbio.hhdea.algorithm.HHdEA;
 
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.SelectionFunction;
-import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.CastroRoulette;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.FRRMAB;
 import br.ufpr.inf.cbio.hhdea.metrics.MetricsEvaluator;
 import java.io.BufferedReader;
