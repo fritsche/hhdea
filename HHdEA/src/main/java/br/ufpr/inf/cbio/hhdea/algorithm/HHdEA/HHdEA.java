@@ -34,27 +34,27 @@ import org.uma.jmetal.util.SolutionListUtils;
  *
  * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
  * @param <S>
- * @version 0.1 - Every MOEA uses a complete population - Decomposition based
- * MOEAs uses all Weight Vectors
  */
 public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
 
     protected int maxGenerations;
     protected Problem<S> problem;
-    protected List<List<S>> population;
+    protected List<S> population;
+    protected List<S> extreme; // the best and worse known solutions for each objetive
     protected List<CooperativeAlgorithm<S>> algorithms;
-    protected List<Integer> subpopsize;
     private final int populationSize;
     private double[][] lambda;
     private final String name;
     private MetricsEvaluator metrics;
+    private int type;
 
-    public HHdEA(List<CooperativeAlgorithm<S>> algorithms, int populationSize, int maxGenerations, Problem problem, String name) {
+    public HHdEA(List<CooperativeAlgorithm<S>> algorithms, int populationSize, int maxGenerations, Problem problem, String name, int type) {
         this.algorithms = algorithms;
         this.populationSize = populationSize;
         this.maxGenerations = maxGenerations;
         this.problem = problem;
         this.name = name;
+        this.type = type;
     }
 
     @Override
@@ -62,94 +62,55 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
 
         initializeUniformWeight();
 
-        population = new ArrayList<>(algorithms.size());
-        int remainingPopulation = populationSize;
-        float remainingProbability = 1.0f;
-        subpopsize = new ArrayList<>(algorithms.size());
-
-//        for (int moea = 0; moea < algorithms.size(); moea++) {
-//            CooperativeAlgorithm alg = algorithms.get(moea);
-//            alg.setQuota((float) (1.0 / (float) algorithms.size()));
-//        }
-        algorithms.get(0).setQuota(1); // NSGAII
-        algorithms.get(1).setQuota(0); // NSGAIII
-        algorithms.get(2).setQuota(0); // SPEA2
-        algorithms.get(3).setQuota(0); // ThetaDEA
-
-        for (int moea = 0; moea < algorithms.size(); moea++) {
-            CooperativeAlgorithm alg = algorithms.get(moea);
-            subpopsize.add(alg.getPopulationSize(remainingPopulation, remainingProbability));
-            remainingPopulation = remainingPopulation - subpopsize.get(moea);
-            remainingProbability = remainingProbability - alg.getQuota();
-            initPopulation(moea, subpopsize.get(moea));
-        }
-
+        initPopulation();
+        initExtreme();
         this.metrics = new MetricsEvaluator(algorithms.size(), population, lambda, problem.getNumberOfObjectives());
 
+        int active = 0;
+
         for (int generations = 1; generations <= maxGenerations; generations++) {
-
             /**
-             * Generate offspring.
+             * MOEA selection
              */
-            List<List<S>> offspring = new ArrayList<>();
-            for (int moea = 0; moea < algorithms.size() && generations < maxGenerations; moea++) {
-                CooperativeAlgorithm alg = algorithms.get(moea);
-                offspring.add(alg.generateOffspring(population.get(moea), subpopsize.get(moea), lambda));
+            if (type == 1) {
+                if (generations <= 12) {
+                    active = 0; // NSGAII
+                } else if (generations <= 66) {
+                    active = 1; // NSGAIII
+                } else if (generations <= 409) {
+                    active = 3; // ThetaDEA
+                } else if (generations <= 443) {
+                    active = 1; // NSGAIII
+                } else if (generations <= 643) {
+                    active = 3; // ThetaDEA
+                } else if (generations <= 708) {
+                    active = 1; // NSGAIII
+                } else if (generations <= 719) {
+                    active = 3; // ThetaDEA
+                } else if (generations <= 975) {
+                    active = 1; // NSGAIII
+                } else {
+                    active = 3; // ThetaDEA
+                }
             }
 
             /**
-             * Extract metrics.
+             * execute MOEA
              */
-            metrics.extractMetrics(population, offspring);
-            metrics.log();
+            CooperativeAlgorithm alg = algorithms.get(active);
+            List<S> initial = new ArrayList<>(population);
+            List<S> output = alg.run(initial, populationSize, lambda, extreme);
 
             /**
-             * @TODO make decisions based on metrics and change probabilities
+             * Credit Assignment
              */
-            algorithms.get(0).setQuota(0); // NSGAII
-            algorithms.get(1).setQuota(0); // NSGAIII
-            algorithms.get(2).setQuota(0); // SPEA2
-            algorithms.get(3).setQuota(0); // ThetaDEA
-
-            if (generations <= 12) {
-                algorithms.get(0).setQuota(1); // NSGAII
-            } else if (generations <= 66) {
-                algorithms.get(1).setQuota(1); // NSGAIII
-            } else if (generations <= 409) {
-                algorithms.get(3).setQuota(1); // ThetaDEA
-            } else if (generations <= 443) {
-                algorithms.get(1).setQuota(1); // NSGAIII
-            } else if (generations <= 643) {
-                algorithms.get(3).setQuota(1); // ThetaDEA
-            } else if (generations <= 708) {
-                algorithms.get(1).setQuota(1); // NSGAIII
-            } else if (generations <= 719) {
-                algorithms.get(3).setQuota(1); // ThetaDEA
-            } else if (generations <= 975) {
-                algorithms.get(1).setQuota(1); // NSGAIII
-            } else {
-                algorithms.get(3).setQuota(1); // ThetaDEA
-            }
+            metrics.extractMetrics(initial, output, active);
+            metrics.log(active);
 
             /**
-             * Update population.
+             * Move Acceptance
              */
-            remainingPopulation = populationSize;
-            remainingProbability = 1.0f;
-            for (int moea = 0; moea < algorithms.size(); moea++) {
-                CooperativeAlgorithm alg = algorithms.get(moea);
-                List<S> union = new ArrayList<>();
-                population.forEach((pop) -> {
-                    union.addAll(pop);
-                });
-                offspring.forEach((off) -> {
-                    union.addAll(off);
-                });
-                subpopsize.set(moea, alg.getPopulationSize(remainingPopulation, remainingProbability));
-                remainingPopulation = remainingPopulation - subpopsize.get(moea);
-                remainingProbability = remainingProbability - alg.getQuota();
-                population.set(moea, alg.environmentalSelection(union, subpopsize.get(moea), lambda));
-            }
+            population = output;
         }
     }
 
@@ -186,30 +147,46 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
 
     /**
      * Initialize the population
-     *
-     * @param moea
-     * @param popsize
      */
-    protected void initPopulation(int moea, int popsize) {
-
-        List<S> subpop = new ArrayList<>(popsize);
-
-        for (int i = 0; i < popsize; i++) {
+    protected void initPopulation() {
+        population = new ArrayList<>(populationSize);
+        for (int i = 0; i < populationSize; i++) {
             S newSolution = problem.createSolution();
             problem.evaluate(newSolution);
-            subpop.add(newSolution);
+            population.add(newSolution);
         }
-        population.add(subpop);
 
+    }
+
+    protected void updateExtreme() {
+        for (int i = 0; i < populationSize; i++) {
+            S sol = population.get(i);
+            for (int m = 0; m < problem.getNumberOfObjectives(); m++) {
+                int best = 2 * m;
+                if (sol.getObjective(m) < extreme.get(best).getObjective(m)) {
+                    extreme.set(best, sol);
+                }
+                int worse = best + 1;
+                if (sol.getObjective(m) < extreme.get(worse).getObjective(m)) {
+                    extreme.set(worse, sol);
+                }
+            }
+        }
+    }
+
+    protected void initExtreme() {
+        extreme = new ArrayList<>(problem.getNumberOfObjectives() * 2);
+        S sol = population.get(0);
+        for (int m = 0; m < problem.getNumberOfObjectives(); m++) {
+            extreme.add(sol); // init best
+            extreme.add(sol); // init worse
+        }
+        updateExtreme();
     }
 
     @Override
     public List<S> getResult() {
-        List<S> union = new ArrayList<>();
-        population.forEach((pop) -> {
-            union.addAll(pop);
-        });
-        return SolutionListUtils.getNondominatedSolutions(union);
+        return SolutionListUtils.getNondominatedSolutions(population);
     }
 
     @Override

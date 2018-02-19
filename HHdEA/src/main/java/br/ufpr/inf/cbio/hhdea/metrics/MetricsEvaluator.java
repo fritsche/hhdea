@@ -16,12 +16,14 @@
  */
 package br.ufpr.inf.cbio.hhdea.metrics;
 
-import java.util.ArrayList;
 import java.util.List;
+import org.uma.jmetal.qualityindicator.impl.hypervolume.PISAHypervolume;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.comparator.DominanceComparator;
 import org.uma.jmetal.util.front.Front;
 import org.uma.jmetal.util.front.imp.ArrayFront;
+import org.uma.jmetal.util.point.Point;
+import org.uma.jmetal.util.point.impl.ArrayPoint;
 
 /**
  *
@@ -31,15 +33,15 @@ import org.uma.jmetal.util.front.imp.ArrayFront;
 public class MetricsEvaluator<S extends Solution<?>> {
 
     private final int t;
-    private List<S> initialPopulation;
-    private List<S> lastPopulation;
     private final double[][] lambda;
     private final DominanceComparator comparator = new DominanceComparator();
     protected double[] zp_; 	// ideal point for Pareto-based population
     protected int m;
+    protected R2 r2;
+    protected PISAHypervolume hv;
 
     public enum Metrics {
-        PARENTS_RAW_R2//, R2IMPROVEMENT, DOMINANCERATIO, IMPROVEMENTCOUNT, PBIDIFFERENCE, R2FIR//, IMPROVEMENTDISTANCE
+        OUTPUT_RAW_R2, OUTPUT_RAW_HV//, R2IMPROVEMENT, DOMINANCERATIO, IMPROVEMENTCOUNT, PBIDIFFERENCE, R2FIR//, IMPROVEMENTDISTANCE
     };
 
     private double[][] metrics;
@@ -56,60 +58,49 @@ public class MetricsEvaluator<S extends Solution<?>> {
         this.metrics = metrics;
     }
 
-    public MetricsEvaluator(int numberOfMOEAs, List<List<S>> population, double[][] lambda, int m) {
+    public MetricsEvaluator(int numberOfMOEAs, List<S> population, double[][] lambda, int m) {
         this.m = m;
         this.zp_ = new double[m]; // ideal point for Pareto-based population
-        initIdealPoint();
+//        initIdealPoint();
         this.t = numberOfMOEAs;
         this.metrics = new double[this.t][Metrics.values().length];
         this.lambda = lambda;
-        this.initialPopulation = new ArrayList<>();
-        this.lastPopulation = new ArrayList<>(t);
-        population.forEach((l) -> {
-            initialPopulation.addAll(l);
-            lastPopulation.addAll(l);
-            l.forEach((p) -> {
-                updateReference(p, zp_);
-            });
-        });
+
+        Front reference = new ArrayFront(m, m);
+        for (int i = 0; i < m; i++) {
+            double[] values = new double[m];
+            values[i] = 2.0;
+            Point point = new ArrayPoint(values);
+            reference.setPoint(i, point);
+        }
+        r2 = new R2(lambda, reference);
+        hv = new PISAHypervolume(reference);
     }
 
-    public void updateReference(Solution indiv, double[] z_) {
-        for (int i = 0; i < m; i++) {
-            if (indiv.getObjective(i) < z_[i]) {
-                z_[i] = indiv.getObjective(i);
-            }
-        }
-    } // updateReference
-
-    private void initIdealPoint() {
-        for (int i = 0; i < m; i++) {
-            zp_[i] = 1.0e+30;
-        }
-    } // initIdealPoint
-
+//    public void updateReference(Solution indiv, double[] z_) {
+//        for (int i = 0; i < m; i++) {
+//            if (indiv.getObjective(i) < z_[i]) {
+//                z_[i] = indiv.getObjective(i);
+//            }
+//        }
+//    } // updateReference
+//
+//    private void initIdealPoint() {
+//        for (int i = 0; i < m; i++) {
+//            zp_[i] = 1.0e+30;
+//        }
+//    } // initIdealPoint
     /**
      * Fitness Landscape Analysis (FLA) inspired metrics for MOP.
      *
-     * @param parents
-     * @param offspring
+     * @param initial
+     * @param output
+     * @param moea
      */
-    public void extractMetrics(List<List<S>> parents, List<List<S>> offspring) {
+    public void extractMetrics(List<S> initial, List<S> output, int moea) {
 
-        for (int moea = 0; moea < offspring.size(); moea++) {
-            if (offspring.get(moea).isEmpty()) {
-                for (Metrics metric : Metrics.values()) {
-                    metrics[moea][metric.ordinal()] = 0.0;
-                }
-                continue;
-            }
-            /**
-             * Parents Raw R2.
-             */
-            Front parentsFront = new ArrayFront(parents.get(moea));
-            R2 r2 = new R2(lambda, null);
-            metrics[moea][Metrics.PARENTS_RAW_R2.ordinal()] = r2.r2(parentsFront);
-        }
+        metrics[moea][Metrics.OUTPUT_RAW_R2.ordinal()] = r2.evaluate(output);
+        metrics[moea][Metrics.OUTPUT_RAW_HV.ordinal()] = hv.evaluate(output);
 
 //        Front lastFront = new ArrayFront(lastPopulation);
 //        parents.forEach((l) -> {
@@ -222,12 +213,10 @@ public class MetricsEvaluator<S extends Solution<?>> {
 //        });
     }
 
-    public void log() {
+    public void log(int active) {
         for (Metrics metric : Metrics.values()) {
             System.out.print(metric + ":\t");
-            for (int moea = 0; moea < t; moea++) {
-                System.out.print(metrics[moea][metric.ordinal()] + "\t");
-            }
+            System.out.print(metrics[active][metric.ordinal()] + "\t");
             System.out.println();
         }
     }

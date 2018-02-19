@@ -50,13 +50,16 @@ public class CONSGAII<S extends Solution<?>> extends NSGAII implements Cooperati
         int size = initialPopulation.size();
         if (size % 2 != 0) {
             initialPopulation.add((S) initialPopulation.get(JMetalRandom.getInstance().nextInt(0, size)).copy());
+            int iterations = maxEvaluations / size;
+            size++;
+            this.maxEvaluationsOverride = iterations * size;
+        } else {
+            this.maxEvaluationsOverride = maxEvaluations;
         }
-        int iterations = maxEvaluations / size;
-        size++;
-        this.maxEvaluationsOverride = iterations * size;
 
         initProgress();
         // apply replacement only to compute internal parameters of NSGA-II
+        maxPopulationSize = size;
         population = replacement(new ArrayList(0), initialPopulation);
 
         while (!isStoppingConditionReached()) {

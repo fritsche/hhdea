@@ -34,10 +34,20 @@ public class HHdEABuilder<S extends Solution<?>> implements AlgorithmBuilder<HHd
     private int maxGenerations;
     private final Problem problem;
     private String name;
+    private int type;
 
     public HHdEABuilder(Problem problem) {
         this.problem = problem;
         name = "HHdEA"; // default name
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public HHdEABuilder setType(int type) {
+        this.type = type;
+        return this;
     }
 
     public String getName() {
@@ -86,7 +96,7 @@ public class HHdEABuilder<S extends Solution<?>> implements AlgorithmBuilder<HHd
 
     @Override
     public HHdEA build() {
-        return new HHdEA(algorithms, populationSize, maxGenerations, problem, name);
+        return new HHdEA(algorithms, populationSize, maxGenerations, problem, name, type);
     }
 
 }

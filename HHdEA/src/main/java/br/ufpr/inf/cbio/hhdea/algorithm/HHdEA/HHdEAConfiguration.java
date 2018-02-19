@@ -44,7 +44,8 @@ public class HHdEAConfiguration<S extends Solution> implements AlgorithmConfigur
         setup();
 
         HHdEABuilder builder = new HHdEABuilder(problem);
-
+        builder.setType(0); // single MOEA
+        
         switch (name) {
             case "CONSGAII":
                 builder.addAlgorithm(new CONSGAIIConfiguration().configure(problem, 0, 0));
@@ -59,6 +60,7 @@ public class HHdEAConfiguration<S extends Solution> implements AlgorithmConfigur
                 builder.addAlgorithm(new COThetaDEAConfiguration().configure(problem, 0, 0));
                 break;
             default: // ALL
+                builder.setType(1); // multi MOEA
                 builder.addAlgorithm(new CONSGAIIConfiguration().configure(problem, 0, 0))
                         .addAlgorithm(new CONSGAIIIConfiguration().configure(problem, 0, 0))
                         .addAlgorithm(new COSPEA2Configuration().configure(problem, 0, 0))

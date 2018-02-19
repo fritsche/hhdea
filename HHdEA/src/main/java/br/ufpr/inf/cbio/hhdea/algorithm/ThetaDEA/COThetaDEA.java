@@ -36,6 +36,7 @@ public class COThetaDEA<S extends Solution<?>> extends ThetaDEA implements Coope
     public List<S> run(List<S> initialPopulation, int maxEvaluations, double lambda[][], List<S> extremeSolutions) {
 
         generations_ = 0;
+        maxGenerations = (int) Math.round((double) maxEvaluations / initialPopulation.size());
         this.lambda_ = lambda;
         this.populationSize_ = initialPopulation.size();
         this.population_ = initialPopulation;

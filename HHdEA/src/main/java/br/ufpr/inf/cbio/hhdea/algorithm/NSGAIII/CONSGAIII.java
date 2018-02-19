@@ -37,18 +37,18 @@ public class CONSGAIII<S extends Solution<?>> extends NSGAIII<S> implements Coop
 
     @Override
     public List<S> run(List<S> initialPopulation, int maxEvaluations, double lambda[][], List<S> extremeSolutions) {
-        
+
         int size = initialPopulation.size();
+        maxGenerations_ = maxEvaluations / size;
         if (size % 2 != 0) {
             initialPopulation.add((S) initialPopulation.get(JMetalRandom.getInstance().nextInt(0, size)).copy());
+            size++;
         }
-        maxGenerations_ = maxEvaluations / size;
-        size++;
         populationSize_ = size;
         generations_ = -1; // initial population doesn't count
 
-        this.lambda_ =  lambda;
-        
+        this.lambda_ = lambda;
+
         this.population_ = initialPopulation;
 
         while (generations_ < maxGenerations_) {
@@ -115,7 +115,7 @@ public class CONSGAIII<S extends Solution<?>> extends NSGAIII<S> implements Coop
             generations_++;
 
         }
-        
+
         return population_;
 
     }
