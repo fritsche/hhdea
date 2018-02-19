@@ -73,11 +73,12 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
              * MOEA selection
              */
             if (type == 1) {
-
                 if (generations <= 500) {
                     active = 3; // ThetaDEA
-                } else {
+                } else if (generations <= 546) {
                     active = 1; // NSGAIII
+                } else {
+                    active = 3; // ThetaDEA
                 }
             }
 
