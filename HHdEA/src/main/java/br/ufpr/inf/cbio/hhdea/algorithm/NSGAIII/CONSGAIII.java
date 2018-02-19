@@ -41,7 +41,7 @@ public class CONSGAIII<S extends Solution<?>> extends NSGAIII<S> implements Coop
         int size = initialPopulation.size();
         maxGenerations_ = maxEvaluations / size;
         if (size % 2 != 0) {
-            initialPopulation.add((S) initialPopulation.get(JMetalRandom.getInstance().nextInt(0, size)).copy());
+            initialPopulation.add((S) initialPopulation.get(JMetalRandom.getInstance().nextInt(0, size - 1)).copy());
             size++;
         }
         populationSize_ = size;

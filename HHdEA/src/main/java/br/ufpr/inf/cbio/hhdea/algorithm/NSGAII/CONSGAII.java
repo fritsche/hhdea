@@ -49,7 +49,7 @@ public class CONSGAII<S extends Solution<?>> extends NSGAII implements Cooperati
 
         int size = initialPopulation.size();
         if (size % 2 != 0) {
-            initialPopulation.add((S) initialPopulation.get(JMetalRandom.getInstance().nextInt(0, size)).copy());
+            initialPopulation.add((S) initialPopulation.get(JMetalRandom.getInstance().nextInt(0, size - 1)).copy());
             int iterations = maxEvaluations / size;
             size++;
             this.maxEvaluationsOverride = iterations * size;
