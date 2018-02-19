@@ -39,7 +39,7 @@ public class MetricsEvaluator<S extends Solution<?>> {
     protected int m;
 
     public enum Metrics {
-        R2IMPROVEMENT, DOMINANCERATIO, IMPROVEMENTCOUNT, PBIDIFFERENCE, R2FIR//, IMPROVEMENTDISTANCE
+        PARENTS_RAW_R2//, R2IMPROVEMENT, DOMINANCERATIO, IMPROVEMENTCOUNT, PBIDIFFERENCE, R2FIR//, IMPROVEMENTDISTANCE
     };
 
     private double[][] metrics;
@@ -96,116 +96,130 @@ public class MetricsEvaluator<S extends Solution<?>> {
      */
     public void extractMetrics(List<List<S>> parents, List<List<S>> offspring) {
 
-        Front lastFront = new ArrayFront(lastPopulation);
-        parents.forEach((l) -> {
-            l.forEach((p) -> {
-                updateReference(p, zp_);
-            });
-        });
-        offspring.forEach((l) -> {
-            l.forEach((p) -> {
-                updateReference(p, zp_);
-            });
-        });
-
         for (int moea = 0; moea < offspring.size(); moea++) {
-
             if (offspring.get(moea).isEmpty()) {
                 for (Metrics metric : Metrics.values()) {
                     metrics[moea][metric.ordinal()] = 0.0;
                 }
                 continue;
             }
-
-            List<S> union = new ArrayList<>(); // parents and offspring
-            union.addAll(parents.get(moea));
-            union.addAll(offspring.get(moea));
-            List<S> all = new ArrayList<>();
-            all.addAll(union);
-            all.addAll(initialPopulation);
-            Front referenceFront = new ArrayFront(all);
-            Front initialFront = new ArrayFront(initialPopulation);
-            Front moeaFront = new ArrayFront(union);
-            R2 r2 = new R2(lambda, referenceFront);
-            double r2initialFront = r2.r2(initialFront);
-            double r2moeaFront = r2.r2(moeaFront);
-            double r2lastFront = r2.r2(lastFront);
             /**
-             * R2IMPROVEMENT. Difference between current R2 and the R2 of the
-             * initial population. (Inspired on the FLA concept of
-             * *Searchability*).
+             * Parents Raw R2.
              */
-            double landmarking = ((r2initialFront - r2moeaFront) / (r2initialFront));
-            metrics[moea][Metrics.R2IMPROVEMENT.ordinal()] = landmarking;
-            /**
-             * R2FIR. Fitness Improvement Rate between current and last front.
-             * Similar to HHMOPSO (Castro, 2014).
-             */
-            double r2fir = ((r2lastFront - r2moeaFront) / (r2moeaFront));
-            metrics[moea][Metrics.R2FIR.ordinal()] = r2fir;
-            /**
-             * IMPROVEMENTCOUNT. How many iterations since the previous R2 was
-             * best or equal the current one. (Inspired on the FLA concept of
-             * *Adaptive Walk*).
-             */
-            double adaptivewalk = 0;
-            if (r2moeaFront < r2lastFront) {
-                adaptivewalk = metrics[moea][Metrics.IMPROVEMENTCOUNT.ordinal()] + 1;
-            }
-            metrics[moea][Metrics.IMPROVEMENTCOUNT.ordinal()] = adaptivewalk;
-            /**
-             * DOMINANCERATIO. Percentage of parents dominated by offspring.
-             * (Inspired on the FLA concept of *Evolvability*).
-             */
-            int count = 0;
-            for (S p : parents.get(moea)) {
-                for (S o : offspring.get(moea)) {
-                    if (comparator.compare(p, o) == 1) {
-                        count++;
-                        break;
-                    }
-                }
-            }
-            metrics[moea][Metrics.DOMINANCERATIO.ordinal()] = count / (double) parents.get(moea).size();
-            /**
-             * PBIDIFFERENCE. Difference between the average PBI of the current
-             * population and the average PBI from the previous one. (Inspired
-             * on the FLA concept of *Evolvability*).
-             */
-            double uavg = .0;
-            for (S u : union) {
-                double min = PBI(u, lambda[0]);
-                for (int w = 1; w < lambda.length; w++) {
-                    double pbi = PBI(u, lambda[w]);
-                    if (pbi < min) {
-                        min = pbi;
-                    }
-                }
-                uavg += min;
-            }
-            uavg /= union.size();
-            double pavg = .0;
-            for (S p : lastPopulation) {
-                double min = PBI(p, lambda[0]);
-                for (int w = 1; w < lambda.length; w++) {
-                    double pbi = PBI(p, lambda[w]);
-                    if (pbi < min) {
-                        min = pbi;
-                    }
-                }
-                pavg += min;
-            }
-            pavg /= lastPopulation.size();
-            metrics[moea][Metrics.PBIDIFFERENCE.ordinal()] = (pavg - uavg) / pavg;
+            Front parentsFront = new ArrayFront(parents.get(moea));
+            R2 r2 = new R2(lambda, null);
+            metrics[moea][Metrics.PARENTS_RAW_R2.ordinal()] = r2.r2(parentsFront);
         }
-        lastPopulation.clear();
-        parents.forEach((p) -> {
-            lastPopulation.addAll(p);
-        });
-        offspring.forEach((o) -> {
-            lastPopulation.addAll(o);
-        });
 
+//        Front lastFront = new ArrayFront(lastPopulation);
+//        parents.forEach((l) -> {
+//            l.forEach((p) -> {
+//                updateReference(p, zp_);
+//            });
+//        });
+//        offspring.forEach((l) -> {
+//            l.forEach((p) -> {
+//                updateReference(p, zp_);
+//            });
+//        });
+//
+//        for (int moea = 0; moea < offspring.size(); moea++) {
+//
+//            if (offspring.get(moea).isEmpty()) {
+//                for (Metrics metric : Metrics.values()) {
+//                    metrics[moea][metric.ordinal()] = 0.0;
+//                }
+//                continue;
+//            }
+//
+//            List<S> union = new ArrayList<>(); // parents and offspring
+//            union.addAll(parents.get(moea));
+//            union.addAll(offspring.get(moea));
+//            List<S> all = new ArrayList<>();
+//            all.addAll(union);
+//            all.addAll(initialPopulation);
+//            Front referenceFront = new ArrayFront(all);
+//            Front initialFront = new ArrayFront(initialPopulation);
+//            Front moeaFront = new ArrayFront(union);
+//            R2 r2 = new R2(lambda, referenceFront);
+//            double r2initialFront = r2.r2(initialFront);
+//            double r2moeaFront = r2.r2(moeaFront);
+//            double r2lastFront = r2.r2(lastFront);
+//            /**
+//             * R2IMPROVEMENT. Difference between current R2 and the R2 of the
+//             * initial population. (Inspired on the FLA concept of
+//             * *Searchability*).
+//             */
+//            double landmarking = ((r2initialFront - r2moeaFront) / (r2initialFront));
+//            metrics[moea][Metrics.R2IMPROVEMENT.ordinal()] = landmarking;
+//            /**
+//             * R2FIR. Fitness Improvement Rate between current and last front.
+//             * Similar to HHMOPSO (Castro, 2014).
+//             */
+//            double r2fir = ((r2lastFront - r2moeaFront) / (r2moeaFront));
+//            metrics[moea][Metrics.R2FIR.ordinal()] = r2fir;
+//            /**
+//             * IMPROVEMENTCOUNT. How many iterations since the previous R2 was
+//             * best or equal the current one. (Inspired on the FLA concept of
+//             * *Adaptive Walk*).
+//             */
+//            double adaptivewalk = 0;
+//            if (r2moeaFront < r2lastFront) {
+//                adaptivewalk = metrics[moea][Metrics.IMPROVEMENTCOUNT.ordinal()] + 1;
+//            }
+//            metrics[moea][Metrics.IMPROVEMENTCOUNT.ordinal()] = adaptivewalk;
+//            /**
+//             * DOMINANCERATIO. Percentage of parents dominated by offspring.
+//             * (Inspired on the FLA concept of *Evolvability*).
+//             */
+//            int count = 0;
+//            for (S p : parents.get(moea)) {
+//                for (S o : offspring.get(moea)) {
+//                    if (comparator.compare(p, o) == 1) {
+//                        count++;
+//                        break;
+//                    }
+//                }
+//            }
+//            metrics[moea][Metrics.DOMINANCERATIO.ordinal()] = count / (double) parents.get(moea).size();
+//            /**
+//             * PBIDIFFERENCE. Difference between the average PBI of the current
+//             * population and the average PBI from the previous one. (Inspired
+//             * on the FLA concept of *Evolvability*).
+//             */
+//            double uavg = .0;
+//            for (S u : union) {
+//                double min = PBI(u, lambda[0]);
+//                for (int w = 1; w < lambda.length; w++) {
+//                    double pbi = PBI(u, lambda[w]);
+//                    if (pbi < min) {
+//                        min = pbi;
+//                    }
+//                }
+//                uavg += min;
+//            }
+//            uavg /= union.size();
+//            double pavg = .0;
+//            for (S p : lastPopulation) {
+//                double min = PBI(p, lambda[0]);
+//                for (int w = 1; w < lambda.length; w++) {
+//                    double pbi = PBI(p, lambda[w]);
+//                    if (pbi < min) {
+//                        min = pbi;
+//                    }
+//                }
+//                pavg += min;
+//            }
+//            pavg /= lastPopulation.size();
+//            metrics[moea][Metrics.PBIDIFFERENCE.ordinal()] = (pavg - uavg) / pavg;
+//        }
+//        lastPopulation.clear();
+//        parents.forEach((p) -> {
+//            lastPopulation.addAll(p);
+//        });
+//        offspring.forEach((o) -> {
+//            lastPopulation.addAll(o);
+//        });
     }
 
     public void log() {
