@@ -26,6 +26,7 @@ import org.uma.jmetal.operator.SelectionOperator;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
+import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
 /**
  *
@@ -34,47 +35,50 @@ import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
  */
 public class CONSGAII<S extends Solution<?>> extends NSGAII implements CooperativeAlgorithm<S> {
 
-    private float probability;
+    private int maxEvaluationsOverride;
 
     public CONSGAII(Problem problem, int maxEvaluations, int populationSize, CrossoverOperator crossoverOperator, MutationOperator mutationOperator, SelectionOperator selectionOperator, SolutionListEvaluator evaluator) {
         super(problem, maxEvaluations, populationSize, crossoverOperator, mutationOperator, selectionOperator, evaluator);
     }
 
-    public static int roundEven(float d) {
-        return Math.round(d / 2) * 2;
-    }
-
     @Override
-    public void setQuota(float probability) {
-        this.probability = probability;
-    }
+    public List<S> run(List<S> initialPopulation, int maxEvaluations, double[][] lambda, List<S> extremeSolutions) {
 
-    @Override
-    public float getQuota() {
-        return probability;
-    }
+        List<S> offspringPopulation;
+        List<S> matingPopulation;
 
-    @Override
-    public int getPopulationSize(int remainingPopulation, float remainingProbability) {
-        return roundEven(remainingPopulation * (probability / remainingProbability));
-    }
-
-    @Override
-    public List<S> environmentalSelection(List<S> union, int outputSize, double[][] lambda) {
-        if (outputSize == 0) {
-            return new ArrayList<>(0);
+        int size = initialPopulation.size();
+        if (size % 2 != 0) {
+            initialPopulation.add((S) initialPopulation.get(JMetalRandom.getInstance().nextInt(0, size)).copy());
         }
-        setMaxPopulationSize(outputSize);
-        return replacement(new ArrayList<>(), union);
+        int iterations = maxEvaluations / size;
+        size++;
+        this.maxEvaluationsOverride = iterations * size;
+
+        initProgress();
+        // apply replacement only to compute internal parameters of NSGA-II
+        population = replacement(new ArrayList(0), initialPopulation);
+
+        while (!isStoppingConditionReached()) {
+            matingPopulation = selection(population);
+            offspringPopulation = reproduction(matingPopulation);
+            offspringPopulation = evaluatePopulation(offspringPopulation);
+            population = replacement(population, offspringPopulation);
+            updateProgress();
+        }
+
+        return population;
+
     }
 
     @Override
-    public List<S> generateOffspring(List<S> population, int N, double[][] lambda) {
-        if (N == 0) {
-            return new ArrayList<>(0);
-        }
-        setMaxPopulationSize(N);
-        return evaluatePopulation(reproduction(selection(population)));
+    protected void initProgress() {
+        evaluations = 0;
+    }
+
+    @Override
+    protected boolean isStoppingConditionReached() {
+        return evaluations >= maxEvaluationsOverride;
     }
 
 }

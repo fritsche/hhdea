@@ -20,6 +20,7 @@ import br.ufpr.inf.cbio.hhdea.algorithm.HHdEA.CooperativeAlgorithm;
 import java.util.ArrayList;
 import java.util.List;
 import org.uma.jmetal.solution.Solution;
+import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 import org.uma.jmetal.util.solutionattribute.Ranking;
 import org.uma.jmetal.util.solutionattribute.impl.DominanceRanking;
 
@@ -28,109 +29,95 @@ import org.uma.jmetal.util.solutionattribute.impl.DominanceRanking;
  * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
  * @param <S>
  */
-public class CONSGAIII<S extends Solution<?>> extends NSGAIII implements CooperativeAlgorithm<S> {
+public class CONSGAIII<S extends Solution<?>> extends NSGAIII<S> implements CooperativeAlgorithm<S> {
 
-    private float probability;
-
-    public CONSGAIII(CONSGAIIIBuilder builder) {
+    public CONSGAIII(NSGAIIIBuilder builder) {
         super(builder);
     }
 
-    protected List<S> replacement(List<S> union_) {
-        // Ranking the union
-        Ranking ranking = (new DominanceRanking()).computeRanking(union_);
+    @Override
+    public List<S> run(List<S> initialPopulation, int maxEvaluations, double lambda[][], List<S> extremeSolutions) {
+        
+        int size = initialPopulation.size();
+        if (size % 2 != 0) {
+            initialPopulation.add((S) initialPopulation.get(JMetalRandom.getInstance().nextInt(0, size)).copy());
+        }
+        maxGenerations_ = maxEvaluations / size;
+        size++;
+        populationSize_ = size;
+        generations_ = -1; // initial population doesn't count
 
-        int remain = populationSize_;
-        int index = 0;
-        List<S> front;
-        population_ = new ArrayList<>();
+        this.lambda_ =  lambda;
+        
+        this.population_ = initialPopulation;
 
-        // Obtain the next front
-        front = ranking.getSubfront(index);
+        while (generations_ < maxGenerations_) {
+            offspringPopulation_ = new ArrayList<>(populationSize_);
+            for (int i = 0; i < (populationSize_ / 2); i++) {
+                if (generations_ < maxGenerations_) {
+                    // obtain parents
 
-        while ((remain > 0) && (remain >= front.size())) {
+                    List<S> parents = new ArrayList<>();
+                    parents.add(selection_.execute(population_));
+                    parents.add(selection_.execute(population_));
 
-            for (int k = 0; k < front.size(); k++) {
-                population_.add(front.get(k));
+                    List<S> offSpring = crossover_.execute(parents);
+
+                    mutation_.execute(offSpring.get(0));
+                    mutation_.execute(offSpring.get(1));
+
+                    problem_.evaluate(offSpring.get(0));
+                    problem_.evaluate(offSpring.get(1));
+
+                    offspringPopulation_.add(offSpring.get(0));
+                    offspringPopulation_.add(offSpring.get(1));
+
+                } // if
             } // for
 
-            // Decrement remain
-            remain = remain - front.size();
+            union_ = new ArrayList<>();
+            union_.addAll(population_);
+            union_.addAll(offspringPopulation_);
+
+            // Ranking the union
+            Ranking ranking = (new DominanceRanking()).computeRanking(union_);
+
+            int remain = populationSize_;
+            int index = 0;
+            List<S> front;
+            population_.clear();
 
             // Obtain the next front
-            index++;
-            if (remain > 0) {
-                front = ranking.getSubfront(index);
-            } // if
+            front = ranking.getSubfront(index);
+
+            while ((remain > 0) && (remain >= front.size())) {
+
+                for (int k = 0; k < front.size(); k++) {
+                    population_.add(front.get(k));
+                } // for
+
+                // Decrement remain
+                remain = remain - front.size();
+
+                // Obtain the next front
+                index++;
+                if (remain > 0) {
+                    front = ranking.getSubfront(index);
+                } // if
+            }
+
+            if (remain > 0) { // front contains individuals to insert
+
+                new Niching(population_, front, lambda_, remain, normalize_)
+                        .execute();
+            }
+
+            generations_++;
+
         }
-
-        if (remain > 0) { // front contains individuals to insert
-
-            new Niching(population_, front, lambda_, remain, normalize_)
-                    .execute();
-        }
-
+        
         return population_;
-    }
 
-    public static int roundEven(float d) {
-        return Math.round(d / 2) * 2;
-    }
-
-    @Override
-    public void setQuota(float probability) {
-        this.probability = probability;
-    }
-
-    @Override
-    public float getQuota() {
-        return probability;
-    }
-
-    @Override
-    public int getPopulationSize(int remainingPopulation, float remainingProbability) {
-        return roundEven(remainingPopulation * (probability / remainingProbability));
-    }
-
-    @Override
-    public List<S> environmentalSelection(List<S> union, int outputSize, double[][] lambda) {
-        if (outputSize == 0) {
-            return new ArrayList<>(0);
-        }
-        this.lambda_ = lambda;
-        this.populationSize_ = outputSize;
-        return replacement(union);
-    }
-
-    @Override
-    public List<S> generateOffspring(List<S> population, int N, double[][] lambda) {
-        if (N == 0) {
-            return new ArrayList<>(0);
-        }
-        this.lambda_ = lambda;
-        this.populationSize_ = N;
-        offspringPopulation_ = new ArrayList<>(populationSize_);
-        for (int i = 0; i < (populationSize_ / 2); i++) {
-            // obtain parents
-
-            List<S> parents = new ArrayList<>();
-            parents.add((S) selection_.execute(population));
-            parents.add((S) selection_.execute(population));
-
-            List<S> offSpring = (List<S>) crossover_.execute(parents);
-
-            mutation_.execute(offSpring.get(0));
-            mutation_.execute(offSpring.get(1));
-
-            problem_.evaluate(offSpring.get(0));
-            problem_.evaluate(offSpring.get(1));
-
-            offspringPopulation_.add(offSpring.get(0));
-            offspringPopulation_.add(offSpring.get(1));
-
-        } // for
-
-        return offspringPopulation_;
     }
 
 }

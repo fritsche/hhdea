@@ -28,69 +28,43 @@ import org.uma.jmetal.solution.Solution;
  */
 public class COThetaDEA<S extends Solution<?>> extends ThetaDEA implements CooperativeAlgorithm<S> {
 
-    private float probability;
-
-    public COThetaDEA(COThetaDEABuilder builder) {
+    public COThetaDEA(ThetaDEABuilder builder) {
         super(builder);
     }
 
     @Override
-    public void setQuota(float probability) {
-        this.probability = probability;
-    }
+    public List<S> run(List<S> initialPopulation, int maxEvaluations, double lambda[][], List<S> extremeSolutions) {
 
-    @Override
-    public float getQuota() {
-        return probability;
-    }
-
-    @Override
-    public int getPopulationSize(int remainingPopulation, float remainingProbability) {
-        return Math.round(remainingPopulation * (probability / remainingProbability));
-    }
-
-    @Override
-    public List<S> environmentalSelection(List<S> union, int outputSize, double[][] lambda) {
-
-        if (outputSize == 0) {
-            return new ArrayList<>(0);
-        }
+        generations_ = 0;
         this.lambda_ = lambda;
-        this.populationSize_ = outputSize;
+        this.populationSize_ = initialPopulation.size();
+        this.population_ = initialPopulation;
 
-        this.population_ = union;
+        initIdealPoint();  // initialize the ideal point
+        initNadirPoint();    // initialize the nadir point
+        initExtremePoints(); // initialize the extreme points
 
-        // initIdealPoint();  // initialize the ideal point
-        // initNadirPoint();    // initialize the nadir point
-        // initExtremePoints(); // initialize the extreme points
-        this.union_ = this.population_;
+        updateIdealPoint(extremeSolutions);
+        updateNadirPoint(extremeSolutions);
 
-        List<S>[] sets = getParetoFronts();
-
-        List<S> firstFront = sets[0];   // the first non-dominated front
-        List<S> stPopulation = sets[1]; // the population used in theta-non-dominated ranking
-
-        updateIdealPoint(firstFront);  // update the ideal point
-        if (normalize_) {
-            updateNadirPoint(firstFront);  // update the nadir point
-            normalizePopulation(stPopulation);  // normalize the population using ideal point and nadir point
+        while (generations_ < maxGenerations) {
+            createOffSpringPopulation();  // create the offspring population
+            union_ = new ArrayList<>();
+            union_.addAll(population_);
+            union_.addAll(offspringPopulation_);
+            List<S>[] sets = getParetoFronts();
+            List<S> firstFront = sets[0];   // the first non-dominated front
+            List<S> stPopulation = sets[1]; // the population used in theta-non-dominated ranking
+            updateIdealPoint(firstFront);  // update the ideal point
+            if (normalize_) {
+                updateNadirPoint(firstFront);  // update the nadir point
+                normalizePopulation(stPopulation);  // normalize the population using ideal point and nadir point
+            }
+            getNextPopulation(stPopulation);  // select the next population using theta-non-dominated ranking
+            generations_++;
         }
 
-        getNextPopulation(stPopulation);  // select the next population using theta-non-dominated ranking
-
-        return population_;
-    }
-
-    @Override
-    public List<S> generateOffspring(List<S> population, int N, double[][] lambda) {
-        if (N == 0) {
-            return new ArrayList<>(0);
-        }
-        this.lambda_ = lambda;
-        this.populationSize_ = N;
-        this.population_ = population;
-        createOffSpringPopulation();
-        return offspringPopulation_;
+        return this.population_;
     }
 
 }
