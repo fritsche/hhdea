@@ -79,8 +79,10 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
                     active = 1; // NSGAIII
                 } else if (generations <= 755) {
                     active = 3; // ThetaDEA
-                } else {
+                } else if (generations <= 765) {
                     active = 1; // NSGAIII
+                } else {
+                    active = 3; // ThetaDEA
                 }
             }
 
