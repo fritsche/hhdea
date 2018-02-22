@@ -18,6 +18,7 @@ package br.ufpr.inf.cbio.hhdea.algorithm.NSGAII;
 
 import br.ufpr.inf.cbio.hhdea.algorithm.HHdEA.CooperativeAlgorithm;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAII;
 import org.uma.jmetal.operator.CrossoverOperator;
@@ -35,53 +36,31 @@ import org.uma.jmetal.util.pseudorandom.JMetalRandom;
  */
 public class CONSGAII<S extends Solution<?>> extends NSGAII implements CooperativeAlgorithm<S> {
 
-    private int maxEvaluationsOverride;
-
-    public CONSGAII(Problem problem, int maxEvaluations, int populationSize, CrossoverOperator crossoverOperator, MutationOperator mutationOperator, SelectionOperator selectionOperator, SolutionListEvaluator evaluator) {
-        super(problem, maxEvaluations, populationSize, crossoverOperator, mutationOperator, selectionOperator, evaluator);
+    public CONSGAII(Problem problem, int maxEvaluations, int populationSize, CrossoverOperator crossoverOperator, MutationOperator mutationOperator, SelectionOperator selectionOperator, Comparator dominanceComparator, SolutionListEvaluator evaluator) {
+        super(problem, maxEvaluations, populationSize, crossoverOperator, mutationOperator, selectionOperator, dominanceComparator, evaluator);
     }
 
     @Override
-    public List<S> run(List<S> initialPopulation, int maxEvaluations, double[][] lambda, List<S> extremeSolutions) {
+    public List<S> run(List<S> initialPopulation, int popSize, double[][] lambda, List<S> extremeSolutions) {
 
         List<S> offspringPopulation;
         List<S> matingPopulation;
 
-        int size = initialPopulation.size();
-        if (size % 2 != 0) {
-            initialPopulation.add((S) initialPopulation.get(JMetalRandom.getInstance().nextInt(0, size - 1)).copy());
-            int iterations = maxEvaluations / size;
-            size++;
-            this.maxEvaluationsOverride = iterations * size;
-        } else {
-            this.maxEvaluationsOverride = maxEvaluations;
+        popSize += (popSize % 2);
+        if (initialPopulation.size() < popSize) {
+            initialPopulation.add((S) initialPopulation.get(JMetalRandom.getInstance().nextInt(0, popSize - 1)).copy());
         }
 
-        initProgress();
-        // apply replacement only to compute internal parameters of NSGA-II
-        maxPopulationSize = size;
+        // filter solutions
+        maxPopulationSize = popSize;
         population = replacement(new ArrayList(0), initialPopulation);
 
-        while (!isStoppingConditionReached()) {
-            matingPopulation = selection(population);
-            offspringPopulation = reproduction(matingPopulation);
-            offspringPopulation = evaluatePopulation(offspringPopulation);
-            population = replacement(population, offspringPopulation);
-            updateProgress();
-        }
+        matingPopulation = selection(population);
+        offspringPopulation = reproduction(matingPopulation);
+        offspringPopulation = evaluatePopulation(offspringPopulation);
+        population = replacement(population, offspringPopulation);
 
         return population;
-
-    }
-
-    @Override
-    protected void initProgress() {
-        evaluations = 0;
-    }
-
-    @Override
-    protected boolean isStoppingConditionReached() {
-        return evaluations >= maxEvaluationsOverride;
     }
 
 }

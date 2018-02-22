@@ -34,14 +34,12 @@ public class COMOEADD<S extends Solution<?>> extends MOEADD<S> implements Cooper
     }
 
     @Override
-    public List<S> run(List<S> initialPopulation, int maxEvaluations, double[][] lambda, List<S> extremeSolutions) {
-        evaluations_ = 0;
+    public List<S> run(List<S> initialPopulation, int popSize, double[][] lambda, List<S> extremeSolutions) {
 
         T_ = 20;
         delta_ = 0.9;
 
-        populationSize_ = initialPopulation.size();
-        this.maxEvaluations = maxEvaluations;
+        populationSize_ = popSize;
 
         neighborhood_ = new int[populationSize_][T_];
         this.lambda_ = lambda;
@@ -55,7 +53,7 @@ public class COMOEADD<S extends Solution<?>> extends MOEADD<S> implements Cooper
 
         // STEP 1. Initialization
         initNeighborhood();
-        population_ = initialPopulation;
+        population_ = initialPopulation.subList(0, popSize);
         initIdealPoint();
         initNadirPoint();
 
@@ -78,55 +76,56 @@ public class COMOEADD<S extends Solution<?>> extends MOEADD<S> implements Cooper
             rankIdx_[curRank][i] = 1;
         }
 
-        // init location
-        for (S initial : population_) {
-            setLocation(initial, zp_, nzp_);
+        // filter solutions
+        for (S initial : initialPopulation) {
+            // update ideal points
+            updateReference(initial, zp_);
+            // update nadir points
+            updateNadirPoint(initial, nzp_);
+            updateArchive(initial);
         }
 
-        // main procedure
-        do {
-            int[] permutation = new int[populationSize_];
-            Utils.randomPermutation(permutation, populationSize_);
+        int[] permutation = new int[populationSize_];
+        Utils.randomPermutation(permutation, populationSize_);
 
-            for (int i = 0; i < populationSize_; i++) {
-                int cid = permutation[i];
+        for (int i = 0; i < populationSize_; i++) {
+            int cid = permutation[i];
 
-                int type;
-                double rnd = randomGenerator.nextDouble();
+            int type;
+            double rnd = randomGenerator.nextDouble();
 
-                // mating selection style
-                if (rnd < delta_) {
-                    type = 1; // neighborhood
-                } else {
-                    type = 2; // whole population
-                }
-                List<S> parents;
-                List<S> offSpring;
-                parents = matingSelection(cid, type);
+            // mating selection style
+            if (rnd < delta_) {
+                type = 1; // neighborhood
+            } else {
+                type = 2; // whole population
+            }
+            List<S> parents;
+            List<S> offSpring;
+            parents = matingSelection(cid, type);
 
-                // SBX crossover
-                offSpring = crossover_.execute(parents);
+            // SBX crossover
+            offSpring = crossover_.execute(parents);
 
-                mutation_.execute(offSpring.get(0));
-                mutation_.execute(offSpring.get(1));
+            mutation_.execute(offSpring.get(0));
+            mutation_.execute(offSpring.get(1));
 
-                problem_.evaluate(offSpring.get(0));
-                problem_.evaluate(offSpring.get(1));
+            problem_.evaluate(offSpring.get(0));
+            problem_.evaluate(offSpring.get(1));
 
-                evaluations_ += 2;
+            evaluations_ += 2;
 
-                // update ideal points
-                updateReference(offSpring.get(0), zp_);
-                updateReference(offSpring.get(1), zp_);
+            // update ideal points
+            updateReference(offSpring.get(0), zp_);
+            updateReference(offSpring.get(1), zp_);
 
-                // update nadir points
-                updateNadirPoint(offSpring.get(0), nzp_);
-                updateNadirPoint(offSpring.get(1), nzp_);
+            // update nadir points
+            updateNadirPoint(offSpring.get(0), nzp_);
+            updateNadirPoint(offSpring.get(1), nzp_);
 
-                updateArchive(offSpring.get(0));
-                updateArchive(offSpring.get(1));
-            } // for			
-        } while (evaluations_ < maxEvaluations);
+            updateArchive(offSpring.get(0));
+            updateArchive(offSpring.get(1));
+        } // for			
 
         return population_;
 

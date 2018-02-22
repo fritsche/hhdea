@@ -66,43 +66,35 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
         initExtreme();
         this.metrics = new MetricsEvaluator(algorithms.size(), population, lambda, problem.getNumberOfObjectives());
 
-        int active = 0;
+        int active;
 
         for (int generations = 1; generations <= maxGenerations; generations++) {
             /**
              * MOEA selection
              */
-            if (type == 1) {
-                if (generations <= 500) {
-                    active = 3; // ThetaDEA
-                } else if (generations <= 546) {
-                    active = 1; // NSGAIII
-                } else if (generations <= 755) {
-                    active = 3; // ThetaDEA
-                } else if (generations <= 765) {
-                    active = 1; // NSGAIII
-                } else {
-                    active = 3; // ThetaDEA
-                }
+            double remaining = populationSize;
+            List<S> offspring = new ArrayList<>();
+            active = 0;
+            for (CooperativeAlgorithm alg : algorithms) {
+                /**
+                 * execute MOEA
+                 */
+                int subPopSize = (int) remaining / (algorithms.size() - active);
+                List<S> initial = new ArrayList<>(population);
+                List output = alg.run(initial, subPopSize, lambda, extreme);
+                offspring.addAll(output);
+                remaining -= output.size();
+                /**
+                 * Credit Assignment
+                 */
+                metrics.extractMetrics(initial, output, active);
+                metrics.log(active);
+                active++;
             }
-
-            /**
-             * execute MOEA
-             */
-            CooperativeAlgorithm alg = algorithms.get(active);
-            List<S> initial = new ArrayList<>(population);
-            List<S> output = alg.run(initial, populationSize, lambda, extreme);
-
-            /**
-             * Credit Assignment
-             */
-            metrics.extractMetrics(initial, output, active);
-            metrics.log(active);
-
             /**
              * Move Acceptance
              */
-            population = output;
+            population = offspring;
         }
     }
 

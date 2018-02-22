@@ -31,12 +31,12 @@ public interface CooperativeAlgorithm<S extends Solution<?>> {
      * evolve this population and return the population evolved.
      *
      * @param initialPopulation
-     * @param maxEvaluations
+     * @param popSize
      * @param lambda
      * @param extremeSolutions the best and worse solution known for each objective. Used to
      * compute ideal and nadir points.
      * @return
      */
-    public List<S> run(List<S> initialPopulation, int maxEvaluations, double lambda[][], List<S> extremeSolutions);
+    public List<S> run(List<S> initialPopulation, int popSize, double lambda[][], List<S> extremeSolutions);
 
 }

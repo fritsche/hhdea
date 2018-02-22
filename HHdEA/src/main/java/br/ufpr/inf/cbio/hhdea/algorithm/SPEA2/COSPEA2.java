@@ -17,8 +17,10 @@
 package br.ufpr.inf.cbio.hhdea.algorithm.SPEA2;
 
 import br.ufpr.inf.cbio.hhdea.algorithm.HHdEA.CooperativeAlgorithm;
+import java.util.ArrayList;
 import java.util.List;
 import org.uma.jmetal.algorithm.multiobjective.spea2.SPEA2;
+import org.uma.jmetal.algorithm.multiobjective.spea2.util.EnvironmentalSelection;
 import org.uma.jmetal.operator.CrossoverOperator;
 import org.uma.jmetal.operator.MutationOperator;
 import org.uma.jmetal.operator.SelectionOperator;
@@ -31,45 +33,43 @@ import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
  * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
  * @param <S>
  */
-public class COSPEA2<S extends Solution<?>> extends SPEA2 implements CooperativeAlgorithm<S> {
+public class COSPEA2<S extends Solution<?>> extends SPEA2<S> implements CooperativeAlgorithm<S> {
 
-    private int maxIterationsOverride;
+    public EnvironmentalSelection<S> environmentalSelectionOverride;
 
     public COSPEA2(Problem problem, int maxIterations, int populationSize, CrossoverOperator crossoverOperator, MutationOperator mutationOperator, SelectionOperator selectionOperator, SolutionListEvaluator evaluator) {
         super(problem, maxIterations, populationSize, crossoverOperator, mutationOperator, selectionOperator, evaluator);
     }
 
     @Override
-    public List<S> run(List<S> initialPopulation, int maxEvaluations, double lambda[][], List<S> extremeSolutions) {
+    public List<S> run(List<S> initialPopulation, int popSize, double lambda[][], List<S> extremeSolutions) {
 
         List<S> offspringPopulation;
         List<S> matingPopulation;
+        this.archive = new ArrayList<>(popSize);
+        environmentalSelectionOverride = new EnvironmentalSelection<>(popSize);
 
-        maxIterationsOverride = maxEvaluations / initialPopulation.size();
-
-        initProgress();
         population = initialPopulation;
 
-        while (!isStoppingConditionReached()) {
-            matingPopulation = selection(population);
-            offspringPopulation = reproduction(matingPopulation);
-            offspringPopulation = evaluatePopulation(offspringPopulation);
-            population = replacement(population, offspringPopulation);
-            updateProgress();
-        }
+        // SPEA2 "selection" is actualy doing environmental selection
+        maxPopulationSize = popSize;
+        matingPopulation = selection(population);
 
-        return population;
+        // the parent selection is inside the reproduction method
+        offspringPopulation = reproduction(matingPopulation);
+        offspringPopulation = evaluatePopulation(offspringPopulation);
+        population = replacement(population, offspringPopulation);
 
+        return selection(population);
     }
 
     @Override
-    protected void initProgress() {
-        iterations = 0;
+    protected List<S> selection(List<S> population) {
+        List<S> union = new ArrayList<>(2 * getMaxPopulationSize());
+        union.addAll(archive);
+        union.addAll(population);
+        strenghtRawFitness.computeDensityEstimator(union);
+        archive = environmentalSelectionOverride.execute(union);
+        return archive;
     }
-
-    @Override
-    protected boolean isStoppingConditionReached() {
-        return iterations >= maxIterationsOverride;
-    }
-
 }

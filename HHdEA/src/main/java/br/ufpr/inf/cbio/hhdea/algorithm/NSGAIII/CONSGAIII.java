@@ -36,88 +36,86 @@ public class CONSGAIII<S extends Solution<?>> extends NSGAIII<S> implements Coop
     }
 
     @Override
-    public List<S> run(List<S> initialPopulation, int maxEvaluations, double lambda[][], List<S> extremeSolutions) {
+    public List<S> run(List<S> initialPopulation, int popSize, double lambda[][], List<S> extremeSolutions) {
 
-        int size = initialPopulation.size();
-        maxGenerations_ = maxEvaluations / size;
-        if (size % 2 != 0) {
-            initialPopulation.add((S) initialPopulation.get(JMetalRandom.getInstance().nextInt(0, size - 1)).copy());
-            size++;
+        popSize += (popSize % 2);
+        if (initialPopulation.size() < popSize) {
+            initialPopulation.add((S) initialPopulation.get(JMetalRandom.getInstance().nextInt(0, popSize - 1)).copy());
         }
-        populationSize_ = size;
-        generations_ = -1; // initial population doesn't count
+        populationSize_ = popSize;
 
         this.lambda_ = lambda;
 
         this.population_ = initialPopulation;
 
-        while (generations_ < maxGenerations_) {
-            offspringPopulation_ = new ArrayList<>(populationSize_);
-            for (int i = 0; i < (populationSize_ / 2); i++) {
-                if (generations_ < maxGenerations_) {
-                    // obtain parents
+        offspringPopulation_ = new ArrayList<>(populationSize_);
 
-                    List<S> parents = new ArrayList<>();
-                    parents.add(selection_.execute(population_));
-                    parents.add(selection_.execute(population_));
+        // filter solutions
+        environmentalSelection();
 
-                    List<S> offSpring = crossover_.execute(parents);
+        for (int i = 0; i < (populationSize_ / 2); i++) {
+            // obtain parents
 
-                    mutation_.execute(offSpring.get(0));
-                    mutation_.execute(offSpring.get(1));
+            List<S> parents = new ArrayList<>();
+            parents.add(selection_.execute(population_));
+            parents.add(selection_.execute(population_));
 
-                    problem_.evaluate(offSpring.get(0));
-                    problem_.evaluate(offSpring.get(1));
+            List<S> offSpring = crossover_.execute(parents);
 
-                    offspringPopulation_.add(offSpring.get(0));
-                    offspringPopulation_.add(offSpring.get(1));
+            mutation_.execute(offSpring.get(0));
+            mutation_.execute(offSpring.get(1));
 
-                } // if
-            } // for
+            problem_.evaluate(offSpring.get(0));
+            problem_.evaluate(offSpring.get(1));
 
-            union_ = new ArrayList<>();
-            union_.addAll(population_);
-            union_.addAll(offspringPopulation_);
+            offspringPopulation_.add(offSpring.get(0));
+            offspringPopulation_.add(offSpring.get(1));
 
-            // Ranking the union
-            Ranking ranking = (new DominanceRanking()).computeRanking(union_);
+        } // if
 
-            int remain = populationSize_;
-            int index = 0;
-            List<S> front;
-            population_.clear();
-
-            // Obtain the next front
-            front = ranking.getSubfront(index);
-
-            while ((remain > 0) && (remain >= front.size())) {
-
-                for (int k = 0; k < front.size(); k++) {
-                    population_.add(front.get(k));
-                } // for
-
-                // Decrement remain
-                remain = remain - front.size();
-
-                // Obtain the next front
-                index++;
-                if (remain > 0) {
-                    front = ranking.getSubfront(index);
-                } // if
-            }
-
-            if (remain > 0) { // front contains individuals to insert
-
-                new Niching(population_, front, lambda_, remain, normalize_)
-                        .execute();
-            }
-
-            generations_++;
-
-        }
+        environmentalSelection();
 
         return population_;
 
+    }
+
+    private void environmentalSelection() {
+        union_ = new ArrayList<>();
+        union_.addAll(population_);
+        union_.addAll(offspringPopulation_);
+
+        // Ranking the union
+        Ranking ranking = (new DominanceRanking()).computeRanking(union_);
+
+        int remain = populationSize_;
+        int index = 0;
+        List<S> front;
+        population_.clear();
+
+        // Obtain the next front
+        front = ranking.getSubfront(index);
+
+        while ((remain > 0) && (remain >= front.size())) {
+
+            for (int k = 0; k < front.size(); k++) {
+                population_.add(front.get(k));
+            } // for
+
+            // Decrement remain
+            remain = remain - front.size();
+
+            // Obtain the next front
+            index++;
+            if (remain > 0) {
+                front = ranking.getSubfront(index);
+            } // if
+        }
+
+        if (remain > 0) { // front contains individuals to insert
+
+            new Niching(population_, front, lambda_, remain, normalize_)
+                    .execute();
+        }
     }
 
 }

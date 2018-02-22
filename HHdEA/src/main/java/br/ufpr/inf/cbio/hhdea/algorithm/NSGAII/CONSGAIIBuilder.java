@@ -16,11 +16,14 @@
  */
 package br.ufpr.inf.cbio.hhdea.algorithm.NSGAII;
 
+import java.util.Comparator;
 import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAIIBuilder;
 import org.uma.jmetal.operator.CrossoverOperator;
 import org.uma.jmetal.operator.MutationOperator;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
+import org.uma.jmetal.util.JMetalException;
+import org.uma.jmetal.util.comparator.DominanceComparator;
 
 /**
  *
@@ -29,14 +32,30 @@ import org.uma.jmetal.solution.Solution;
  */
 public class CONSGAIIBuilder<S extends Solution<?>> extends NSGAIIBuilder<S> {
 
+    private Comparator<S> dominanceComparator;
+
     public CONSGAIIBuilder(Problem<S> problem, CrossoverOperator<S> crossoverOperator, MutationOperator<S> mutationOperator) {
         super(problem, crossoverOperator, mutationOperator);
+        dominanceComparator = new DominanceComparator<>();
+    }
+
+    @Override
+    public CONSGAIIBuilder<S> setDominanceComparator(Comparator<S> dominanceComparator) {
+        if (dominanceComparator == null) {
+            throw new JMetalException("dominanceComparator is null");
+        }
+        this.dominanceComparator = dominanceComparator;
+
+        return this;
     }
 
     @Override
     public CONSGAII<Solution<?>> build() {
-        return new CONSGAII(getProblem(), getMaxIterations(), getPopulationSize(), 
-                getCrossoverOperator(), getMutationOperator(), getSelectionOperator(), getSolutionListEvaluator());
+        return new CONSGAII<>(getProblem(), getMaxIterations(), getPopulationSize(), getCrossoverOperator(), getMutationOperator(), getSelectionOperator(), getDominanceComparator(), getSolutionListEvaluator());
+    }
+
+    public Comparator<S> getDominanceComparator() {
+        return dominanceComparator;
     }
 
 }
