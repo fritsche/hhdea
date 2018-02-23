@@ -36,7 +36,7 @@ import org.uma.jmetal.util.SolutionListUtils;
  * @param <S>
  */
 public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
-
+    
     protected int maxGenerations;
     protected Problem<S> problem;
     protected List<S> population;
@@ -47,7 +47,7 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
     private final String name;
     private MetricsEvaluator metrics;
     private int type;
-
+    
     public HHdEA(List<CooperativeAlgorithm<S>> algorithms, int populationSize, int maxGenerations, Problem problem, String name, int type) {
         this.algorithms = algorithms;
         this.populationSize = populationSize;
@@ -56,18 +56,18 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
         this.name = name;
         this.type = type;
     }
-
+    
     @Override
     public void run() {
-
+        
         initializeUniformWeight();
-
+        
         initPopulation();
         initExtreme();
         this.metrics = new MetricsEvaluator(algorithms.size(), population, lambda, problem.getNumberOfObjectives());
-
+        
         int active;
-
+        
         for (int generations = 1; generations <= maxGenerations; generations++) {
             /**
              * MOEA selection
@@ -80,8 +80,16 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
                  * execute MOEA
                  */
                 int subPopSize = (int) remaining / (algorithms.size() - active);
+                List<double[]> aux = new ArrayList<>();
+                for (int i = active; i < lambda.length; i += algorithms.size()) {
+                    aux.add(lambda[i]);
+                }
+                double[][] sublambda = new double[aux.size()][aux.get(0).length];
+                for (int i = 0; i < aux.size(); i++) {
+                    sublambda[i] = aux.get(i);
+                }
                 List<S> initial = new ArrayList<>(population);
-                List output = alg.run(initial, subPopSize, lambda, extreme);
+                List output = alg.run(initial, subPopSize, sublambda, extreme);
                 offspring.addAll(output);
                 remaining -= output.size();
                 /**
@@ -97,14 +105,14 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
             population = offspring;
         }
     }
-
+    
     protected void initializeUniformWeight() {
         String dataFileName;
         dataFileName = "W" + problem.getNumberOfObjectives() + "D_"
                 + populationSize + ".dat";
-
+        
         lambda = new double[populationSize][problem.getNumberOfObjectives()];
-
+        
         try {
             InputStream in = getClass().getResourceAsStream("/WeightVectors/" + dataFileName);
             InputStreamReader isr = new InputStreamReader(in);
@@ -139,9 +147,9 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
             problem.evaluate(newSolution);
             population.add(newSolution);
         }
-
+        
     }
-
+    
     protected void updateExtreme() {
         for (int i = 0; i < populationSize; i++) {
             S sol = population.get(i);
@@ -157,7 +165,7 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
             }
         }
     }
-
+    
     protected void initExtreme() {
         extreme = new ArrayList<>(problem.getNumberOfObjectives() * 2);
         S sol = population.get(0);
@@ -167,20 +175,20 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
         }
         updateExtreme();
     }
-
+    
     @Override
     public List<S> getResult() {
         return SolutionListUtils.getNondominatedSolutions(population);
     }
-
+    
     @Override
     public String getName() {
         return name;
     }
-
+    
     @Override
     public String getDescription() {
         return "Hyper-heuristics for distributed Evolutionary Algorithms";
     }
-
+    
 }
