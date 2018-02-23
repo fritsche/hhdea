@@ -16,6 +16,7 @@
  */
 package br.ufpr.inf.cbio.hhdea.algorithm.HHdEA;
 
+import br.ufpr.inf.cbio.hhdea.algorithm.MOEADD.COMOEADDConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.NSGAII.CONSGAIIConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.NSGAIII.CONSGAIIIConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.SPEA2.COSPEA2Configuration;
@@ -59,12 +60,16 @@ public class HHdEAConfiguration<S extends Solution> implements AlgorithmConfigur
             case "COThetaDEA":
                 builder.addAlgorithm(new COThetaDEAConfiguration().configure(problem, 0, 0));
                 break;
+            case "COMOEADD":
+                builder.addAlgorithm(new COMOEADDConfiguration().configure(problem, 0, 0));
+                break;
             default: // ALL
                 builder.setType(1); // multi MOEA
                 builder//.addAlgorithm(new CONSGAIIConfiguration().configure(problem, 0, 0))
                         .addAlgorithm(new CONSGAIIIConfiguration().configure(problem, 0, 0))
                         //.addAlgorithm(new COSPEA2Configuration().configure(problem, 0, 0))
-                        .addAlgorithm(new COThetaDEAConfiguration().configure(problem, 0, 0));
+                        .addAlgorithm(new COThetaDEAConfiguration().configure(problem, 0, 0))
+                        .addAlgorithm(new COMOEADDConfiguration().configure(problem, 0, 0));
         }
 
         return builder.setName(name)

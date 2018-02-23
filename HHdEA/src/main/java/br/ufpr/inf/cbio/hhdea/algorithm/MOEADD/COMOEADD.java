@@ -17,6 +17,7 @@
 package br.ufpr.inf.cbio.hhdea.algorithm.MOEADD;
 
 import br.ufpr.inf.cbio.hhdea.algorithm.HHdEA.CooperativeAlgorithm;
+import java.util.ArrayList;
 import java.util.List;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.solutionattribute.Ranking;
@@ -53,7 +54,7 @@ public class COMOEADD<S extends Solution<?>> extends MOEADD<S> implements Cooper
 
         // STEP 1. Initialization
         initNeighborhood();
-        population_ = initialPopulation.subList(0, popSize);
+        initPopulation(initialPopulation);
         initIdealPoint();
         initNadirPoint();
 
@@ -130,5 +131,13 @@ public class COMOEADD<S extends Solution<?>> extends MOEADD<S> implements Cooper
         return population_;
 
     }
-
+    
+    public void initPopulation(List<S> initialPop) {
+        population_ = new ArrayList<>(populationSize_); 
+        for (int i = 0; i < populationSize_; i++) {
+            population_.add(initialPop.get(i));
+            subregionIdx_[i][i] = 1;
+        }
+    } // initPopulation
+    
 }
