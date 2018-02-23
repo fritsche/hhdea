@@ -87,8 +87,8 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
                 /**
                  * Credit Assignment
                  */
-                metrics.extractMetrics(initial, output, active);
-                metrics.log(active);
+//                metrics.extractMetrics(initial, output, active);
+//                metrics.log(active);
                 active++;
             }
             /**
