@@ -101,6 +101,7 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
 //            metrics.log(0);
             
             population = offspring;
+            updateExtreme();
         }
     }
     
