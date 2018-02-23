@@ -72,14 +72,12 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
             /**
              * MOEA selection
              */
-            double remaining = populationSize;
             List<S> offspring = new ArrayList<>();
             active = 0;
             for (CooperativeAlgorithm alg : algorithms) {
                 /**
                  * execute MOEA
                  */
-                int subPopSize = (int) remaining / (algorithms.size() - active);
                 List<double[]> aux = new ArrayList<>();
                 for (int i = active; i < lambda.length; i += algorithms.size()) {
                     aux.add(lambda[i]);
@@ -89,19 +87,19 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
                     sublambda[i] = aux.get(i);
                 }
                 List<S> initial = new ArrayList<>(population);
-                List output = alg.run(initial, subPopSize, sublambda, extreme);
+                List output = alg.run(initial, sublambda.length, sublambda, extreme);
                 offspring.addAll(output);
-                remaining -= output.size();
                 /**
                  * Credit Assignment
                  */
-//                metrics.extractMetrics(initial, output, active);
-//                metrics.log(active);
                 active++;
             }
             /**
              * Move Acceptance
              */
+//            metrics.extractMetrics(null, offspring, 0);
+//            metrics.log(0);
+            
             population = offspring;
         }
     }
