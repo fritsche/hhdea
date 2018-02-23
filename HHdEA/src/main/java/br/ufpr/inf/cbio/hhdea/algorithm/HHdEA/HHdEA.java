@@ -86,7 +86,10 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
                 for (int i = 0; i < aux.size(); i++) {
                     sublambda[i] = aux.get(i);
                 }
-                List<S> initial = new ArrayList<>(population);
+                List<S> initial = new ArrayList<>(population.size());
+                for (S s : population){
+                    initial.add((S) s.copy());
+                }
                 List output = alg.run(initial, sublambda.length, sublambda, extreme);
                 offspring.addAll(output);
                 /**
