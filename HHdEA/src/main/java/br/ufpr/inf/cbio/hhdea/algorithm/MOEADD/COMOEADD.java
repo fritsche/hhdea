@@ -89,7 +89,7 @@ public class COMOEADD<S extends Solution<?>> extends MOEADD<S> implements Cooper
         int[] permutation = new int[populationSize_];
         Utils.randomPermutation(permutation, populationSize_);
 
-        for (int i = 0; i < populationSize_; i++) {
+        for (int i = 0; i <= Math.ceil(populationSize_ / 2); i++) {
             int cid = permutation[i];
 
             int type;
