@@ -20,7 +20,6 @@ import br.ufpr.inf.cbio.hhdea.algorithm.HHdEA.CooperativeAlgorithm;
 import java.util.ArrayList;
 import java.util.List;
 import org.uma.jmetal.solution.Solution;
-import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 import org.uma.jmetal.util.solutionattribute.Ranking;
 import org.uma.jmetal.util.solutionattribute.impl.DominanceRanking;
 
@@ -33,50 +32,6 @@ public class CONSGAIII<S extends Solution<?>> extends NSGAIII<S> implements Coop
 
     public CONSGAIII(NSGAIIIBuilder builder) {
         super(builder);
-    }
-
-    @Override
-    public List<S> run(List<S> initialPopulation, int popSize, double lambda[][], List<S> extremeSolutions) {
-
-        popSize += (popSize % 2);
-        if (initialPopulation.size() < popSize) {
-            initialPopulation.add((S) initialPopulation.get(JMetalRandom.getInstance().nextInt(0, popSize - 1)).copy());
-        }
-        populationSize_ = popSize;
-
-        this.lambda_ = lambda;
-
-        this.population_ = initialPopulation;
-
-        offspringPopulation_ = new ArrayList<>(populationSize_);
-
-        // filter solutions
-        environmentalSelection();
-
-        for (int i = 0; i < (populationSize_ / 2); i++) {
-            // obtain parents
-
-            List<S> parents = new ArrayList<>();
-            parents.add(selection_.execute(population_));
-            parents.add(selection_.execute(population_));
-
-            List<S> offSpring = crossover_.execute(parents);
-
-            mutation_.execute(offSpring.get(0));
-            mutation_.execute(offSpring.get(1));
-
-            problem_.evaluate(offSpring.get(0));
-            problem_.evaluate(offSpring.get(1));
-
-            offspringPopulation_.add(offSpring.get(0));
-            offspringPopulation_.add(offSpring.get(1));
-
-        } // if
-
-        environmentalSelection();
-
-        return population_;
-
     }
 
     private void environmentalSelection() {
@@ -116,6 +71,53 @@ public class CONSGAIII<S extends Solution<?>> extends NSGAIII<S> implements Coop
             new Niching(population_, front, lambda_, remain, normalize_)
                     .execute();
         }
+    }
+
+    @Override
+    public void init(int populationSize) {
+        this.populationSize_ = populationSize;
+        initializeUniformWeight();
+        if (populationSize_ % 2 != 0) {
+            populationSize_ += 1;
+        }
+        initPopulation();
+    }
+
+    @Override
+    public void doIteration() {
+        offspringPopulation_ = new ArrayList<>(populationSize_);
+        for (int i = 0; i < (populationSize_ / 2); i++) {
+
+            List<S> parents = new ArrayList<>();
+            parents.add(selection_.execute(population_));
+            parents.add(selection_.execute(population_));
+
+            List<S> offSpring = crossover_.execute(parents);
+
+            mutation_.execute(offSpring.get(0));
+            mutation_.execute(offSpring.get(1));
+
+            problem_.evaluate(offSpring.get(0));
+            problem_.evaluate(offSpring.get(1));
+
+            offspringPopulation_.add(offSpring.get(0));
+            offspringPopulation_.add(offSpring.get(1));
+
+        } // for
+
+        environmentalSelection();
+
+    }
+
+    @Override
+    public List<S> getPopulation() {
+        return population_;
+    }
+
+    @Override
+    public void receive(List<S> solutions) {
+        offspringPopulation_ = solutions;
+        environmentalSelection();
     }
 
 }

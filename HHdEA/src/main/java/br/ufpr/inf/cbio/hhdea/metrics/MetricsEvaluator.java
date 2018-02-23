@@ -16,9 +16,16 @@
  */
 package br.ufpr.inf.cbio.hhdea.metrics;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.List;
+import java.util.StringTokenizer;
+import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.qualityindicator.impl.hypervolume.PISAHypervolume;
 import org.uma.jmetal.solution.Solution;
+import org.uma.jmetal.util.JMetalException;
 import org.uma.jmetal.util.comparator.DominanceComparator;
 import org.uma.jmetal.util.front.Front;
 import org.uma.jmetal.util.front.imp.ArrayFront;
@@ -32,191 +39,59 @@ import org.uma.jmetal.util.point.impl.ArrayPoint;
  */
 public class MetricsEvaluator<S extends Solution<?>> {
 
-    private final int t;
-    private final double[][] lambda;
-    private final DominanceComparator comparator = new DominanceComparator();
+    private int populationSize;
+    private Problem problem;
+    private double[][] lambda;
     protected double[] zp_; 	// ideal point for Pareto-based population
     protected int m;
     protected R2 r2;
-    protected PISAHypervolume hv;
 
     public enum Metrics {
-        OUTPUT_RAW_R2, OUTPUT_RAW_HV//, R2IMPROVEMENT, DOMINANCERATIO, IMPROVEMENTCOUNT, PBIDIFFERENCE, R2FIR//, IMPROVEMENTDISTANCE
+        OUTPUT_RAW_R2
     };
 
-    private double[][] metrics;
+    private double[] metrics;
 
-    public double getMetric(int moea, Metrics metric) {
-        return metrics[moea][metric.ordinal()];
+    public double getMetric(Metrics metric) {
+        return metrics[metric.ordinal()];
     }
 
-    public double[][] getMetrics() {
+    public double[] getMetrics() {
         return metrics;
     }
 
-    public void setMetrics(double[][] metrics) {
+    public void setMetrics(double[] metrics) {
         this.metrics = metrics;
     }
 
-    public MetricsEvaluator(int numberOfMOEAs, List<S> population, double[][] lambda, int m) {
-        this.m = m;
-        this.zp_ = new double[m]; // ideal point for Pareto-based population
-//        initIdealPoint();
-        this.t = numberOfMOEAs;
-        this.metrics = new double[this.t][Metrics.values().length];
-        this.lambda = lambda;
+    public MetricsEvaluator(Problem problem, int populationSize) {
+        this.m = problem.getNumberOfObjectives();
+        this.problem = problem;
+        this.populationSize = populationSize;
+        this.zp_ = new double[m];
+        this.metrics = new double[Metrics.values().length];
+        initializeUniformWeight();
 
         Front reference = new ArrayFront(m, m);
+        double val = 3.0;
         for (int i = 0; i < m; i++) {
             double[] values = new double[m];
-            values[i] = 2.0;
+            values[i] = val;
+            val += 2.0;
             Point point = new ArrayPoint(values);
             reference.setPoint(i, point);
         }
         r2 = new R2(lambda, reference);
-        hv = new PISAHypervolume(reference);
     }
 
-//    public void updateReference(Solution indiv, double[] z_) {
-//        for (int i = 0; i < m; i++) {
-//            if (indiv.getObjective(i) < z_[i]) {
-//                z_[i] = indiv.getObjective(i);
-//            }
-//        }
-//    } // updateReference
-//
-//    private void initIdealPoint() {
-//        for (int i = 0; i < m; i++) {
-//            zp_[i] = 1.0e+30;
-//        }
-//    } // initIdealPoint
-    /**
-     * Fitness Landscape Analysis (FLA) inspired metrics for MOP.
-     *
-     * @param initial
-     * @param output
-     * @param moea
-     */
-    public void extractMetrics(List<S> initial, List<S> output, int moea) {
-
-        metrics[moea][Metrics.OUTPUT_RAW_R2.ordinal()] = r2.evaluate(output);
-        metrics[moea][Metrics.OUTPUT_RAW_HV.ordinal()] = hv.evaluate(output);
-
-//        Front lastFront = new ArrayFront(lastPopulation);
-//        parents.forEach((l) -> {
-//            l.forEach((p) -> {
-//                updateReference(p, zp_);
-//            });
-//        });
-//        offspring.forEach((l) -> {
-//            l.forEach((p) -> {
-//                updateReference(p, zp_);
-//            });
-//        });
-//
-//        for (int moea = 0; moea < offspring.size(); moea++) {
-//
-//            if (offspring.get(moea).isEmpty()) {
-//                for (Metrics metric : Metrics.values()) {
-//                    metrics[moea][metric.ordinal()] = 0.0;
-//                }
-//                continue;
-//            }
-//
-//            List<S> union = new ArrayList<>(); // parents and offspring
-//            union.addAll(parents.get(moea));
-//            union.addAll(offspring.get(moea));
-//            List<S> all = new ArrayList<>();
-//            all.addAll(union);
-//            all.addAll(initialPopulation);
-//            Front referenceFront = new ArrayFront(all);
-//            Front initialFront = new ArrayFront(initialPopulation);
-//            Front moeaFront = new ArrayFront(union);
-//            R2 r2 = new R2(lambda, referenceFront);
-//            double r2initialFront = r2.r2(initialFront);
-//            double r2moeaFront = r2.r2(moeaFront);
-//            double r2lastFront = r2.r2(lastFront);
-//            /**
-//             * R2IMPROVEMENT. Difference between current R2 and the R2 of the
-//             * initial population. (Inspired on the FLA concept of
-//             * *Searchability*).
-//             */
-//            double landmarking = ((r2initialFront - r2moeaFront) / (r2initialFront));
-//            metrics[moea][Metrics.R2IMPROVEMENT.ordinal()] = landmarking;
-//            /**
-//             * R2FIR. Fitness Improvement Rate between current and last front.
-//             * Similar to HHMOPSO (Castro, 2014).
-//             */
-//            double r2fir = ((r2lastFront - r2moeaFront) / (r2moeaFront));
-//            metrics[moea][Metrics.R2FIR.ordinal()] = r2fir;
-//            /**
-//             * IMPROVEMENTCOUNT. How many iterations since the previous R2 was
-//             * best or equal the current one. (Inspired on the FLA concept of
-//             * *Adaptive Walk*).
-//             */
-//            double adaptivewalk = 0;
-//            if (r2moeaFront < r2lastFront) {
-//                adaptivewalk = metrics[moea][Metrics.IMPROVEMENTCOUNT.ordinal()] + 1;
-//            }
-//            metrics[moea][Metrics.IMPROVEMENTCOUNT.ordinal()] = adaptivewalk;
-//            /**
-//             * DOMINANCERATIO. Percentage of parents dominated by offspring.
-//             * (Inspired on the FLA concept of *Evolvability*).
-//             */
-//            int count = 0;
-//            for (S p : parents.get(moea)) {
-//                for (S o : offspring.get(moea)) {
-//                    if (comparator.compare(p, o) == 1) {
-//                        count++;
-//                        break;
-//                    }
-//                }
-//            }
-//            metrics[moea][Metrics.DOMINANCERATIO.ordinal()] = count / (double) parents.get(moea).size();
-//            /**
-//             * PBIDIFFERENCE. Difference between the average PBI of the current
-//             * population and the average PBI from the previous one. (Inspired
-//             * on the FLA concept of *Evolvability*).
-//             */
-//            double uavg = .0;
-//            for (S u : union) {
-//                double min = PBI(u, lambda[0]);
-//                for (int w = 1; w < lambda.length; w++) {
-//                    double pbi = PBI(u, lambda[w]);
-//                    if (pbi < min) {
-//                        min = pbi;
-//                    }
-//                }
-//                uavg += min;
-//            }
-//            uavg /= union.size();
-//            double pavg = .0;
-//            for (S p : lastPopulation) {
-//                double min = PBI(p, lambda[0]);
-//                for (int w = 1; w < lambda.length; w++) {
-//                    double pbi = PBI(p, lambda[w]);
-//                    if (pbi < min) {
-//                        min = pbi;
-//                    }
-//                }
-//                pavg += min;
-//            }
-//            pavg /= lastPopulation.size();
-//            metrics[moea][Metrics.PBIDIFFERENCE.ordinal()] = (pavg - uavg) / pavg;
-//        }
-//        lastPopulation.clear();
-//        parents.forEach((p) -> {
-//            lastPopulation.addAll(p);
-//        });
-//        offspring.forEach((o) -> {
-//            lastPopulation.addAll(o);
-//        });
+    public void extractMetrics(List<S> solutions) {
+        metrics[Metrics.OUTPUT_RAW_R2.ordinal()] = r2.evaluate(solutions);
     }
 
-    public void log(int active) {
+    public void log() {
         for (Metrics metric : Metrics.values()) {
             System.out.print(metric + ":\t");
-            System.out.print(metrics[active][metric.ordinal()] + "\t");
+            System.out.print(metrics[metric.ordinal()] + "\t");
             System.out.println();
         }
     }
@@ -235,6 +110,37 @@ public class MetricsEvaluator<S extends Solution<?>> {
             sum += vec1[i] * vec2[i];
         }
         return sum;
+    }
+
+    private void initializeUniformWeight() {
+        String dataFileName;
+        dataFileName = "W" + problem.getNumberOfObjectives() + "D_"
+                + populationSize + ".dat";
+
+        lambda = new double[populationSize][problem.getNumberOfObjectives()];
+
+        try {
+            InputStream in = getClass().getResourceAsStream("/WeightVectors/" + dataFileName);
+            InputStreamReader isr = new InputStreamReader(in);
+            try (BufferedReader br = new BufferedReader(isr)) {
+                int i = 0;
+                int j;
+                String aux = br.readLine();
+                while (aux != null) {
+                    StringTokenizer st = new StringTokenizer(aux);
+                    j = 0;
+                    while (st.hasMoreTokens()) {
+                        double value = new Double(st.nextToken());
+                        lambda[i][j] = value;
+                        j++;
+                    }
+                    aux = br.readLine();
+                    i++;
+                }
+            }
+        } catch (IOException | NumberFormatException e) {
+            throw new JMetalException("initializeUniformWeight: failed when reading for file: /WeightVectors/" + dataFileName, e);
+        }
     }
 
     public double PBI(Solution indiv, double[] lambda) {
