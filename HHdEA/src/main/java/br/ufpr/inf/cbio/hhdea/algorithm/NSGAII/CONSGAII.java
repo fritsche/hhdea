@@ -17,7 +17,6 @@
 package br.ufpr.inf.cbio.hhdea.algorithm.NSGAII;
 
 import br.ufpr.inf.cbio.hhdea.algorithm.HHdEA.CooperativeAlgorithm;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAII;
@@ -27,7 +26,6 @@ import org.uma.jmetal.operator.SelectionOperator;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
-import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
 /**
  *
@@ -41,26 +39,25 @@ public class CONSGAII<S extends Solution<?>> extends NSGAII implements Cooperati
     }
 
     @Override
-    public List<S> run(List<S> initialPopulation, int popSize, double[][] lambda, List<S> extremeSolutions) {
+    public void init(int populationSize) {
+        setMaxPopulationSize(populationSize + (populationSize % 2));
+        population = createInitialPopulation();
+        population = evaluatePopulation(population);
+    }
 
+    @Override
+    public void doIteration() {
         List<S> offspringPopulation;
         List<S> matingPopulation;
-
-        popSize += (popSize % 2);
-        if (initialPopulation.size() < popSize) {
-            initialPopulation.add((S) initialPopulation.get(JMetalRandom.getInstance().nextInt(0, popSize - 1)).copy());
-        }
-
-        // filter solutions
-        maxPopulationSize = popSize;
-        population = replacement(new ArrayList(0), initialPopulation);
-
         matingPopulation = selection(population);
         offspringPopulation = reproduction(matingPopulation);
         offspringPopulation = evaluatePopulation(offspringPopulation);
         population = replacement(population, offspringPopulation);
+    }
 
-        return population;
+    @Override
+    public void receive(List<S> solutions) {
+        population = replacement(population, solutions);
     }
 
 }

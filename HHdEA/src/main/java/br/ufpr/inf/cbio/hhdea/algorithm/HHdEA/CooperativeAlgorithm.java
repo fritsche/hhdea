@@ -26,17 +26,9 @@ import org.uma.jmetal.solution.Solution;
  */
 public interface CooperativeAlgorithm<S extends Solution<?>> {
 
-    /**
-     * Given an initial population and a maxNumber of fitness evaluations,
-     * evolve this population and return the population evolved.
-     *
-     * @param initialPopulation
-     * @param popSize
-     * @param lambda
-     * @param extremeSolutions the best and worse solution known for each objective. Used to
-     * compute ideal and nadir points.
-     * @return
-     */
-    public List<S> run(List<S> initialPopulation, int popSize, double lambda[][], List<S> extremeSolutions);
+    public void init(int populationSize);
+    public void doIteration();
+    public List<S> getPopulation();
+    public void receive(List<S> solutions);
 
 }

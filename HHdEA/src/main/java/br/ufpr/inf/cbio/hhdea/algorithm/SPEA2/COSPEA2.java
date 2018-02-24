@@ -42,34 +42,35 @@ public class COSPEA2<S extends Solution<?>> extends SPEA2<S> implements Cooperat
     }
 
     @Override
-    public List<S> run(List<S> initialPopulation, int popSize, double lambda[][], List<S> extremeSolutions) {
-
-        List<S> offspringPopulation;
-        List<S> matingPopulation;
-        this.archive = new ArrayList<>(popSize);
-        environmentalSelectionOverride = new EnvironmentalSelection<>(popSize);
-
-        population = initialPopulation;
-
-        // SPEA2 "selection" is actualy doing environmental selection
-        maxPopulationSize = popSize;
-        matingPopulation = selection(population);
-
-        // the parent selection is inside the reproduction method
-        offspringPopulation = reproduction(matingPopulation);
-        offspringPopulation = evaluatePopulation(offspringPopulation);
-        population = replacement(population, offspringPopulation);
-
-        return selection(population);
-    }
-
-    @Override
     protected List<S> selection(List<S> population) {
-        List<S> union = new ArrayList<>(2 * getMaxPopulationSize());
+        List<S> union = new ArrayList<>();
         union.addAll(archive);
         union.addAll(population);
         strenghtRawFitness.computeDensityEstimator(union);
         archive = environmentalSelectionOverride.execute(union);
         return archive;
+    }
+
+    @Override
+    public void init(int populationSize) {
+        setMaxPopulationSize(populationSize);
+        population = createInitialPopulation();
+        population = evaluatePopulation(population);
+        environmentalSelectionOverride = new EnvironmentalSelection<>(populationSize);
+    }
+
+    @Override
+    public void doIteration() {
+        List<S> offspringPopulation;
+        List<S> matingPopulation;
+        matingPopulation = selection(population);
+        offspringPopulation = reproduction(matingPopulation);
+        offspringPopulation = evaluatePopulation(offspringPopulation);
+        population = replacement(population, offspringPopulation);
+    }
+
+    @Override
+    public void receive(List<S> solutions) {
+        selection(solutions);
     }
 }

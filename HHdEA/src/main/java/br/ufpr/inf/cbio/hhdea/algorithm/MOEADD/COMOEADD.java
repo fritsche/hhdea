@@ -34,16 +34,25 @@ public class COMOEADD<S extends Solution<?>> extends MOEADD<S> implements Cooper
         super(builder);
     }
 
-    @Override
-    public List<S> run(List<S> initialPopulation, int popSize, double[][] lambda, List<S> extremeSolutions) {
+    public void initPopulation(List<S> initialPop) {
+        population_ = new ArrayList<>(populationSize_);
+        for (int i = 0; i < populationSize_; i++) {
+            population_.add(initialPop.get(i));
+            subregionIdx_[i][i] = 1;
+        }
+    } // initPopulation
 
+    @Override
+    public void init(int populationSize) {
+
+        this.populationSize_ = populationSize;
         T_ = 20;
         delta_ = 0.9;
 
-        populationSize_ = popSize;
+        population_ = new ArrayList<>(populationSize_);
 
         neighborhood_ = new int[populationSize_][T_];
-        this.lambda_ = lambda;
+        lambda_ = new double[populationSize_][problem_.getNumberOfObjectives()];
 
         zp_ = new double[problem_.getNumberOfObjectives()]; // ideal point for Pareto-based population
         nzp_ = new double[problem_.getNumberOfObjectives()]; // nadir point for Pareto-based population
@@ -53,15 +62,11 @@ public class COMOEADD<S extends Solution<?>> extends MOEADD<S> implements Cooper
         subregionDist_ = new double[populationSize_][populationSize_];
 
         // STEP 1. Initialization
+        initUniformWeight();
         initNeighborhood();
-        initPopulation(initialPopulation);
+        initPopulation();
         initIdealPoint();
         initNadirPoint();
-
-        for (S extreme : extremeSolutions) {
-            updateReference(extreme, zp_);
-            updateNadirPoint(extreme, nzp_);
-        }
 
         // initialize the distance
         for (int i = 0; i < populationSize_; i++) {
@@ -77,19 +82,14 @@ public class COMOEADD<S extends Solution<?>> extends MOEADD<S> implements Cooper
             rankIdx_[curRank][i] = 1;
         }
 
-        // filter solutions
-        for (S initial : initialPopulation) {
-            // update ideal points
-            updateReference(initial, zp_);
-            // update nadir points
-            updateNadirPoint(initial, nzp_);
-            updateArchive(initial);
-        }
+    }
 
+    @Override
+    public void doIteration() {
         int[] permutation = new int[populationSize_];
         Utils.randomPermutation(permutation, populationSize_);
 
-        for (int i = 0; i <= Math.ceil(populationSize_ / 2); i++) {
+        for (int i = 0; i < Math.ceil(populationSize_ / 2.0); i++) {
             int cid = permutation[i];
 
             int type;
@@ -127,17 +127,20 @@ public class COMOEADD<S extends Solution<?>> extends MOEADD<S> implements Cooper
             updateArchive(offSpring.get(0));
             updateArchive(offSpring.get(1));
         } // for			
-
-        return population_;
-
     }
-    
-    public void initPopulation(List<S> initialPop) {
-        population_ = new ArrayList<>(populationSize_); 
-        for (int i = 0; i < populationSize_; i++) {
-            population_.add(initialPop.get(i));
-            subregionIdx_[i][i] = 1;
+
+    @Override
+    public List<S> getPopulation() {
+        return population_;
+    }
+
+    @Override
+    public void receive(List<S> solutions) {
+        for (S s : solutions) {
+            updateReference(s, zp_);
+            updateNadirPoint(s, nzp_);
+            updateArchive(s);
         }
-    } // initPopulation
-    
+    }
+
 }

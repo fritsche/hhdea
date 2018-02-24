@@ -32,27 +32,6 @@ public class COThetaDEA<S extends Solution<?>> extends ThetaDEA implements Coope
         super(builder);
     }
 
-    @Override
-    public List<S> run(List<S> initialPopulation, int popSize, double lambda[][], List<S> extremeSolutions) {
-
-        this.lambda_ = lambda;
-        this.populationSize_ = popSize;
-        this.population_ = initialPopulation;
-        offspringPopulation_ = new ArrayList<>(populationSize_);
-
-        initIdealPoint();  // initialize the ideal point
-        initNadirPoint();    // initialize the nadir point
-        initExtremePoints(); // initialize the extreme points
-
-        updateIdealPoint(extremeSolutions);
-        updateNadirPoint(extremeSolutions);
-
-        environmentalSelection();
-        createOffSpringPopulation();  // create the offspring population
-        environmentalSelection();
-        return this.population_;
-    }
-
     private void environmentalSelection() {
         union_ = new ArrayList<>();
         union_.addAll(population_);
@@ -66,6 +45,33 @@ public class COThetaDEA<S extends Solution<?>> extends ThetaDEA implements Coope
             normalizePopulation(stPopulation);  // normalize the population using ideal point and nadir point
         }
         getNextPopulation(stPopulation);  // select the next population using theta-non-dominated ranking
+    }
+
+    @Override
+    public void init(int populationSize) {
+        this.populationSize_ = populationSize;
+        initializeUniformWeight();
+        initPopulation();   // initialize the population;
+        initIdealPoint();  // initialize the ideal point
+        initNadirPoint();    // initialize the nadir point
+        initExtremePoints(); // initialize the extreme points
+    }
+
+    @Override
+    public void doIteration() {
+        createOffSpringPopulation();  // create the offspring population
+        environmentalSelection();
+    }
+
+    @Override
+    public List<S> getPopulation() {
+        return population_;
+    }
+
+    @Override
+    public void receive(List<S> solutions) {
+        offspringPopulation_ = solutions;
+        environmentalSelection();
     }
 
 }
