@@ -24,6 +24,10 @@ import org.uma.jmetal.problem.multiobjective.dtlz.DTLZ1;
 import org.uma.jmetal.problem.multiobjective.dtlz.DTLZ2;
 import org.uma.jmetal.problem.multiobjective.dtlz.DTLZ3;
 import org.uma.jmetal.problem.multiobjective.dtlz.DTLZ4;
+import org.uma.jmetal.problem.multiobjective.dtlz.DTLZ7;
+import org.uma.jmetal.problem.multiobjective.wfg.WFG1;
+import org.uma.jmetal.problem.multiobjective.wfg.WFG2;
+import org.uma.jmetal.problem.multiobjective.wfg.WFG3;
 import org.uma.jmetal.problem.multiobjective.wfg.WFG6;
 import org.uma.jmetal.problem.multiobjective.wfg.WFG7;
 import org.uma.jmetal.solution.DoubleSolution;
@@ -66,11 +70,42 @@ public class MainRunner<S extends Solution<?>, Result> extends ExecuteAlgorithms
                 k = 10;
                 problemList.add(new ExperimentProblem<>(new DTLZ4(m + k - 1, m)));
                 break;
+            case "DTLZ7":
+                k = 20;
+                problemList.add(new ExperimentProblem<>(new DTLZ7(m + k - 1, m)));
+            case "WFG1":
+                k = 2 * (m - 1);
+                problemList.add(new ExperimentProblem<>(new WFG1(k, 20, m)));
+                break;
+            case "WFG2":
+                k = 2 * (m - 1);
+                problemList.add(new ExperimentProblem<>(new WFG2(k, 20, m)));
+                break;
+            case "WFG3":
+                k = 2 * (m - 1);
+                problemList.add(new ExperimentProblem<>(new WFG3(k, 20, m)));
+                break;
+            case "WFG4":
+                k = 2 * (m - 1);
+                problemList.add(new ExperimentProblem<>(new WFG3(k, 20, m)));
+                break;
+            case "WFG5":
+                k = 2 * (m - 1);
+                problemList.add(new ExperimentProblem<>(new WFG3(k, 20, m)));
+                break;
             case "WFG6":
                 k = 2 * (m - 1);
                 problemList.add(new ExperimentProblem<>(new WFG6(k, 20, m)));
                 break;
             case "WFG7":
+                k = 2 * (m - 1);
+                problemList.add(new ExperimentProblem<>(new WFG7(k, 20, m)));
+                break;
+            case "WFG8":
+                k = 2 * (m - 1);
+                problemList.add(new ExperimentProblem<>(new WFG7(k, 20, m)));
+                break;
+            case "WFG9":
                 k = 2 * (m - 1);
                 problemList.add(new ExperimentProblem<>(new WFG7(k, 20, m)));
                 break;
