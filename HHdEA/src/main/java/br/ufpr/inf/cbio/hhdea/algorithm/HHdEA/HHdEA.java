@@ -52,17 +52,19 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
         for (CooperativeAlgorithm alg : algorithms) {
             alg.init(populationSize);
         }
-
+        int generations = algorithms.size();
+        int migrationcondition = 1;
         this.metrics = new MetricsEvaluator(problem, populationSize);
 
-        for (int generations = 1; generations <= Math.ceil(maxGenerations / 30.0); generations++) {
+        while (generations <= maxGenerations) {
             System.out.println(generations);
 
             for (CooperativeAlgorithm alg : algorithms) {
                 alg.doIteration();
+                generations++;
             }
 
-            if (generations % 10 == 0) {
+            if (migrationcondition % 10 == 0) {
                 List<List<S>> union = new ArrayList<>();
                 for (CooperativeAlgorithm alg : algorithms) {
                     List<S> pop = alg.getPopulation();
@@ -78,7 +80,7 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
                     }
                 }
             }
-
+            migrationcondition++;
         }
     }
 
