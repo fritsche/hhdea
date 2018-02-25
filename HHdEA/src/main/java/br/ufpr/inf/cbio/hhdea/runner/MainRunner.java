@@ -140,11 +140,10 @@ public class MainRunner<S extends Solution<?>, Result> extends ExecuteAlgorithms
         List<ExperimentProblem<DoubleSolution>> problemList = getProblemList(problem, m);
         List<ExperimentAlgorithm<DoubleSolution, List<DoubleSolution>>> algorithms = new ArrayList<>();
 
-
         algorithms.add(
                 new ExperimentAlgorithm<>(AlgorithmConfigurationFactory
                         .getAlgorithmConfiguration(algorithm)
-                        .configure(problemList.get(0).getProblem(), popSize, generations), 
+                        .configure(problemList.get(0).getProblem(), popSize, generations),
                         problemList.get(0).getTag()));
 
         ExperimentBuilder<DoubleSolution, List<DoubleSolution>> study = new ExperimentBuilder<>(Integer.toString(m));
@@ -197,11 +196,19 @@ public class MainRunner<S extends Solution<?>, Result> extends ExecuteAlgorithms
                     case "DTLZ4":
                         generations = 600; // DTLZ4
                         break;
-                    case "WFG6":
-                        generations = 400; // WFG6
+                    case "DTLZ7":
+                        generations = 1000; // DTLZ7
                         break;
+                    case "WFG1":
+                    case "WFG2":
+                    case "WFG3":
+                    case "WFG4":
+                    case "WFG5":
+                    case "WFG6":
                     case "WFG7":
-                        generations = 400; // WFG7
+                    case "WFG8":
+                    case "WFG9":
+                        generations = 400; // WFG
                         break;
                 }
                 break;
@@ -219,11 +226,19 @@ public class MainRunner<S extends Solution<?>, Result> extends ExecuteAlgorithms
                     case "DTLZ4":
                         generations = 1000; // DTLZ4
                         break;
-                    case "WFG6":
-                        generations = 750; // WFG6
+                    case "DTLZ7":
+                        generations = 1000; // DTLZ7
                         break;
+                    case "WFG1":
+                    case "WFG2":
+                    case "WFG3":
+                    case "WFG4":
+                    case "WFG5":
+                    case "WFG6":
                     case "WFG7":
-                        generations = 750; // WFG7
+                    case "WFG8":
+                    case "WFG9":
+                        generations = 750; // WFG
                         break;
                 }
                 break;
@@ -241,11 +256,19 @@ public class MainRunner<S extends Solution<?>, Result> extends ExecuteAlgorithms
                     case "DTLZ4":
                         generations = 1250; // DTLZ4
                         break;
-                    case "WFG6":
-                        generations = 1500; // WFG6
+                    case "DTLZ7":
+                        generations = 1000; // DTLZ7
                         break;
+                    case "WFG1":
+                    case "WFG2":
+                    case "WFG3":
+                    case "WFG4":
+                    case "WFG5":
+                    case "WFG6":
                     case "WFG7":
-                        generations = 1500; // WFG7
+                    case "WFG8":
+                    case "WFG9":
+                        generations = 1500; // WFG
                         break;
                 }
                 break;
@@ -263,11 +286,19 @@ public class MainRunner<S extends Solution<?>, Result> extends ExecuteAlgorithms
                     case "DTLZ4":
                         generations = 2000;  // DTLZ4
                         break;
-                    case "WFG6":
-                        generations = 2000;  // WFG6
+                    case "DTLZ7":
+                        generations = 1500; // DTLZ7
                         break;
+                    case "WFG1":
+                    case "WFG2":
+                    case "WFG3":
+                    case "WFG4":
+                    case "WFG5":
+                    case "WFG6":
                     case "WFG7":
-                        generations = 2000;  // WFG7
+                    case "WFG8":
+                    case "WFG9":
+                        generations = 2000; // WFG
                         break;
                 }
                 break;
@@ -285,11 +316,19 @@ public class MainRunner<S extends Solution<?>, Result> extends ExecuteAlgorithms
                     case "DTLZ4":
                         generations = 3000;  // DTLZ4
                         break;
-                    case "WFG6":
-                        generations = 3000;  // WFG6
+                    case "DTLZ7":
+                        generations = 2000; // DTLZ7
                         break;
+                    case "WFG1":
+                    case "WFG2":
+                    case "WFG3":
+                    case "WFG4":
+                    case "WFG5":
+                    case "WFG6":
                     case "WFG7":
-                        generations = 3000;  // WFG7
+                    case "WFG8":
+                    case "WFG9":
+                        generations = 3000; // WFG
                         break;
                 }
                 break;
