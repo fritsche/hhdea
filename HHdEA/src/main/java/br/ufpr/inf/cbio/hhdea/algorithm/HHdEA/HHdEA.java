@@ -57,7 +57,7 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
         this.metrics = new MetricsEvaluator(problem, populationSize);
 
         while (generations <= maxGenerations) {
-            System.out.println(generations);
+            System.out.println(migrationcondition);
 
             for (CooperativeAlgorithm alg : algorithms) {
                 alg.doIteration();
@@ -65,19 +65,16 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
             }
 
             if (migrationcondition % 10 == 0) {
-                List<List<S>> union = new ArrayList<>();
-                for (CooperativeAlgorithm alg : algorithms) {
-                    List<S> pop = alg.getPopulation();
-                    List<S> copy = new ArrayList<>();
-                    for (S s : pop) {
-                        copy.add((S) s.copy());
+                for (int i = 0; i < algorithms.size(); i++) {
+                    List<S> migrants = new ArrayList<>();
+                    for (int j = 0; j < algorithms.size(); j++) {
+                        if (i != j) {
+                            for (S s : algorithms.get(j).getPopulation()) {
+                                migrants.add((S) s.copy());
+                            }
+                        }
                     }
-                    union.add(copy);
-                }
-                for (CooperativeAlgorithm alg : algorithms) {
-                    for (List<S> migrants : union) {
-                        alg.receive(migrants);
-                    }
+                    algorithms.get(i).receive(migrants);
                 }
             }
             migrationcondition++;
