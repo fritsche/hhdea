@@ -57,27 +57,21 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
         this.metrics = new MetricsEvaluator(problem, populationSize);
 
         while (generations <= maxGenerations) {
-            System.out.println(migrationcondition);
+            // System.out.println(migrationcondition);
 
-            for (CooperativeAlgorithm alg : algorithms) {
-                alg.doIteration();
+            for (int i = 0; i < algorithms.size(); i++) {
+                algorithms.get(i).doIteration();
                 generations++;
-            }
-
-            if (migrationcondition % 10 == 0) {
-                for (int i = 0; i < algorithms.size(); i++) {
-                    List<S> migrants = new ArrayList<>();
-                    for (int j = 0; j < algorithms.size(); j++) {
-                        if (i != j) {
-                            for (S s : algorithms.get(j).getPopulation()) {
-                                migrants.add((S) s.copy());
-                            }
+                List<S> migrants = new ArrayList<>();
+                for (int j = 0; j < algorithms.size(); j++) {
+                    if (i != j) {
+                        for (S s : algorithms.get(j).getPopulation()) {
+                            migrants.add((S) s.copy());
                         }
                     }
-                    algorithms.get(i).receive(migrants);
+                    algorithms.get(j).receive(migrants);
                 }
             }
-            migrationcondition++;
         }
     }
 
