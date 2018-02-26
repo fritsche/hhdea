@@ -36,7 +36,7 @@ public class MOMBI2<S extends Solution<?>> extends org.uma.jmetal.algorithm.mult
     }
 
     @Override
-    public String toString() {
+    public String getName() {
         return "MOMBI2";
     }
 
