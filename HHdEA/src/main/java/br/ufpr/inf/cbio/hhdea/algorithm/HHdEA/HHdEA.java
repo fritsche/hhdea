@@ -61,19 +61,19 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
 
             double rand = JMetalRandom.getInstance().nextDouble();
             int i = 0;
-            if (rand < 1.0 / 28.0) {
+            if (rand < 1.0 / 127.0) {
                 i = 0;
-            } else if (rand < 3.0 / 28.0) {
+            } else if (rand < 3.0 / 127.0) {
                 i = 1;
-            } else if (rand < 6.0 / 28.0) {
+            } else if (rand < 7.0 / 127.0) {
                 i = 2;
-            } else if (rand < 10.0 / 28.0) {
+            } else if (rand < 15.0 / 127.0) {
                 i = 3;
-            } else if (rand < 15.0 / 28.0) {
+            } else if (rand < 31.0 / 127.0) {
                 i = 4;
-            } else if (rand < 21.0 / 28.0) {
+            } else if (rand < 63.0 / 127.0) {
                 i = 5;
-            } else if (rand < 28.0 / 28.0) {
+            } else if (rand < 127.0 / 127.0) {
                 i = 6;
             }
 
