@@ -64,12 +64,12 @@ public class HHdEAConfiguration<S extends Solution> implements AlgorithmConfigur
                 break;
             default: // ALL
                 // for (int i = 0; i < 6; i++) {
-                    builder.addAlgorithm(new CONSGAIIConfiguration().configure(problem, 0, 0))
-                            .addAlgorithm(new CONSGAIIIConfiguration().configure(problem, 0, 0))
-                            .addAlgorithm(new COSPEA2Configuration().configure(problem, 0, 0))
-                            .addAlgorithm(new COThetaDEAConfiguration().configure(problem, 0, 0))
-                            .addAlgorithm(new COMOEADDConfiguration().configure(problem, 0, 0));
-                // }
+                builder.addAlgorithm(new CONSGAIIConfiguration().configure(problem, 0, 0))
+                        .addAlgorithm(new CONSGAIIIConfiguration().configure(problem, 0, 0))
+                        // .addAlgorithm(new COSPEA2Configuration().configure(problem, 0, 0))
+                        .addAlgorithm(new COThetaDEAConfiguration().configure(problem, 0, 0))
+                        .addAlgorithm(new COMOEADDConfiguration().configure(problem, 0, 0));
+            // }
         }
 
         return builder.setName(name)
