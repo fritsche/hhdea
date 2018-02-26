@@ -23,6 +23,7 @@ import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.SolutionListUtils;
+import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
 /**
  *
@@ -57,21 +58,40 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
         this.metrics = new MetricsEvaluator(problem, populationSize);
 
         while (generations <= maxGenerations) {
-            // System.out.println(migrationcondition);
 
-            for (int i = 0; i < algorithms.size(); i++) {
-                algorithms.get(i).doIteration();
-                generations++;
-                for (int j = 0; j < algorithms.size(); j++) {
-                    if (i != j) {
-                        List<S> migrants = new ArrayList<>();
-                        for (S s : algorithms.get(i).getPopulation()) {
-                            migrants.add((S) s.copy());
-                        }
-                        algorithms.get(j).receive(migrants);
+            double rand = JMetalRandom.getInstance().nextDouble();
+            int i = 0;
+            if (rand < 1.0 / 28.0) {
+                i = 0;
+            } else if (rand < 3.0 / 28.0) {
+                i = 1;
+            } else if (rand < 6.0 / 28.0) {
+                i = 2;
+            } else if (rand < 10.0 / 28.0) {
+                i = 3;
+            } else if (rand < 15.0 / 28.0) {
+                i = 4;
+            } else if (rand < 21.0 / 28.0) {
+                i = 5;
+            } else if (rand < 28.0 / 28.0) {
+                i = 6;
+            }
+
+            System.out.println(i);
+
+            // for (int i = 0; i < algorithms.size(); i++) {
+            algorithms.get(i).doIteration();
+            generations++;
+            for (int j = 0; j < algorithms.size(); j++) {
+                if (i != j) {
+                    List<S> migrants = new ArrayList<>();
+                    for (S s : algorithms.get(i).getPopulation()) {
+                        migrants.add((S) s.copy());
                     }
+                    algorithms.get(j).receive(migrants);
                 }
             }
+            // }
         }
     }
 
