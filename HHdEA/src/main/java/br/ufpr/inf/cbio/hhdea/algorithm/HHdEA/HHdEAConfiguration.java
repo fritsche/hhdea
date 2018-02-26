@@ -16,6 +16,7 @@
  */
 package br.ufpr.inf.cbio.hhdea.algorithm.HHdEA;
 
+import br.ufpr.inf.cbio.hhdea.algorithm.MOEAD.COMOEADConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.MOEADD.COMOEADDConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.MOMBI2.COMOMBI2Configuration;
 import br.ufpr.inf.cbio.hhdea.algorithm.NSGAII.CONSGAIIConfiguration;
@@ -63,6 +64,9 @@ public class HHdEAConfiguration<S extends Solution> implements AlgorithmConfigur
             case "COThetaDEA":
                 builder.addAlgorithm(new COThetaDEAConfiguration().configure(problem, popSize, generations));
                 break;
+            case "COMOEAD":
+                builder.addAlgorithm(new COMOEADConfiguration().configure(problem, popSize, generations));
+                break;
             case "COMOEADD":
                 builder.addAlgorithm(new COMOEADDConfiguration().configure(problem, popSize, generations));
                 break;
@@ -71,7 +75,9 @@ public class HHdEAConfiguration<S extends Solution> implements AlgorithmConfigur
                 builder.addAlgorithm(new CONSGAIIConfiguration().configure(problem, popSize, generations))
                         .addAlgorithm(new CONSGAIIIConfiguration().configure(problem, popSize, generations))
                         .addAlgorithm(new COMOMBI2Configuration().configure(problem, popSize, generations))
+                        .addAlgorithm(new COSPEA2Configuration().configure(problem, popSize, generations))
                         .addAlgorithm(new COThetaDEAConfiguration().configure(problem, popSize, generations))
+                        .addAlgorithm(new COMOEADConfiguration().configure(problem, popSize, generations))
                         .addAlgorithm(new COMOEADDConfiguration().configure(problem, popSize, generations));
             // }
         }

@@ -17,6 +17,7 @@
 package br.ufpr.inf.cbio.hhdea.config;
 
 import br.ufpr.inf.cbio.hhdea.algorithm.HHdEA.HHdEAConfiguration;
+import br.ufpr.inf.cbio.hhdea.algorithm.MOEAD.MOEADConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.MOEADD.MOEADDConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.MOMBI2.MOMBI2Configuration;
 import br.ufpr.inf.cbio.hhdea.algorithm.NSGAII.NSGAIIConfiguration;
@@ -38,6 +39,8 @@ public class AlgorithmConfigurationFactory {
                 return new NSGAIIIConfiguration();
             case "MOEADD":
                 return new MOEADDConfiguration();
+            case "MOEAD":
+                return new MOEADConfiguration();
             case "NSGAII":
                 return new NSGAIIConfiguration();
             case "SPEA2":
