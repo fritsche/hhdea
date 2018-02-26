@@ -17,6 +17,7 @@
 package br.ufpr.inf.cbio.hhdea.algorithm.HHdEA;
 
 import br.ufpr.inf.cbio.hhdea.algorithm.MOEADD.COMOEADDConfiguration;
+import br.ufpr.inf.cbio.hhdea.algorithm.MOMBI2.COMOMBI2Configuration;
 import br.ufpr.inf.cbio.hhdea.algorithm.NSGAII.CONSGAIIConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.NSGAIII.CONSGAIIIConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.SPEA2.COSPEA2Configuration;
@@ -48,27 +49,30 @@ public class HHdEAConfiguration<S extends Solution> implements AlgorithmConfigur
 
         switch (name) {
             case "CONSGAII":
-                builder.addAlgorithm(new CONSGAIIConfiguration().configure(problem, 0, 0));
+                builder.addAlgorithm(new CONSGAIIConfiguration().configure(problem, popSize, generations));
                 break;
             case "CONSGAIII":
-                builder.addAlgorithm(new CONSGAIIIConfiguration().configure(problem, 0, 0));
+                builder.addAlgorithm(new CONSGAIIIConfiguration().configure(problem, popSize, generations));
                 break;
             case "COSPEA2":
-                builder.addAlgorithm(new COSPEA2Configuration().configure(problem, 0, 0));
+                builder.addAlgorithm(new COSPEA2Configuration().configure(problem, popSize, generations));
+                break;
+            case "COMOMBI2":
+                builder.addAlgorithm(new COMOMBI2Configuration().configure(problem, popSize, generations));
                 break;
             case "COThetaDEA":
-                builder.addAlgorithm(new COThetaDEAConfiguration().configure(problem, 0, 0));
+                builder.addAlgorithm(new COThetaDEAConfiguration().configure(problem, popSize, generations));
                 break;
             case "COMOEADD":
-                builder.addAlgorithm(new COMOEADDConfiguration().configure(problem, 0, 0));
+                builder.addAlgorithm(new COMOEADDConfiguration().configure(problem, popSize, generations));
                 break;
             default: // ALL
                 // for (int i = 0; i < 6; i++) {
-                builder.addAlgorithm(new CONSGAIIConfiguration().configure(problem, 0, 0))
-                        .addAlgorithm(new CONSGAIIIConfiguration().configure(problem, 0, 0))
-                        // .addAlgorithm(new COSPEA2Configuration().configure(problem, 0, 0))
-                        .addAlgorithm(new COThetaDEAConfiguration().configure(problem, 0, 0))
-                        .addAlgorithm(new COMOEADDConfiguration().configure(problem, 0, 0));
+                builder.addAlgorithm(new CONSGAIIConfiguration().configure(problem, popSize, generations))
+                        .addAlgorithm(new CONSGAIIIConfiguration().configure(problem, popSize, generations))
+                        .addAlgorithm(new COMOMBI2Configuration().configure(problem, popSize, generations))
+                        .addAlgorithm(new COThetaDEAConfiguration().configure(problem, popSize, generations))
+                        .addAlgorithm(new COMOEADDConfiguration().configure(problem, popSize, generations));
             // }
         }
 
