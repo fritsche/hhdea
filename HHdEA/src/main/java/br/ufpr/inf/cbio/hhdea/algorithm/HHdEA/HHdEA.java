@@ -62,14 +62,14 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
             for (int i = 0; i < algorithms.size(); i++) {
                 algorithms.get(i).doIteration();
                 generations++;
-                List<S> migrants = new ArrayList<>();
                 for (int j = 0; j < algorithms.size(); j++) {
                     if (i != j) {
-                        for (S s : algorithms.get(j).getPopulation()) {
+                        List<S> migrants = new ArrayList<>();
+                        for (S s : algorithms.get(i).getPopulation()) {
                             migrants.add((S) s.copy());
                         }
+                        algorithms.get(j).receive(migrants);
                     }
-                    algorithms.get(j).receive(migrants);
                 }
             }
         }
