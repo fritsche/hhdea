@@ -18,7 +18,6 @@ package br.ufpr.inf.cbio.hhdea.algorithm.MOMBI2;
 
 import br.ufpr.inf.cbio.hhdea.config.AlgorithmConfiguration;
 import java.util.List;
-import org.uma.jmetal.algorithm.multiobjective.mombi.MOMBI2;
 import org.uma.jmetal.operator.CrossoverOperator;
 import org.uma.jmetal.operator.MutationOperator;
 import org.uma.jmetal.operator.SelectionOperator;
