@@ -28,8 +28,12 @@ import org.uma.jmetal.problem.multiobjective.dtlz.DTLZ7;
 import org.uma.jmetal.problem.multiobjective.wfg.WFG1;
 import org.uma.jmetal.problem.multiobjective.wfg.WFG2;
 import org.uma.jmetal.problem.multiobjective.wfg.WFG3;
+import org.uma.jmetal.problem.multiobjective.wfg.WFG4;
+import org.uma.jmetal.problem.multiobjective.wfg.WFG5;
 import org.uma.jmetal.problem.multiobjective.wfg.WFG6;
 import org.uma.jmetal.problem.multiobjective.wfg.WFG7;
+import org.uma.jmetal.problem.multiobjective.wfg.WFG8;
+import org.uma.jmetal.problem.multiobjective.wfg.WFG9;
 import org.uma.jmetal.solution.DoubleSolution;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.JMetalException;
@@ -87,11 +91,11 @@ public class MainRunner<S extends Solution<?>, Result> extends ExecuteAlgorithms
                 break;
             case "WFG4":
                 k = 2 * (m - 1);
-                problemList.add(new ExperimentProblem<>(new WFG3(k, 20, m)));
+                problemList.add(new ExperimentProblem<>(new WFG4(k, 20, m)));
                 break;
             case "WFG5":
                 k = 2 * (m - 1);
-                problemList.add(new ExperimentProblem<>(new WFG3(k, 20, m)));
+                problemList.add(new ExperimentProblem<>(new WFG5(k, 20, m)));
                 break;
             case "WFG6":
                 k = 2 * (m - 1);
@@ -103,11 +107,11 @@ public class MainRunner<S extends Solution<?>, Result> extends ExecuteAlgorithms
                 break;
             case "WFG8":
                 k = 2 * (m - 1);
-                problemList.add(new ExperimentProblem<>(new WFG7(k, 20, m)));
+                problemList.add(new ExperimentProblem<>(new WFG8(k, 20, m)));
                 break;
             case "WFG9":
                 k = 2 * (m - 1);
-                problemList.add(new ExperimentProblem<>(new WFG7(k, 20, m)));
+                problemList.add(new ExperimentProblem<>(new WFG9(k, 20, m)));
                 break;
             default:
                 throw new JMetalException("There is no configurations for " + problem + " problem");
