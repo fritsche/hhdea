@@ -73,13 +73,14 @@ public class HHdEAConfiguration<S extends Solution> implements AlgorithmConfigur
             default: // ALL
                 // for (int i = 0; i < 6; i++) {
                 builder
-                        .addAlgorithm(new COMOEADConfiguration().configure(problem, popSize, generations))
+                        .addAlgorithm(new COMOEADDConfiguration().configure(problem, popSize, generations))
+                        .addAlgorithm(new COMOMBI2Configuration().configure(problem, popSize, generations))
                         .addAlgorithm(new COSPEA2Configuration().configure(problem, popSize, generations))
+                        .addAlgorithm(new COThetaDEAConfiguration().configure(problem, popSize, generations))
                         .addAlgorithm(new CONSGAIIIConfiguration().configure(problem, popSize, generations))
                         .addAlgorithm(new CONSGAIIConfiguration().configure(problem, popSize, generations))
-                        .addAlgorithm(new COThetaDEAConfiguration().configure(problem, popSize, generations))
-                        .addAlgorithm(new COMOEADDConfiguration().configure(problem, popSize, generations))
-                        .addAlgorithm(new COMOMBI2Configuration().configure(problem, popSize, generations));
+                        .addAlgorithm(new COMOEADConfiguration().configure(problem, popSize, generations))
+                        ;
             // }
         }
 

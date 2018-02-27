@@ -17,9 +17,11 @@
 package br.ufpr.inf.cbio.hhdea.runner;
 
 import br.ufpr.inf.cbio.hhdea.config.AlgorithmConfigurationFactory;
+import br.ufpr.inf.cbio.hhdea.problem.InvertedProblem;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+import org.uma.jmetal.problem.DoubleProblem;
 import org.uma.jmetal.problem.multiobjective.dtlz.DTLZ1;
 import org.uma.jmetal.problem.multiobjective.dtlz.DTLZ2;
 import org.uma.jmetal.problem.multiobjective.dtlz.DTLZ3;
@@ -51,11 +53,17 @@ import org.uma.jmetal.util.pseudorandom.JMetalRandom;
  * @param <Result>
  */
 public class MainRunner<S extends Solution<?>, Result> extends ExecuteAlgorithms<S, Result> {
-
+    
     private final int id;
-
+    
     public static List<ExperimentProblem<DoubleSolution>> getProblemList(String problem, int m) {
         List<ExperimentProblem<DoubleSolution>> problemList = new ArrayList<>();
+        
+        if (problem.startsWith("Minus")) {
+            problemList.add(new ExperimentProblem<>(new InvertedProblem((DoubleProblem) getProblemList(problem.substring(5), m).get(0).getProblem(), problem)));
+            return problemList;
+        }
+        
         int k;
         switch (problem) {
             case "DTLZ1":
@@ -118,17 +126,17 @@ public class MainRunner<S extends Solution<?>, Result> extends ExecuteAlgorithms
         }
         return problemList;
     }
-
+    
     public static void main(String[] args) {
 
         // do not print info
         JMetalLogger.logger.setLevel(Level.WARNING);
-
+        
         if (args.length != 6) {
             throw new JMetalException("Needed arguments: "
                     + "outputDirectory algorithm problem m id seed");
         }
-
+        
         int i = 0;
         String experimentBaseDirectory = args[i++];
         String algorithm = args[i++];
@@ -138,26 +146,26 @@ public class MainRunner<S extends Solution<?>, Result> extends ExecuteAlgorithms
         int seed = Integer.parseInt(args[i++]);
         int generations = getGenerationsNumber(problem, m);
         int popSize = getPopSize(m);
-
+        
         JMetalRandom.getInstance().setSeed(seed);
-
+        
         List<ExperimentProblem<DoubleSolution>> problemList = getProblemList(problem, m);
         List<ExperimentAlgorithm<DoubleSolution, List<DoubleSolution>>> algorithms = new ArrayList<>();
-
+        
         algorithms.add(
                 new ExperimentAlgorithm<>(AlgorithmConfigurationFactory
                         .getAlgorithmConfiguration(algorithm)
                         .configure(problemList.get(0).getProblem(), popSize, generations),
                         problemList.get(0).getTag()));
-
+        
         ExperimentBuilder<DoubleSolution, List<DoubleSolution>> study = new ExperimentBuilder<>(Integer.toString(m));
-
+        
         study.setAlgorithmList(algorithms);
-
+        
         study.setProblemList(problemList);
-
+        
         study.setExperimentBaseDirectory(experimentBaseDirectory);
-
+        
         study.setOutputParetoFrontFileName(
                 "FUN");
         study.setOutputParetoSetFileName(
@@ -167,12 +175,12 @@ public class MainRunner<S extends Solution<?>, Result> extends ExecuteAlgorithms
         study.setNumberOfCores(
                 1);
         Experiment<DoubleSolution, List<DoubleSolution>> experiment = study.build();
-
+        
         new MainRunner(experiment, id)
                 .run();
-
+        
     }
-
+    
     @Override
     public void run() {
         JMetalLogger.logger.info("ExecuteAlgorithms: Preparing output directory");
@@ -180,11 +188,15 @@ public class MainRunner<S extends Solution<?>, Result> extends ExecuteAlgorithms
         Experiment<S, Result> experiment = getExperiment();
         experiment.getAlgorithmList().get(0).runAlgorithm(this.id, experiment);
     }
-
+    
     public static int getGenerationsNumber(String problem, int m) {
-
+        
         int generations = 0;
-
+        
+        if (problem.startsWith("Minus")) {
+            return getGenerationsNumber(problem.substring(5), m);
+        }
+        
         switch (m) {
             case 3:
                 switch (problem) {
@@ -341,7 +353,7 @@ public class MainRunner<S extends Solution<?>, Result> extends ExecuteAlgorithms
         }
         return generations;
     }
-
+    
     public static int getPopSize(int m) {
         int popSize = 0;
         switch (m) {
@@ -363,7 +375,7 @@ public class MainRunner<S extends Solution<?>, Result> extends ExecuteAlgorithms
         }
         return popSize;
     }
-
+    
     public MainRunner(Experiment<S, Result> configuration, int id) {
         super(configuration);
         this.id = id;
