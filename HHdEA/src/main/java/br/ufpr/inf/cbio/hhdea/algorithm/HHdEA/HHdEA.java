@@ -54,7 +54,6 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
             alg.init(populationSize);
         }
         int generations = algorithms.size();
-        int migrationcondition = 1;
         this.metrics = new MetricsEvaluator(problem, populationSize);
 
         while (generations <= maxGenerations) {

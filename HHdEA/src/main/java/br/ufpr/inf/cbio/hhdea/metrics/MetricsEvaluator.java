@@ -16,6 +16,9 @@
  */
 package br.ufpr.inf.cbio.hhdea.metrics;
 
+import br.ufpr.inf.cbio.hhdea.metrics.utilityfunction.ASF;
+import br.ufpr.inf.cbio.hhdea.metrics.utilityfunction.PBI;
+import br.ufpr.inf.cbio.hhdea.metrics.utilityfunction.Tchebycheff;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,7 +50,7 @@ public class MetricsEvaluator<S extends Solution<?>> {
     protected R2 r2;
 
     public enum Metrics {
-        OUTPUT_RAW_R2
+        FIR_R2_THC, FIR_R2_ASF, FIR_R2_PBI
     };
 
     private double[] metrics;
@@ -71,21 +74,35 @@ public class MetricsEvaluator<S extends Solution<?>> {
         this.zp_ = new double[m];
         this.metrics = new double[Metrics.values().length];
         initializeUniformWeight();
-
-        Front reference = new ArrayFront(m, m);
-        double val = 3.0;
-        for (int i = 0; i < m; i++) {
-            double[] values = new double[m];
-            values[i] = val;
-            val += 2.0;
-            Point point = new ArrayPoint(values);
-            reference.setPoint(i, point);
-        }
-        r2 = new R2(lambda, reference);
     }
 
-    public void extractMetrics(List<S> solutions) {
-        metrics[Metrics.OUTPUT_RAW_R2.ordinal()] = r2.evaluate(solutions);
+    public void extractMetrics(List<S> parents, List<S> offspring) {
+        int points = parents.size() + offspring.size();
+        Front reference = new ArrayFront(points, m);
+        Front parentsFront = new ArrayFront(parents);
+        Front offspringFront = new ArrayFront(offspring);
+        int i = 0;
+        for (int p = 0; p < parents.size(); p++, i++) {
+            reference.setPoint(i, parentsFront.getPoint(p));
+        }
+        for (int o = 0; o < offspring.size(); o++, i++) {
+            reference.setPoint(i, offspringFront.getPoint(o));
+        }
+
+        r2 = new R2(lambda, reference, new Tchebycheff());
+        double parentR2 = r2.r2(parentsFront);
+        double offspringR2 = r2.r2(offspringFront);
+        metrics[Metrics.FIR_R2_THC.ordinal()] = (parentR2 - offspringR2) / offspringR2;
+
+        r2 = new R2(lambda, reference, new ASF());
+        parentR2 = r2.r2(parentsFront);
+        offspringR2 = r2.r2(offspringFront);
+        metrics[Metrics.FIR_R2_ASF.ordinal()] = (parentR2 - offspringR2) / offspringR2;
+
+        r2 = new R2(lambda, reference, new PBI());
+        parentR2 = r2.r2(parentsFront);
+        offspringR2 = r2.r2(offspringFront);
+        metrics[Metrics.FIR_R2_PBI.ordinal()] = (parentR2 - offspringR2) / offspringR2;
     }
 
     public void log() {

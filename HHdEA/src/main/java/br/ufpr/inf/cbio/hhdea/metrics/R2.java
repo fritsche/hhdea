@@ -1,5 +1,6 @@
 package br.ufpr.inf.cbio.hhdea.metrics;
 
+import br.ufpr.inf.cbio.hhdea.metrics.utilityfunction.UtilityFunction;
 import org.uma.jmetal.qualityindicator.QualityIndicator;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.front.Front;
@@ -25,6 +26,7 @@ public class R2<Evaluate extends List<? extends Solution<?>>>
     private final double[][] lambda;
 
     private final Front referenceParetoFront;
+    private UtilityFunction function;
 
     /**
      * Creates a new instance of the R2 indicator for a problem with two
@@ -78,6 +80,11 @@ public class R2<Evaluate extends List<? extends Solution<?>>>
         super("R2", "R2 quality indicator");
         this.lambda = lambda;
         this.referenceParetoFront = referenceParetoFront;
+    }
+
+    public R2(double[][] lambda, Front referenceParetoFront, UtilityFunction function) {
+        this(lambda, referenceParetoFront);
+        this.function = function;
     }
 
     private static double[][] generateWeights(int nVectors) {
@@ -139,10 +146,13 @@ public class R2<Evaluate extends List<? extends Solution<?>>>
     }
 
     public double r2(Front front) {
+        double[] minimumValues = {};
+        double[] maximumValues = {};
+        
         if (this.referenceParetoFront != null) {
             // STEP 1. Obtain the maximum and minimum values of the Pareto front
-            double[] maximumValues = FrontUtils.getMaximumValues(this.referenceParetoFront);
-            double[] minimumValues = FrontUtils.getMinimumValues(this.referenceParetoFront);
+            maximumValues = FrontUtils.getMaximumValues(this.referenceParetoFront);
+            minimumValues = FrontUtils.getMinimumValues(this.referenceParetoFront);
 
             // STEP 2. Get the normalized front
             FrontNormalizer frontNormalizer = new FrontNormalizer(minimumValues, maximumValues);
@@ -155,11 +165,7 @@ public class R2<Evaluate extends List<? extends Solution<?>>>
         double[][] matrix = new double[front.getNumberOfPoints()][lambda.length];
         for (int i = 0; i < front.getNumberOfPoints(); i++) {
             for (int j = 0; j < lambda.length; j++) {
-                matrix[i][j] = lambda[j][0] * Math.abs(front.getPoint(i).getDimensionValue(0));
-                for (int n = 1; n < numberOfObjectives; n++) {
-                    matrix[i][j] = Math.max(matrix[i][j],
-                            lambda[j][n] * Math.abs(front.getPoint(i).getDimensionValue(n)));
-                }
+                matrix[i][j] = function.execute(lambda[j], front.getPoint(i), numberOfObjectives, minimumValues, maximumValues);
             }
         }
 
