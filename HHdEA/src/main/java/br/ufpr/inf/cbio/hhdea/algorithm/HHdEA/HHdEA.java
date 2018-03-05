@@ -58,6 +58,22 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
 
         while (generations <= maxGenerations) {
 
+            for (int i = 0; i < algorithms.size(); i++) {
+                List<S> parents = new ArrayList<>();
+                for (S s : algorithms.get(i).getPopulation()) {
+                    parents.add((S) s.copy());
+                }
+                algorithms.get(i).doIteration();
+                List<S> offspring = new ArrayList<>();
+                for (S s : algorithms.get(i).getPopulation()) {
+                    offspring.add((S) s.copy());
+                }
+                metrics.extractMetrics(parents, offspring);
+                metrics.log(algorithms.get(i).getClass().getSimpleName());
+                generations++;
+            }
+
+            /*
             double rand = JMetalRandom.getInstance().nextDouble();
             int i = 0;
             if (rand < 1.0 / 127.0) {
@@ -89,7 +105,7 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
                     }
                     algorithms.get(j).receive(migrants);
                 }
-            }
+            }*/
             // }
         }
     }

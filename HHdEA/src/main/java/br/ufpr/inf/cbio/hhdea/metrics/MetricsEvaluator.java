@@ -26,14 +26,10 @@ import java.io.InputStreamReader;
 import java.util.List;
 import java.util.StringTokenizer;
 import org.uma.jmetal.problem.Problem;
-import org.uma.jmetal.qualityindicator.impl.hypervolume.PISAHypervolume;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.JMetalException;
-import org.uma.jmetal.util.comparator.DominanceComparator;
 import org.uma.jmetal.util.front.Front;
 import org.uma.jmetal.util.front.imp.ArrayFront;
-import org.uma.jmetal.util.point.Point;
-import org.uma.jmetal.util.point.impl.ArrayPoint;
 
 /**
  *
@@ -105,9 +101,9 @@ public class MetricsEvaluator<S extends Solution<?>> {
         metrics[Metrics.FIR_R2_PBI.ordinal()] = (parentR2 - offspringR2) / offspringR2;
     }
 
-    public void log() {
+    public void log(String prefix) {
         for (Metrics metric : Metrics.values()) {
-            System.out.print(metric + ":\t");
+            System.out.print("[" + prefix + "] " + metric + ":\t");
             System.out.print(metrics[metric.ordinal()] + "\t");
             System.out.println();
         }
