@@ -16,8 +16,6 @@
  */
 package br.ufpr.inf.cbio.hhdea.metrics;
 
-import br.ufpr.inf.cbio.hhdea.metrics.utilityfunction.ASF;
-import br.ufpr.inf.cbio.hhdea.metrics.utilityfunction.PBI;
 import br.ufpr.inf.cbio.hhdea.metrics.utilityfunction.Tchebycheff;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -46,7 +44,7 @@ public class MetricsEvaluator<S extends Solution<?>> {
     protected R2 r2;
 
     public enum Metrics {
-        FIR_R2_THC, FIR_R2_ASF, FIR_R2_PBI
+        FIR_R2_THC
     };
 
     private double[] metrics;
@@ -90,15 +88,6 @@ public class MetricsEvaluator<S extends Solution<?>> {
         double offspringR2 = r2.r2(offspringFront);
         metrics[Metrics.FIR_R2_THC.ordinal()] = (parentR2 - offspringR2) / offspringR2;
 
-        r2 = new R2(lambda, reference, new ASF());
-        parentR2 = r2.r2(parentsFront);
-        offspringR2 = r2.r2(offspringFront);
-        metrics[Metrics.FIR_R2_ASF.ordinal()] = (parentR2 - offspringR2) / offspringR2;
-
-        r2 = new R2(lambda, reference, new PBI());
-        parentR2 = r2.r2(parentsFront);
-        offspringR2 = r2.r2(offspringFront);
-        metrics[Metrics.FIR_R2_PBI.ordinal()] = (parentR2 - offspringR2) / offspringR2;
     }
 
     public void log(String prefix) {

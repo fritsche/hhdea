@@ -16,6 +16,8 @@
  */
 package br.ufpr.inf.cbio.hhdea.algorithm.HHdEA;
 
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.CastroRoulette;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.SelectionFunction;
 import br.ufpr.inf.cbio.hhdea.metrics.MetricsEvaluator;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,63 +52,52 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
     @Override
     public void run() {
 
+        SelectionFunction<CooperativeAlgorithm> selection = new CastroRoulette<>();
         for (CooperativeAlgorithm alg : algorithms) {
             alg.init(populationSize);
+            selection.add(alg);
         }
+        selection.init();
+
         int generations = algorithms.size();
         this.metrics = new MetricsEvaluator(problem, populationSize);
 
         while (generations <= maxGenerations) {
 
-            for (int i = 0; i < algorithms.size(); i++) {
-                List<S> parents = new ArrayList<>();
-                for (S s : algorithms.get(i).getPopulation()) {
-                    parents.add((S) s.copy());
-                }
-                algorithms.get(i).doIteration();
-                List<S> offspring = new ArrayList<>();
-                for (S s : algorithms.get(i).getPopulation()) {
-                    offspring.add((S) s.copy());
-                }
-                metrics.extractMetrics(parents, offspring);
-                metrics.log(algorithms.get(i).getClass().getSimpleName());
-                generations++;
+            // heuristic selection
+            CooperativeAlgorithm<S> alg = selection.getNext();
+
+            // apply selected heuristic
+            List<S> parents = new ArrayList<>();
+            for (S s : alg.getPopulation()) {
+                parents.add((S) s.copy());
             }
-
-            /*
-            double rand = JMetalRandom.getInstance().nextDouble();
-            int i = 0;
-            if (rand < 1.0 / 127.0) {
-                i = 0;
-            } else if (rand < 3.0 / 127.0) {
-                i = 1;
-            } else if (rand < 7.0 / 127.0) {
-                i = 2;
-            } else if (rand < 15.0 / 127.0) {
-                i = 3;
-            } else if (rand < 31.0 / 127.0) {
-                i = 4;
-            } else if (rand < 63.0 / 127.0) {
-                i = 5;
-            } else if (rand < 127.0 / 127.0) {
-                i = 6;
-            }
-
-            System.out.println(i);
-
-            // for (int i = 0; i < algorithms.size(); i++) {
-            algorithms.get(i).doIteration();
+            alg.doIteration();
             generations++;
-            for (int j = 0; j < algorithms.size(); j++) {
-                if (i != j) {
+            List<S> offspring = new ArrayList<>();
+            for (S s : alg.getPopulation()) {
+                offspring.add((S) s.copy());
+            }
+
+            // extract metrics
+            metrics.extractMetrics(parents, offspring);
+            // metrics.log(alg.getClass().getSimpleName());
+
+            // compute reward
+            selection.creditAssignment(metrics.getMetric(MetricsEvaluator.Metrics.FIR_R2_THC));
+
+            // move acceptance
+            // ALL MOVES
+            // cooperation phase
+            for (CooperativeAlgorithm<S> neighbor : algorithms) {
+                if (neighbor != alg) {
                     List<S> migrants = new ArrayList<>();
-                    for (S s : algorithms.get(i).getPopulation()) {
+                    for (S s : alg.getPopulation()) {
                         migrants.add((S) s.copy());
                     }
-                    algorithms.get(j).receive(migrants);
+                    neighbor.receive(migrants);
                 }
-            }*/
-            // }
+            }
         }
     }
 

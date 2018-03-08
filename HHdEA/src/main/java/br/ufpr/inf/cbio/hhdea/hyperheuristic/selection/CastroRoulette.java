@@ -61,6 +61,9 @@ public class CastroRoulette<T> extends SelectionFunction<T> {
         for (int i = 1; i < size && rand > sum; ++i, s++) {
             sum += probabilities[i];
         }
+
+        System.out.println("ROULETTE: " + s);
+
         return lowlevelheuristics.get(s);
     }
 
