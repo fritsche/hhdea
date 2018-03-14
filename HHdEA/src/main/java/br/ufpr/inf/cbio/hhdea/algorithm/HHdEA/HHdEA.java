@@ -62,10 +62,10 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
         int generations = algorithms.size();
         this.metrics = new MetricsEvaluator(problem, populationSize);
 
-        while (generations <= maxGenerations) {
+        // heuristic selection (first)
+        CooperativeAlgorithm<S> alg = selection.getNext();
 
-            // heuristic selection
-            CooperativeAlgorithm<S> alg = selection.getNext();
+        while (generations <= maxGenerations) {
 
             // apply selected heuristic
             List<S> parents = new ArrayList<>();
@@ -88,16 +88,17 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
 
             // move acceptance
             // ALL MOVES
-            // cooperation phase
-            for (CooperativeAlgorithm<S> neighbor : algorithms) {
-                if (neighbor != alg) {
-                    List<S> migrants = new ArrayList<>();
-                    for (S s : alg.getPopulation()) {
-                        migrants.add((S) s.copy());
-                    }
-                    neighbor.receive(migrants);
-                }
+            
+            // heuristic selection (next)
+            alg = selection.getNext();
+            
+            // send previous population to the next heuristic
+            List<S> migrants = new ArrayList<>();
+            for (S s : alg.getPopulation()) {
+                migrants.add((S) s.copy());
             }
+            alg.receive(migrants);
+
         }
     }
 
