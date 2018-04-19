@@ -22,10 +22,10 @@ import br.ufpr.inf.cbio.hhdea.metrics.MetricsEvaluator;
 import java.util.ArrayList;
 import java.util.List;
 import org.uma.jmetal.algorithm.Algorithm;
+import org.uma.jmetal.algorithm.multiobjective.moead.util.MOEADUtils;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.SolutionListUtils;
-import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
 /**
  *
@@ -62,10 +62,10 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
         int generations = algorithms.size();
         this.metrics = new MetricsEvaluator(problem, populationSize);
 
-        // heuristic selection (first)
-        CooperativeAlgorithm<S> alg = selection.getNext();
-
         while (generations <= maxGenerations) {
+
+            // heuristic selection
+            CooperativeAlgorithm<S> alg = selection.getNext();
 
             // apply selected heuristic
             List<S> parents = new ArrayList<>();
@@ -88,17 +88,16 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
 
             // move acceptance
             // ALL MOVES
-            
-            // heuristic selection (next)
-            alg = selection.getNext();
-            
-            // send previous population to the next heuristic
-            List<S> migrants = new ArrayList<>();
-            for (S s : alg.getPopulation()) {
-                migrants.add((S) s.copy());
+            // cooperation phase
+            for (CooperativeAlgorithm<S> neighbor : algorithms) {
+                if (neighbor != alg) {
+                    List<S> migrants = new ArrayList<>();
+                    for (S s : alg.getPopulation()) {
+                        migrants.add((S) s.copy());
+                    }
+                    neighbor.receive(migrants);
+                }
             }
-            alg.receive(migrants);
-
         }
     }
 
@@ -108,7 +107,8 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
         for (CooperativeAlgorithm alg : algorithms) {
             union.addAll(alg.getPopulation());
         }
-        return SolutionListUtils.getNondominatedSolutions(union);
+        List<S> aux = SolutionListUtils.getNondominatedSolutions(union);
+        return aux;
     }
 
     @Override
