@@ -107,8 +107,7 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
         for (CooperativeAlgorithm alg : algorithms) {
             union.addAll(alg.getPopulation());
         }
-        List<S> aux = SolutionListUtils.getNondominatedSolutions(union);
-        return aux;
+        return MOEADUtils.getSubsetOfEvenlyDistributedSolutions(SolutionListUtils.getNondominatedSolutions(union), 240);
     }
 
     @Override
