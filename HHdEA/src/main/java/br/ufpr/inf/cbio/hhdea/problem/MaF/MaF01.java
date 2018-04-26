@@ -13,23 +13,12 @@ public class MaF01 extends AbstractDoubleProblem {
     private final String name;
 
     /**
-     * Creates a default MaF01 problem (7 variables and 3 objectives)
-     *
-     * @param solutionType The solution type must "Real" or "BinaryReal".
-     */
-    public MaF01(String solutionType) {
-        this(solutionType, 12, 3);
-    } // MaF01   
-
-    /**
      * Creates a MaF01 problem instance
      *
      * @param numberOfVariables Number of variables
      * @param numberOfObjectives Number of objective functions
-     * @param solutionType The solution type must "Real" or "BinaryReal".
      */
-    public MaF01(String solutionType,
-            Integer numberOfVariables,
+    public MaF01(Integer numberOfVariables,
             Integer numberOfObjectives) {
         setNumberOfVariables(numberOfVariables);
         setNumberOfObjectives(numberOfObjectives);
@@ -53,7 +42,6 @@ public class MaF01 extends AbstractDoubleProblem {
      *
      * @param solution The solution to evaluate
      */
-//MaF01 , modified inverted DTLZ1
     @Override
     public void evaluate(DoubleSolution solution) {
 
@@ -88,4 +76,8 @@ public class MaF01 extends AbstractDoubleProblem {
         }
     }
 
+    @Override
+    public String getName() {
+        return name;
+    }
 }

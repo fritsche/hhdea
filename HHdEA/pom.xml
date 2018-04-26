@@ -59,7 +59,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>br.ufpr.inf.cbio.moeaddcma.runner.MainRunner</mainClass>
+                            <mainClass>br.ufpr.inf.cbio.hhdea.runner.MainRunner</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

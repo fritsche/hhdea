@@ -10,114 +10,107 @@ import org.uma.jmetal.solution.DoubleSolution;
  */
 public class MaF15 extends AbstractDoubleProblem {
 
-    /**
-     * Creates a default MaF15 problem (60 variables and 3 objectives)
-     *
-     * @param solutionType The solution type must "Real".
-     */
+    private final String name;
     public static int nk15;
     public static int sublen15[], len15[];
-
-    public MaF15(String solutionType) throws ClassNotFoundException {
-        this(solutionType, 60, 3);
-    } // MaF15   
 
     /**
      * Creates a MaF15 problem instance
      *
      * @param numberOfVariables Number of variables
      * @param numberOfObjectives Number of objective functions
-     * @param solutionType The solution type must "Real" or "BinaryReal".
      */
-    public MaF15(String solutionType,
-            Integer numberOfVariables,
+    public MaF15(Integer numberOfVariables,
             Integer numberOfObjectives) {
-        numberOfVariables_ = numberOfVariables;
-        numberOfObjectives_ = numberOfObjectives;
-        numberOfConstraints_ = 0;
-        problemName_ = "MaF15";
 
-//evaluate sublen15,len15
         nk15 = 2;
-        double[] c = new double[numberOfObjectives_];
+        double[] c = new double[numberOfObjectives];
         c[0] = 3.8 * 0.1 * (1 - 0.1);
         double sumc = 0;
         sumc += c[0];
-        for (int i = 1; i < numberOfObjectives_; i++) {
+        for (int i = 1; i < numberOfObjectives; i++) {
             c[i] = 3.8 * c[i - 1] * (1 - c[i - 1]);
             sumc += c[i];
         }
 
-        int[] sublen = new int[numberOfObjectives_];
-        int[] len = new int[numberOfObjectives_ + 1];
+        int[] sublen = new int[numberOfObjectives];
+        int[] len = new int[numberOfObjectives + 1];
         len[0] = 0;
-        for (int i = 0; i < numberOfObjectives_; i++) {
-            sublen[i] = (int) Math.ceil(Math.round(c[i] / sumc * numberOfVariables_) / (double) nk15);
+        for (int i = 0; i < numberOfObjectives; i++) {
+            sublen[i] = (int) Math.ceil(Math.round(c[i] / sumc * numberOfVariables) / (double) nk15);
             len[i + 1] = len[i] + (nk15 * sublen[i]);
         }
         sublen15 = sublen;
         len15 = len;
-//re-update numberOfObjectives_,numberOfVariables_
-        numberOfVariables_ = numberOfObjectives_ - 1 + len[numberOfObjectives_];
+//re-update numberOfObjectives,numberOfVariables
+        numberOfVariables = numberOfObjectives - 1 + len[numberOfObjectives];
 
-        lowerLimit_ = new double[numberOfVariables_];
-        upperLimit_ = new double[numberOfVariables_];
-        for (int var = 0; var < numberOfVariables_ - 1; var++) {
-            lowerLimit_[var] = 0.0;
-            upperLimit_[var] = 1.0;
+        setNumberOfVariables(numberOfVariables);
+        setNumberOfObjectives(numberOfObjectives);
+        setNumberOfConstraints(0);
+        this.name = "MaF15";
+
+        List<Double> lower = new ArrayList<>(getNumberOfVariables()), upper = new ArrayList<>(getNumberOfVariables());
+
+        for (int var = 0; var < numberOfVariables - 1; var++) {
+            lower.add(0.0);
+            upper.add(1.0);
         } //for
-        for (int var = numberOfVariables_ - 1; var < numberOfVariables_; var++) {
-            lowerLimit_[var] = 0.0;
-            upperLimit_[var] = 10.0;
+        for (int var = numberOfVariables - 1; var < numberOfVariables; var++) {
+            lower.add(0.0);
+            upper.add(10.0);
         } //for
 
-        if (solutionType.compareTo("Real") == 0) {
-            solutionType_ = new RealSolutionType(this);
-        } else {
-            System.out.println("Error: solution type " + solutionType + " invalid");
-            System.exit(-1);
-        }
+        for (int var = 0; var < numberOfVariables; var++) {
+            lower.add(0.0);
+            upper.add(1.0);
+        } //for
+
+        setLowerLimit(lower);
+        setUpperLimit(upper);
+
     }
 
     /**
      * Evaluates a solution
      *
      * @param solution The solution to evaluate
-     * @throws JMException
      */
-//MaF15 , inverted LSMOP8
-    public void evaluate(Solution solution) throws JMException {
+    @Override
+    public void evaluate(DoubleSolution solution) {
 
-        Variable[] gen = solution.getDecisionVariables();
-        double[] x = new double[numberOfVariables_];
-        double[] f = new double[numberOfObjectives_];
+        int numberOfVariables = solution.getNumberOfVariables();
+        int numberOfObjectives = solution.getNumberOfObjectives();
 
-        for (int i = 0; i < numberOfVariables_; i++) {
-            x[i] = gen[i].getValue();
+        double[] x = new double[numberOfVariables];
+        double[] f = new double[numberOfObjectives];
+
+        for (int i = 0; i < numberOfVariables; i++) {
+            x[i] = solution.getVariableValue(i);
         }
 
 //	change x
-        for (int i = numberOfObjectives_ - 1; i < numberOfVariables_; i++) {
-            x[i] = (1 + Math.cos((i + 1) / (double) numberOfVariables_ * Math.PI / 2)) * x[i] - 10 * x[0];
+        for (int i = numberOfObjectives - 1; i < numberOfVariables; i++) {
+            x[i] = (1 + Math.cos((i + 1) / (double) numberOfVariables * Math.PI / 2)) * x[i] - 10 * x[0];
         }
 //	evaluate eta,g
-        double[] g = new double[numberOfObjectives_];
+        double[] g = new double[numberOfObjectives];
         double sub1;
-        for (int i = 0; i < numberOfObjectives_; i = i + 2) {
+        for (int i = 0; i < numberOfObjectives; i = i + 2) {
             double[] tx = new double[sublen15[i]];
             sub1 = 0;
             for (int j = 0; j < nk15; j++) {
-                System.arraycopy(x, len15[i] + numberOfObjectives_ - 1 + j * sublen15[i], tx, 0, sublen15[i]);
+                System.arraycopy(x, len15[i] + numberOfObjectives - 1 + j * sublen15[i], tx, 0, sublen15[i]);
                 sub1 += Griewank(tx);
             }
             g[i] = sub1 / (nk15 * sublen15[i]);
         }
 
-        for (int i = 1; i < numberOfObjectives_; i = i + 2) {
+        for (int i = 1; i < numberOfObjectives; i = i + 2) {
             double[] tx = new double[sublen15[i]];
             sub1 = 0;
             for (int j = 0; j < nk15; j++) {
-                System.arraycopy(x, len15[i] + numberOfObjectives_ - 1 + j * sublen15[i], tx, 0, sublen15[i]);
+                System.arraycopy(x, len15[i] + numberOfObjectives - 1 + j * sublen15[i], tx, 0, sublen15[i]);
                 sub1 += Sphere(tx);
             }
             g[i] = sub1 / (nk15 * sublen15[i]);
@@ -125,14 +118,14 @@ public class MaF15 extends AbstractDoubleProblem {
 
 //	evaluate fm,fm-1,...,2,f1
         double subf1 = 1;
-        f[numberOfObjectives_ - 1] = (1 - Math.sin(Math.PI * x[0] / 2)) * (1 + g[numberOfObjectives_ - 1]);
-        for (int i = numberOfObjectives_ - 2; i > 0; i--) {
-            subf1 *= Math.cos(Math.PI * x[numberOfObjectives_ - i - 2] / 2);
-            f[i] = (1 - subf1 * Math.sin(Math.PI * x[numberOfObjectives_ - i - 1] / 2)) * (1 + g[i] + g[i + 1]);
+        f[numberOfObjectives - 1] = (1 - Math.sin(Math.PI * x[0] / 2)) * (1 + g[numberOfObjectives - 1]);
+        for (int i = numberOfObjectives - 2; i > 0; i--) {
+            subf1 *= Math.cos(Math.PI * x[numberOfObjectives - i - 2] / 2);
+            f[i] = (1 - subf1 * Math.sin(Math.PI * x[numberOfObjectives - i - 1] / 2)) * (1 + g[i] + g[i + 1]);
         }
-        f[0] = (1 - subf1 * Math.cos(Math.PI * x[numberOfObjectives_ - 2] / 2)) * (1 + g[0] + g[1]);
+        f[0] = (1 - subf1 * Math.cos(Math.PI * x[numberOfObjectives - 2] / 2)) * (1 + g[0] + g[1]);
 
-        for (int i = 0; i < numberOfObjectives_; i++) {
+        for (int i = 0; i < numberOfObjectives; i++) {
             solution.setObjective(i, f[i]);
         }
 
@@ -155,4 +148,10 @@ public class MaF15 extends AbstractDoubleProblem {
         }
         return eta;
     }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
 }

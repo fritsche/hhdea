@@ -18,6 +18,7 @@ package br.ufpr.inf.cbio.hhdea.runner;
 
 import br.ufpr.inf.cbio.hhdea.config.AlgorithmConfigurationFactory;
 import br.ufpr.inf.cbio.hhdea.problem.InvertedProblem;
+import br.ufpr.inf.cbio.hhdea.problem.MaF.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -64,8 +65,66 @@ public class MainRunner<S extends Solution<?>, Result> extends ExecuteAlgorithms
             return problemList;
         }
 
-        int k;
+        int k, l;
         switch (problem) {
+            case "MaF01":
+                k = 10;
+                problemList.add(new ExperimentProblem<>(new MaF01(m + k - 1, m)));
+                break;
+            case "MaF02":
+                k = 10;
+                problemList.add(new ExperimentProblem<>(new MaF02(m + k - 1, m)));
+                break;
+            case "MaF03":
+                k = 10;
+                problemList.add(new ExperimentProblem<>(new MaF03(m + k - 1, m)));
+                break;
+            case "MaF04":
+                k = 10;
+                problemList.add(new ExperimentProblem<>(new MaF04(m + k - 1, m)));
+                break;
+            case "MaF05":
+                k = 10;
+                problemList.add(new ExperimentProblem<>(new MaF05(m + k - 1, m)));
+                break;
+            case "MaF06":
+                k = 10;
+                problemList.add(new ExperimentProblem<>(new MaF06(m + k - 1, m)));
+                break;
+            case "MaF07":
+                k = 20;
+                problemList.add(new ExperimentProblem<>(new MaF07(m + k - 1, m)));
+                break;
+            case "MaF08":
+                problemList.add(new ExperimentProblem<>(new MaF08(2, m)));
+                break;
+            case "MaF09":
+                problemList.add(new ExperimentProblem<>(new MaF09(2, m)));
+                break;
+            case "MaF10":
+                k = m - 1;
+                l = 10;
+                problemList.add(new ExperimentProblem<>(new MaF10(k + l, m)));
+                break;
+            case "MaF11":
+                k = m - 1;
+                l = 10;
+                problemList.add(new ExperimentProblem<>(new MaF11(k + l, m)));
+                break;
+            case "MaF12":
+                k = m - 1;
+                l = 10;
+                problemList.add(new ExperimentProblem<>(new MaF12(k + l, m)));
+                break;
+            case "MaF13":
+                problemList.add(new ExperimentProblem<>(new MaF13(5, m)));
+                break;
+            case "MaF14":
+                problemList.add(new ExperimentProblem<>(new MaF14(m * 20, m)));
+                break;
+            case "MaF15":
+                problemList.add(new ExperimentProblem<>(new MaF15(m * 20, m)));
+                break;
             case "DTLZ1":
                 k = 5;
                 problemList.add(new ExperimentProblem<>(new DTLZ1(m + k - 1, m)));
@@ -146,7 +205,6 @@ public class MainRunner<S extends Solution<?>, Result> extends ExecuteAlgorithms
         int seed = Integer.parseInt(args[i++]);
         int popSize = getPopSize(m);
         int generations = getGenerationsNumber(problem, m, popSize);
-        
 
         JMetalRandom.getInstance().setSeed(seed);
 

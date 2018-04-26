@@ -1,75 +1,61 @@
-package jmetal.problems.MaF;
+package br.ufpr.inf.cbio.hhdea.problem.MaF;
 
-import jmetal.core.Problem;
-import jmetal.core.Solution;
-import jmetal.core.Variable;
-import jmetal.encodings.solutionType.BinaryRealSolutionType;
-import jmetal.encodings.solutionType.RealSolutionType;
-import jmetal.util.JMException;
+import java.util.ArrayList;
+import java.util.List;
+import org.uma.jmetal.problem.impl.AbstractDoubleProblem;
+import org.uma.jmetal.solution.DoubleSolution;
 
 /**
- * Class representing problem MaF02
+ * Class representing problem MaF02, DTLZ2BZ
  */
-public class MaF02 extends Problem {
+public class MaF02 extends AbstractDoubleProblem {
 
-    /**
-     * Creates a default MaF02 problem (7 variables and 3 objectives)
-     *
-     * @param solutionType The solution type must "Real" or "BinaryReal".
-     */
     public static int const2;
 
-    public MaF02(String solutionType) throws ClassNotFoundException {
-        this(solutionType, 12, 3);
-    } // MaF02   
+    private final String name;
 
     /**
      * Creates a MaF02 problem instance
      *
      * @param numberOfVariables Number of variables
      * @param numberOfObjectives Number of objective functions
-     * @param solutionType The solution type must "Real" or "BinaryReal".
      */
-    public MaF02(String solutionType,
-            Integer numberOfVariables,
+    public MaF02(Integer numberOfVariables,
             Integer numberOfObjectives) {
-        numberOfVariables_ = numberOfVariables;
-        numberOfObjectives_ = numberOfObjectives;
-        const2 = (int) Math.floor((numberOfVariables_ - numberOfObjectives_ + 1) / (double) numberOfObjectives_);
-        numberOfConstraints_ = 0;
-        problemName_ = "MaF02";
+        setNumberOfVariables(numberOfVariables);
+        setNumberOfObjectives(numberOfObjectives);
+        setNumberOfConstraints(0);
+        this.name = "MaF02";
 
-        lowerLimit_ = new double[numberOfVariables_];
-        upperLimit_ = new double[numberOfVariables_];
+        const2 = (int) Math.floor((numberOfVariables - numberOfObjectives + 1) / (double) numberOfObjectives);
+
+        List<Double> lower = new ArrayList<>(getNumberOfVariables()), upper = new ArrayList<>(getNumberOfVariables());
+
         for (int var = 0; var < numberOfVariables; var++) {
-            lowerLimit_[var] = 0.0;
-            upperLimit_[var] = 1.0;
+            lower.add(0.0);
+            upper.add(1.0);
         } //for
-        if (solutionType.compareTo("BinaryReal") == 0) {
-            solutionType_ = new BinaryRealSolutionType(this);
-        } else if (solutionType.compareTo("Real") == 0) {
-            solutionType_ = new RealSolutionType(this);
-        } else {
-            System.out.println("Error: solution type " + solutionType + " invalid");
-            System.exit(-1);
-        }
+
+        setLowerLimit(lower);
+        setUpperLimit(upper);
     }
 
     /**
      * Evaluates a solution
      *
      * @param solution The solution to evaluate
-     * @throws JMException
      */
-//MaF02 , DTLZ2BZ
-    public void evaluate(Solution solution) throws JMException {
+    @Override
+    public void evaluate(DoubleSolution solution) {
 
-        Variable[] gen = solution.getDecisionVariables();
+        int numberOfVariables_ = solution.getNumberOfVariables();
+        int numberOfObjectives_ = solution.getNumberOfObjectives();
+
         double[] x = new double[numberOfVariables_];
         double[] f = new double[numberOfObjectives_];
 
         for (int i = 0; i < numberOfVariables_; i++) {
-            x[i] = gen[i].getValue();
+            x[i] = solution.getVariableValue(i);
         }
 
         double[] g = new double[numberOfObjectives_];
@@ -105,4 +91,8 @@ public class MaF02 extends Problem {
         }
     }
 
+    @Override
+    public String getName() {
+        return name;
+    }
 }
