@@ -12,6 +12,7 @@ import org.uma.jmetal.util.naming.impl.SimpleDescribedEntity;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -153,6 +154,9 @@ public class R2<Evaluate extends List<? extends Solution<?>>>
             // STEP 1. Obtain the maximum and minimum values of the Pareto front
             maximumValues = FrontUtils.getMaximumValues(this.referenceParetoFront);
             minimumValues = FrontUtils.getMinimumValues(this.referenceParetoFront);
+            
+            System.out.println(Arrays.toString(maximumValues));
+            System.out.println(Arrays.toString(minimumValues));
 
             // STEP 2. Get the normalized front
             FrontNormalizer frontNormalizer = new FrontNormalizer(minimumValues, maximumValues);
