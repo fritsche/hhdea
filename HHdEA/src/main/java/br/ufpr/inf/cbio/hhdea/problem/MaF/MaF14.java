@@ -53,12 +53,11 @@ public class MaF14 extends AbstractDoubleProblem {
 
         List<Double> lower = new ArrayList<>(getNumberOfVariables()), upper = new ArrayList<>(getNumberOfVariables());
 
-        for (int var = 0; var < numberOfVariables - 1; var++) {
+        for (int var = 0; var < numberOfObjectives - 1; var++) {
             lower.add(0.0);
             upper.add(1.0);
         } //for
-
-        for (int var = numberOfVariables - 1; var < numberOfVariables; var++) {
+        for (int var = numberOfObjectives - 1; var < numberOfVariables; var++) {
             lower.add(0.0);
             upper.add(10.0);
         } //for
