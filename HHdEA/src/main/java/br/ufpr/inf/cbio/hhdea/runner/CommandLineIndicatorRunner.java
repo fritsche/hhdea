@@ -1,5 +1,6 @@
 package br.ufpr.inf.cbio.hhdea.runner;
 
+import br.ufpr.inf.cbio.hhdea.metrics.HypervolumeApprox;
 import org.uma.jmetal.qualityindicator.QualityIndicator;
 import org.uma.jmetal.qualityindicator.impl.Epsilon;
 import org.uma.jmetal.qualityindicator.impl.ErrorRatio;
@@ -82,7 +83,7 @@ public class CommandLineIndicatorRunner {
         + "-Dexec.args=\"indicatorName referenceFront front [normalize]\" \n\n"
         + "Where indicatorValue can be one of these:\n" + "GD   - Generational distance\n"
         + "IGD  - Inverted generational distance\n" + "IGD  - Inverted generational distance\n"
-        + "IGD+ - Inverted generational distance plus \n" + "HV   - Hypervolume \n"
+        + "IGD+ - Inverted generational distance plus \n" + "HV   - Hypervolume \n" + "HVA   - Hypervolume Approximation \n"
         + "ER   - Error ratio \n" + "SPREAD  - Spread (two objectives)\n"
         + "GSPREAD - Generalized Spread (more than two objectives)\n" + "ER   - Error ratio\n"
         //+ "R2   - R2\n\n" + "ALL  - prints all the available indicators \n\n"
@@ -144,6 +145,7 @@ public class CommandLineIndicatorRunner {
     List<QualityIndicator<List<PointSolution>, Double>> list = new ArrayList<>() ;
     list.add(new Epsilon<PointSolution>(referenceFront)) ;
     list.add(new PISAHypervolume<PointSolution>(referenceFront)) ;
+    list.add(new HypervolumeApprox<PointSolution>(referenceFront)) ;
     list.add(new GenerationalDistance<PointSolution>(referenceFront)) ;
     list.add(new InvertedGenerationalDistance<PointSolution>(referenceFront)) ;
     list.add(new InvertedGenerationalDistancePlus<PointSolution>(referenceFront)) ;

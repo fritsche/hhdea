@@ -1,9 +1,8 @@
-package org.uma.jmetal.qualityindicator.impl.hypervolume;
+package br.ufpr.inf.cbio.hhdea.metrics;
 
 import org.uma.jmetal.qualityindicator.impl.Hypervolume;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.comparator.HypervolumeContributionComparator;
-import org.uma.jmetal.util.comparator.ObjectiveComparator;
 import org.uma.jmetal.util.front.Front;
 import org.uma.jmetal.util.point.Point;
 import org.uma.jmetal.util.point.impl.ArrayPoint;
@@ -12,14 +11,17 @@ import org.uma.jmetal.util.solutionattribute.impl.HypervolumeContributionAttribu
 import java.io.FileNotFoundException;
 import java.util.Collections;
 import java.util.List;
+import org.uma.jmetal.util.front.imp.ArrayFront;
+import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
 public class HypervolumeApprox<S extends Solution<?>> extends Hypervolume<S> {
 
     private Point referencePoint;
     private int numberOfObjectives;
 
-    private static final double DEFAULT_OFFSET = 100.0;
+    private static final double DEFAULT_OFFSET = 1.1;
     private double offset = DEFAULT_OFFSET;
+    private final int sampleSize = 1000000;
 
     /**
      * Default constructor
@@ -54,21 +56,45 @@ public class HypervolumeApprox<S extends Solution<?>> extends Hypervolume<S> {
 
     @Override
     public Double evaluate(List<S> solutionList) {
-        double hv;
-        if (solutionList.isEmpty()) {
-            hv = 0.0;
-        } else {
+        double hv = 0.0;
+        if (!solutionList.isEmpty()) {
             numberOfObjectives = solutionList.get(0).getNumberOfObjectives();
-            referencePoint = new ArrayPoint(numberOfObjectives);
-            
-            int count = 0;
-            
-        }
+            Front front = new ArrayFront(solutionList);
 
+            // normalize solutions
+            for (int i = 0; i < front.getNumberOfPoints(); i++) {
+                Point point = front.getPoint(i);
+                for (int j = 0; j < point.getNumberOfDimensions(); j++) {
+                    point.setDimensionValue(j, point.getDimensionValue(j) / (offset * referencePoint.getDimensionValue(j)));
+                }
+            }
+
+            int countDominated = 0;
+            double[] generated = new double[numberOfObjectives];
+            double totalVolume = Math.pow(offset, numberOfObjectives);
+            for (int i = 0; i < sampleSize; i++) {
+                for (int j = 0; j < numberOfObjectives; j++) {
+                    generated[j] = JMetalRandom.getInstance().nextDouble(0, offset);
+                }
+                for (int k = 0; k < front.getNumberOfPoints(); k++) {
+                    Point point = front.getPoint(k);
+                    boolean dominatedTmp = true;
+                    for (int d = 0; d < numberOfObjectives; d++) {
+                        if (point.getDimensionValue(d) > generated[d]) {
+                            dominatedTmp = false;
+                            break;
+                        }
+                    }
+                    if (dominatedTmp) {
+                        countDominated++;
+                        break;
+                    }
+                }
+            }
+            hv = (double) countDominated / (double) sampleSize * totalVolume;
+        }
         return hv;
     }
-
-   
 
     /**
      * Updates the reference point
@@ -134,32 +160,23 @@ public class HypervolumeApprox<S extends Solution<?>> extends Hypervolume<S> {
         updateReferencePoint(referenceFrontList);
         if (solutionList.size() > 1) {
             double[] contributions = new double[solutionList.size()];
-            double solutionSetHV = 0;
-
-            solutionSetHV = evaluate(solutionList);
+            double solutionSetHV = evaluate(solutionList);
 
             for (int i = 0; i < solutionList.size(); i++) {
                 S currentPoint = solutionList.get(i);
                 solutionList.remove(i);
 
-                if (numberOfObjectives == 2) {
-                    contributions[i] = solutionSetHV - get2DHV(solutionList);
-                } else {
-                    //Front front = new Front(solutionSet.size(), numberOfObjectives, solutionSet);
-                    WfgHypervolumeFront front = new WfgHypervolumeFront(solutionList);
-                    double hv = new WfgHypervolumeVersion(numberOfObjectives, solutionList.size()).getHV(front);
-                    contributions[i] = solutionSetHV - hv;
-                }
+                contributions[i] = solutionSetHV - evaluate(solutionList);
 
                 solutionList.add(i, currentPoint);
             }
 
-            HypervolumeContributionAttribute<Solution<?>> hvContribution = new HypervolumeContributionAttribute<Solution<?>>();
+            HypervolumeContributionAttribute<Solution<?>> hvContribution = new HypervolumeContributionAttribute<>();
             for (int i = 0; i < solutionList.size(); i++) {
                 hvContribution.setAttribute(solutionList.get(i), contributions[i]);
             }
 
-            Collections.sort(solutionList, new HypervolumeContributionComparator<S>());
+            Collections.sort(solutionList, new HypervolumeContributionComparator<>());
         }
 
         return solutionList;
@@ -177,7 +194,12 @@ public class HypervolumeApprox<S extends Solution<?>> extends Hypervolume<S> {
 
     @Override
     public String getDescription() {
-        return "WFG implementation of the hypervolume quality indicator";
+        return "Hypervolume Approximation quality indicator";
+    }
+
+    @Override
+    public String getName() {
+        return "HVA";
     }
 
 }
