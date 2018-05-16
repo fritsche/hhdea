@@ -199,7 +199,7 @@ public class HypervolumeApprox<S extends Solution<?>> extends Hypervolume<S> {
 
     @Override
     public String getName() {
-        return "HVA";
+        return "HV";
     }
 
 }

@@ -22,6 +22,7 @@ import org.uma.jmetal.util.point.util.PointSolution;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import org.uma.jmetal.qualityindicator.impl.Hypervolume;
 
 /**
  * Class for executing quality indicators from the command line. An optional
@@ -146,19 +147,24 @@ public class CommandLineIndicatorRunner {
     private static List<QualityIndicator<List<PointSolution>, Double>> getAvailableIndicators(
             Front referenceFront) throws FileNotFoundException {
 
-        PISAHypervolume hv = new PISAHypervolume<PointSolution>(referenceFront);
-        hv.setOffset(0.1);
+        Hypervolume<PointSolution> hv;
+        if (referenceFront.getPointDimensions() >= 10) {
+            hv = new HypervolumeApprox<>(referenceFront);
+        } else {
+            hv = new PISAHypervolume<>(referenceFront);
+            hv.setOffset(0.1);
+        }
+        
         List<QualityIndicator<List<PointSolution>, Double>> list = new ArrayList<>();
-        list.add(new Epsilon<PointSolution>(referenceFront));
+        list.add(new Epsilon<>(referenceFront));
         list.add(hv);
-        list.add(new HypervolumeApprox<PointSolution>(referenceFront));
-        list.add(new GenerationalDistance<PointSolution>(referenceFront));
-        list.add(new InvertedGenerationalDistance<PointSolution>(referenceFront));
-        list.add(new InvertedGenerationalDistancePlus<PointSolution>(referenceFront));
-        list.add(new Spread<PointSolution>(referenceFront));
-        list.add(new GeneralizedSpread<PointSolution>(referenceFront));
+        list.add(new GenerationalDistance<>(referenceFront));
+        list.add(new InvertedGenerationalDistance<>(referenceFront));
+        list.add(new InvertedGenerationalDistancePlus<>(referenceFront));
+        list.add(new Spread<>(referenceFront));
+        list.add(new GeneralizedSpread<>(referenceFront));
         //list.add(new R2<List<DoubleSolution>>(referenceFront)) ;
-        list.add(new ErrorRatio<List<PointSolution>>(referenceFront));
+        list.add(new ErrorRatio<>(referenceFront));
 
         return list;
     }
