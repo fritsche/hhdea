@@ -20,11 +20,9 @@ import br.ufpr.inf.cbio.hhdea.config.AlgorithmConfigurationFactory;
 import br.ufpr.inf.cbio.hhdea.problem.MaF.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import org.uma.jmetal.solution.DoubleSolution;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.JMetalException;
-import org.uma.jmetal.util.JMetalLogger;
 import org.uma.jmetal.util.experiment.Experiment;
 import org.uma.jmetal.util.experiment.ExperimentBuilder;
 import org.uma.jmetal.util.experiment.util.ExperimentAlgorithm;
@@ -43,15 +41,11 @@ public class MaFRunner<S extends Solution<?>, Result> extends ExecuteAlgorithms<
 
     public static void main(String[] args) {
 
-        // do not print info
-        JMetalLogger.logger.setLevel(Level.INFO);
-
-        if (args.length != 6) {
+	if (args.length != 6) {
             throw new JMetalException("Needed arguments: "
                     + "outputDirectory algorithm problem m id seed");
-        }
-
-        int i = 0;
+        }       
+	int i = 0;
         String experimentBaseDirectory = args[i++];
         String algorithm = args[i++];
         String problem = args[i++];
@@ -145,8 +139,6 @@ public class MaFRunner<S extends Solution<?>, Result> extends ExecuteAlgorithms<
                 throw new JMetalException("There is no configurations for " + problem + " problem");
         }
 
-        JMetalLogger.logger.log(Level.INFO, "Number of variables: {0}", d);
-
         int generations = Math.max(100000, 10000 * d) / popSize;
 
         algorithms.add(
@@ -171,7 +163,6 @@ public class MaFRunner<S extends Solution<?>, Result> extends ExecuteAlgorithms<
 
     @Override
     public void run() {
-        JMetalLogger.logger.info("ExecuteAlgorithms: Preparing output directory");
         super.prepareOutputDirectory();
         Experiment<S, Result> experiment = getExperiment();
         experiment.getAlgorithmList().get(0).runAlgorithm(this.id, experiment);
