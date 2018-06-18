@@ -16,6 +16,8 @@
  */
 package br.ufpr.inf.cbio.hhdea.hyperheuristic.selection;
 
+import java.util.logging.Level;
+import org.uma.jmetal.util.JMetalLogger;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
 /**
@@ -67,6 +69,7 @@ public class CastroRoulette<T> extends SelectionFunction<T> {
 
     @Override
     public void creditAssignment(double reward) {
+        JMetalLogger.logger.log(Level.INFO, "\t{0}\tat:\t{1}\treward:\t{2}", new Object[]{lowlevelheuristics.get(s).toString(), s, reward});
         if (reward >= 0.0) {
             probabilities[s] += increment;
             double dsize = (double) size;
