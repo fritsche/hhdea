@@ -23,6 +23,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import org.uma.jmetal.qualityindicator.impl.Hypervolume;
+import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
 /**
  * Class for executing quality indicators from the command line. An optional
@@ -42,6 +43,7 @@ public class CommandLineIndicatorRunner {
 
         checkArguments(args);
         normalize = checkAboutNormalization(args);
+        setseed(args);
         calculateAndPrintIndicators(args, normalize);
     }
 
@@ -51,7 +53,7 @@ public class CommandLineIndicatorRunner {
      * @param args
      */
     private static void checkArguments(String[] args) {
-        if ((args.length != 3) && (args.length != 4)) {
+        if ((args.length < 3) || (args.length > 5)) {
             printOptions();
             throw new JMetalException("Incorrect arguments");
         }
@@ -65,7 +67,7 @@ public class CommandLineIndicatorRunner {
      */
     private static boolean checkAboutNormalization(String args[]) {
         boolean normalize = false;
-        if (args.length == 4) {
+        if (args.length >= 4) {
             if (args[3].equals("TRUE")) {
                 normalize = true;
             } else if (args[3].equals("FALSE")) {
@@ -83,7 +85,7 @@ public class CommandLineIndicatorRunner {
      */
     private static void printOptions() {
         JMetalLogger.logger.info("Usage: mvn -pl jmetal-exec exec:java -Dexec:mainClass=\"org.uma.jmetal.qualityIndicator.RunIndicator\""
-                + "-Dexec.args=\"indicatorName referenceFront front [normalize]\" \n\n"
+                + "-Dexec.args=\"indicatorName referenceFront front [normalize] [seed]\" \n\n"
                 + "Where indicatorValue can be one of these:\n" + "GD   - Generational distance\n"
                 + "IGD  - Inverted generational distance\n" + "IGD  - Inverted generational distance\n"
                 + "IGD+ - Inverted generational distance plus \n" + "HV   - Hypervolume \n" + "HVA   - Hypervolume Approximation \n"
@@ -154,7 +156,7 @@ public class CommandLineIndicatorRunner {
             hv = new PISAHypervolume<>(referenceFront);
             hv.setOffset(0.1);
         }
-        
+
         List<QualityIndicator<List<PointSolution>, Double>> list = new ArrayList<>();
         list.add(new Epsilon<>(referenceFront));
         list.add(hv);
@@ -192,4 +194,12 @@ public class CommandLineIndicatorRunner {
 
         return result;
     }
+
+    private static void setseed(String args[]) {
+        if (args.length >= 5) {
+            int seed = Integer.parseInt(args[4]);
+            JMetalRandom.getInstance().setSeed(seed);
+        }
+    }
+
 }
