@@ -70,12 +70,10 @@ public class CastroRoulette<T> extends SelectionFunction<T> {
     @Override
     public void creditAssignment(double reward) {
 
-        JMetalLogger.logger.log(Level.INFO, "REWARDOF:\t{0}\t{1}",
-                new Object[]{lowlevelheuristics.get(s).getClass().getSimpleName(), reward});
+        System.out.println("REWARDOF:\t" + lowlevelheuristics.get(s).getClass().getSimpleName() + "\t" + reward);
 
         for (int i = 0; i < size; i++) {
-            JMetalLogger.logger.log(Level.INFO, "PROBABILITY:\t{0}\t{1}",
-                    new Object[]{lowlevelheuristics.get(i).getClass().getSimpleName(), probabilities[i]});
+            System.out.println("PROBABILITY:\t" + lowlevelheuristics.get(i).getClass().getSimpleName() + "\t" + probabilities[i]);
         }
 
         if (reward >= 0.0) {
