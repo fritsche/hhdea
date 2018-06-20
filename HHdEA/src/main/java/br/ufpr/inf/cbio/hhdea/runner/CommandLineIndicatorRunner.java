@@ -22,6 +22,7 @@ import org.uma.jmetal.util.point.util.PointSolution;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import org.uma.jmetal.qualityindicator.impl.Hypervolume;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
@@ -197,7 +198,8 @@ public class CommandLineIndicatorRunner {
 
     private static void setseed(String args[]) {
         if (args.length >= 5) {
-            int seed = Integer.parseInt(args[4]);
+            int seed = Integer.parseInt(args[4]);        
+            JMetalLogger.logger.log(Level.INFO, "SEED: {0}", seed);
             JMetalRandom.getInstance().setSeed(seed);
         }
     }

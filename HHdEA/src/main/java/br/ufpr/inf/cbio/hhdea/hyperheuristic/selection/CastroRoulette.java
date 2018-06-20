@@ -78,7 +78,7 @@ public class CastroRoulette<T> extends SelectionFunction<T> {
                     new Object[]{lowlevelheuristics.get(i).getClass().getSimpleName(), probabilities[i]});
         }
 
-        if (reward > 0.0) {
+        if (reward >= 0.0) {
             probabilities[s] += increment;
             double dsize = (double) size;
             for (int i = 0; i < size; i++) {

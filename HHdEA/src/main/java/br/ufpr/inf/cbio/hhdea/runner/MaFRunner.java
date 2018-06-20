@@ -20,9 +20,11 @@ import br.ufpr.inf.cbio.hhdea.config.AlgorithmConfigurationFactory;
 import br.ufpr.inf.cbio.hhdea.problem.MaF.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import org.uma.jmetal.solution.DoubleSolution;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.JMetalException;
+import org.uma.jmetal.util.JMetalLogger;
 import org.uma.jmetal.util.experiment.Experiment;
 import org.uma.jmetal.util.experiment.ExperimentBuilder;
 import org.uma.jmetal.util.experiment.util.ExperimentAlgorithm;
@@ -54,6 +56,7 @@ public class MaFRunner<S extends Solution<?>, Result> extends ExecuteAlgorithms<
         int seed = Integer.parseInt(args[i++]);
         int popSize = getPopSize(m);
 
+        JMetalLogger.logger.log(Level.INFO, "SEED: {0}", seed);
         JMetalRandom.getInstance().setSeed(seed);
 
         List<ExperimentAlgorithm<DoubleSolution, List<DoubleSolution>>> algorithms = new ArrayList<>();
