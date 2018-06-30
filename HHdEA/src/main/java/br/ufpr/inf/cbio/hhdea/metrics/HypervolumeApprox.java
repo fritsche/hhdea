@@ -72,6 +72,7 @@ public class HypervolumeApprox<S extends Solution<?>> extends Hypervolume<S> {
             int countDominated = 0;
             double[] generated = new double[numberOfObjectives];
             double totalVolume = Math.pow(offset, numberOfObjectives);
+            System.out.println();
             for (int i = 0; i < sampleSize; i++) {
                 for (int j = 0; j < numberOfObjectives; j++) {
                     generated[j] = JMetalRandom.getInstance().nextDouble(0, offset);
@@ -89,8 +90,10 @@ public class HypervolumeApprox<S extends Solution<?>> extends Hypervolume<S> {
                         countDominated++;
                         break;
                     }
+                    System.out.print("\rApproximated Hipervolume: "+((i*sampleSize)+k)/(sampleSize*front.getNumberOfPoints())*100+"%");
                 }
             }
+            System.out.println();
             hv = (double) countDominated / (double) sampleSize * totalVolume;
         }
         return hv;
