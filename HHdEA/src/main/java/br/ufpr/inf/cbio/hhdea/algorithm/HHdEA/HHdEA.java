@@ -92,7 +92,7 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
             for (CooperativeAlgorithm<S> neighbor : algorithms) {
                 if (neighbor != alg) {
                     List<S> migrants = new ArrayList<>();
-                    for (S s : alg.getPopulation()) {
+                    for (S s : offspring) {
                         migrants.add((S) s.copy());
                     }
                     neighbor.receive(migrants);
