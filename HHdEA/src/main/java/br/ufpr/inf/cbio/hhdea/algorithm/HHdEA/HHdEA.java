@@ -107,7 +107,12 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
         for (CooperativeAlgorithm alg : algorithms) {
             union.addAll(alg.getPopulation());
         }
-        return MOEADUtils.getSubsetOfEvenlyDistributedSolutions(SolutionListUtils.getNondominatedSolutions(union), 240);
+
+        if (problem.getName().startsWith("MaF")) {
+            return MOEADUtils.getSubsetOfEvenlyDistributedSolutions(SolutionListUtils.getNondominatedSolutions(union), 240);
+        } else {
+            return SolutionListUtils.getNondominatedSolutions(union);
+        }
     }
 
     @Override
