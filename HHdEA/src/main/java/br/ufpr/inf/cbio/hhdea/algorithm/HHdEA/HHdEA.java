@@ -16,7 +16,7 @@
  */
 package br.ufpr.inf.cbio.hhdea.algorithm.HHdEA;
 
-import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.CastroRoulette;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.FRRMAB;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.SelectionFunction;
 import br.ufpr.inf.cbio.hhdea.metrics.MetricsEvaluator;
 import java.util.ArrayList;
@@ -52,7 +52,7 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
     @Override
     public void run() {
 
-        SelectionFunction<CooperativeAlgorithm> selection = new CastroRoulette<>();
+        SelectionFunction<CooperativeAlgorithm> selection = new FRRMAB<>();
         for (CooperativeAlgorithm alg : algorithms) {
             alg.init(populationSize);
             selection.add(alg);
