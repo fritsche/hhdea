@@ -115,6 +115,12 @@ public class FRRMAB<T> extends SelectionFunction<T> {
     @Override
     public void creditAssignment(double reward) {
 
+        System.out.println("REWARDOF:\t" + lowlevelheuristics.get(s).getClass().getSimpleName() + "\t" + reward);
+
+        for (int i = 0; i < lowlevelheuristics.size(); i++) {
+            System.out.println("UCB:\t" + lowlevelheuristics.get(i).getClass().getSimpleName() + "\t" + UCB[i]);
+        }
+
         refresment();
 
         slidingWindow.add(s, Math.max(0, reward)); // Update the sliding window
