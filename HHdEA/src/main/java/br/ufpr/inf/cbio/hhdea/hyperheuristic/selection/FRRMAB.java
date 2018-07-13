@@ -119,6 +119,8 @@ public class FRRMAB<T> extends SelectionFunction<T> {
 
         for (int i = 0; i < lowlevelheuristics.size(); i++) {
             System.out.println("UCB:\t" + lowlevelheuristics.get(i).getClass().getSimpleName() + "\t" + UCB[i]);
+            System.out.println("REWARD:\t" + lowlevelheuristics.get(i).getClass().getSimpleName() + "\t" + this.reward[i]);
+            System.out.println("USAGE:\t" + lowlevelheuristics.get(i).getClass().getSimpleName() + "\t" + usage[i]);
         }
 
         refresment();
