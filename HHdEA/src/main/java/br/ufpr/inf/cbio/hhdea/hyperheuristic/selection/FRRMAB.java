@@ -39,8 +39,8 @@ public class FRRMAB<T> extends SelectionFunction<T> {
     protected int s; // the last index sent low level heuristic
 
     public FRRMAB() {
-        this.c = 1.0;
-        this.w = 100;
+        this.c = 5.0;
+        this.w = 50;
         this.random = JMetalRandom.getInstance();
     }
 
