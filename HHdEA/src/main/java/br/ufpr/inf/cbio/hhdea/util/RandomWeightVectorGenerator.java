@@ -46,6 +46,7 @@ public class RandomWeightVectorGenerator {
      *
      * @param m number of objectives
      * @param n number of points to generate
+     * @param N number of generated random points
      */
     public void generate(int m, int n, int N) {
         List<DefaultDoubleSolution> points = new ArrayList<>(N); // list of points
@@ -73,21 +74,49 @@ public class RandomWeightVectorGenerator {
 
     }
 
+    public void generate(int n) {
+        List<DefaultDoubleSolution> points = new ArrayList<>(n); // list of points
+        DefaultDoubleSolution aux = new DefaultDoubleSolution(new DTLZ1(0, 2)); // empty solution
+        double inc = 1.0 / (n - 1.0);
+        double v = inc;
+
+        // generate extreme points
+        for (int i = 0; i < 2; i++) {
+            points.add(new DefaultDoubleSolution(aux));
+            points.get(i).setObjective(i, 1);
+        }
+
+        // generate evenly distributed points
+        for (int i = 2; i < n; i++, v += inc) {
+            points.add(new DefaultDoubleSolution(aux));
+            points.get(i).setObjective(0, v);
+            points.get(i).setObjective(1, 1.0 - v);
+        }
+
+        printPoints(points, n, 2);
+
+    }
+
     public static void main(String[] args) {
 
         if (args.length != 4) {
             throw new JMetalException("Wrong number of arguments: seed number_of_objectives number_of_output_points number_of_random_points");
         }
 
-        int i=0;
+        int i = 0;
         int seed = Integer.parseInt(args[i++]);
         JMetalRandom.getInstance().setSeed(seed);
-        
+
         int m = Integer.parseInt(args[i++]); // number of objectives
         int n = Integer.parseInt(args[i++]); // number of output points
         int N = Integer.parseInt(args[i++]); // number of random points
-        
+
         RandomWeightVectorGenerator generator = new RandomWeightVectorGenerator();
-        generator.generate(m, n, N);
+
+        if (m == 2) {
+            generator.generate(n);
+        } else {
+            generator.generate(m, n, N);
+        }
     }
 }
