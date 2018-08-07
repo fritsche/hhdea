@@ -17,10 +17,13 @@
 package br.ufpr.inf.cbio.hhdea.util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.uma.jmetal.algorithm.multiobjective.moead.util.MOEADUtils;
 import org.uma.jmetal.problem.multiobjective.dtlz.DTLZ1;
 import org.uma.jmetal.solution.impl.DefaultDoubleSolution;
+import org.uma.jmetal.util.JMetalException;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
 /**
@@ -29,7 +32,7 @@ import org.uma.jmetal.util.pseudorandom.JMetalRandom;
  */
 public class RandomWeightVectorGenerator {
 
-    public void printPoints(ArrayList<DefaultDoubleSolution> points, int n, int m) {
+    public void printPoints(List<DefaultDoubleSolution> points, int n, int m) {
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < m; j++) {
                 System.out.print("\t" + points.get(i).getObjective(j));
@@ -44,8 +47,7 @@ public class RandomWeightVectorGenerator {
      * @param m number of objectives
      * @param n number of points to generate
      */
-    public void generate(int m, int n) {
-        int N = m * n; // number of random points
+    public void generate(int m, int n, int N) {
         List<DefaultDoubleSolution> points = new ArrayList<>(N); // list of points
         JMetalRandom rand = JMetalRandom.getInstance(); // random generator
         DefaultDoubleSolution aux = new DefaultDoubleSolution(new DTLZ1(0, m)); // empty solution
@@ -66,15 +68,26 @@ public class RandomWeightVectorGenerator {
             }
             points.get(i).setObjective(0, 1 - sum);
         }
-        
-        printPoints(MOEADUtils.getSubsetOfEvenlyDistributedSolutions(points, n), N, m);
+
+        printPoints(MOEADUtils.getSubsetOfEvenlyDistributedSolutions(points, n), n, m);
 
     }
 
     public static void main(String[] args) {
-        int seed = 6354987;
+
+        if (args.length != 4) {
+            throw new JMetalException("Wrong number of arguments: seed number_of_objectives number_of_output_points number_of_random_points");
+        }
+
+        int i=0;
+        int seed = Integer.parseInt(args[i++]);
         JMetalRandom.getInstance().setSeed(seed);
+        
+        int m = Integer.parseInt(args[i++]); // number of objectives
+        int n = Integer.parseInt(args[i++]); // number of output points
+        int N = Integer.parseInt(args[i++]); // number of random points
+        
         RandomWeightVectorGenerator generator = new RandomWeightVectorGenerator();
-        generator.generate(3, 20);
+        generator.generate(m, n, N);
     }
 }
