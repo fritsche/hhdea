@@ -27,7 +27,7 @@ import br.ufpr.inf.cbio.hhdea.algorithm.ThetaDEA.ThetaDEAConfiguration;
 
 /**
  *
- * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
+ * @author Gian Fritsche <gmfritsche at inf.ufpr.br>
  */
 public class AlgorithmConfigurationFactory {
 

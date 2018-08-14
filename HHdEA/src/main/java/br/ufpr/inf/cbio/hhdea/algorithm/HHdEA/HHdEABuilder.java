@@ -24,7 +24,7 @@ import org.uma.jmetal.util.AlgorithmBuilder;
 
 /**
  *
- * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
+ * @author Gian Fritsche <gmfritsche at inf.ufpr.br>
  * @param <S>
  */
 public class HHdEABuilder<S extends Solution<?>> implements AlgorithmBuilder<HHdEA<S>> {

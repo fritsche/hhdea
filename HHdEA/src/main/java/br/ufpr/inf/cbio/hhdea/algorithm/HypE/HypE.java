@@ -27,10 +27,12 @@ import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.SolutionListUtils;
 import org.uma.jmetal.util.solutionattribute.Ranking;
 import org.uma.jmetal.util.solutionattribute.impl.DominanceRanking;
+import org.uma.jmetal.util.solutionattribute.impl.Fitness;
 
 /**
+ * Based on the source received from Lei Cai <caileid at gmail.com>
  *
- * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
+ * @author Gian Fritsche <gmfritsche at inf.ufpr.br>
  * @param <S>
  */
 public class HypE<S extends Solution> implements Algorithm<List<S>> {
@@ -47,6 +49,7 @@ public class HypE<S extends Solution> implements Algorithm<List<S>> {
     private MutationOperator<S> mutationOperator;
     private SelectionOperator<List<S>, S> selectionOperator;
     protected final Problem<S> problem;
+    private final Fitness fitness = new Fitness();
 
     public HypE(HypEBuilder<S> builder) {
         problem = builder.getProblem();
@@ -114,7 +117,7 @@ public class HypE<S extends Solution> implements Algorithm<List<S>> {
 
                 for (int k = 0; k < front.size(); k++) {
                     population.add(front.get(k));
-                } 
+                }
                 // Decrement remain
                 remain = remain - front.size();
                 // Obtain the next front
@@ -130,8 +133,8 @@ public class HypE<S extends Solution> implements Algorithm<List<S>> {
                     int loc = -1;
                     double min = Double.MAX_VALUE;
                     for (int u = 0; u < front.size(); u++) {
-                        if (front.get(u).getFitness() < min) {
-                            min = front.get(u).getFitness();
+                        if ((Double) fitness.getAttribute(front.get(u)) < min) {
+                            min = (Double) fitness.getAttribute(front.get(u));
                             loc = u;
                         }
                     }
