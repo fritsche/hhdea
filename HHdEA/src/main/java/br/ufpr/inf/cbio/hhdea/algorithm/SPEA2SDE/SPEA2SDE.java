@@ -28,8 +28,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Based on the source received from Lei Cai <caileid at gmail.com>
  *
- * @author Gian Fritsche <gian.fritsche at gmail.com>
+ * @author Gian Fritsche <gmfritsche at inf.ufpr.br>
  * @param <S>
  */
 public class SPEA2SDE<S extends Solution<?>> extends AbstractGeneticAlgorithm<S, List<S>> {

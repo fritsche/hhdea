@@ -35,8 +35,10 @@ import org.uma.jmetal.util.solutionattribute.Ranking;
 import org.uma.jmetal.util.solutionattribute.impl.DominanceRanking;
 
 /**
+ * Based on the source distributed by Ke Li
+ * (http://www.cs.bham.ac.uk/~likw/code/MOEADD.zip) <k.li at exeter.ac.uk>
  *
- * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
+ * @author Gian Fritsche <gmfritsche at inf.ufpr.br>
  * @param <S>
  */
 public class MOEADD<S extends Solution<?>> implements Algorithm<List<S>> {

@@ -35,8 +35,10 @@ import org.uma.jmetal.util.solutionattribute.Ranking;
 import org.uma.jmetal.util.solutionattribute.impl.DominanceRanking;
 
 /**
+ * Based on the source distributed by Yuan Yuan
+ * (https://github.com/yyxhdy/ManyEAs) <yyxhdy at gmail.com>
  *
- * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
+ * @author Gian Fritsche <gmfritsche at inf.ufpr.br>
  * @param <S>
  */
 public class NSGAIII<S extends Solution> implements Algorithm<List<S>> {
