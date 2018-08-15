@@ -48,14 +48,11 @@ public class SPEA2SDE<S extends Solution<?>> extends AbstractGeneticAlgorithm<S,
         super(problem);
         this.maxIterations = maxIterations;
         this.setMaxPopulationSize(populationSize);
-
         this.crossoverOperator = crossoverOperator;
         this.mutationOperator = mutationOperator;
         this.selectionOperator = selectionOperator;
         this.environmentalSelection = new EnvironmentalSelectionSDE<>(populationSize);
-
         this.archive = new ArrayList<>(populationSize);
-
         this.evaluator = evaluator;
     }
 
@@ -122,11 +119,11 @@ public class SPEA2SDE<S extends Solution<?>> extends AbstractGeneticAlgorithm<S,
 
     @Override
     public String getName() {
-        return "SPEA2";
+        return "SPEA2SDE";
     }
 
     @Override
     public String getDescription() {
-        return "Strength Pareto. Evolutionary Algorithm";
+        return "Shift-Based Density Estimation for SPEA2";
     }
 }
