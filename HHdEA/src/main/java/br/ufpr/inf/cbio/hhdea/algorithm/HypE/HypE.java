@@ -16,7 +16,6 @@
  */
 package br.ufpr.inf.cbio.hhdea.algorithm.HypE;
 
-import br.ufpr.inf.cbio.hhdea.util.Nadir;
 import java.util.ArrayList;
 import java.util.List;
 import org.uma.jmetal.algorithm.Algorithm;
@@ -64,29 +63,26 @@ public class HypE<S extends Solution> implements Algorithm<List<S>> {
     @Override
     public void run() {
         population = new ArrayList<>(populationSize);
-        S reference = (S) (new Nadir(problem)).getReference();
+        S reference = problem.createSolution();
         evaluations = 0;
         HypEFitnessAssignment fs = new HypEFitnessAssignment();
-        double max = Double.MIN_VALUE, mini = Double.MAX_VALUE;
         for (int i = 0; i < populationSize; i++) {
             S newSolution = problem.createSolution();
             problem.evaluate(newSolution);
             for (int j = 0; j < problem.getNumberOfObjectives(); j++) {
-                if (newSolution.getObjective(j) > max) {
-                    max = newSolution.getObjective(j);
-                }
-                if (newSolution.getObjective(j) < mini) {
-                    mini = newSolution.getObjective(j);
+                if (newSolution.getObjective(j) > reference.getObjective(j)) {
+                    reference.setObjective(j, newSolution.getObjective(j));
                 }
             }
             evaluations++;
             population.add(newSolution);
         }
-
-        System.out.println(max + "  " + mini);
+        for (int j = 0; j < problem.getNumberOfObjectives(); j++) {
+            reference.setObjective(j, reference.getObjective(j) * 1.2);
+        }
 
         while (evaluations < maxEvaluations) {
-
+            
             offspringPopulation = new ArrayList<>(populationSize);
 
             fs.setHypEFitness(population, reference, populationSize, samples);
