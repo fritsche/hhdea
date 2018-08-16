@@ -16,6 +16,7 @@
  */
 package br.ufpr.inf.cbio.hhdea.algorithm.HypE;
 
+import br.ufpr.inf.cbio.hhdea.util.Nadir;
 import java.util.ArrayList;
 import java.util.List;
 import org.uma.jmetal.algorithm.Algorithm;
@@ -39,7 +40,6 @@ public class HypE<S extends Solution> implements Algorithm<List<S>> {
 
     private int populationSize;
     private int maxEvaluations;
-    private int bounds;
     private int samples;
     private int evaluations;
     private List<S> population;
@@ -55,7 +55,6 @@ public class HypE<S extends Solution> implements Algorithm<List<S>> {
         problem = builder.getProblem();
         populationSize = builder.getPopulationSize();
         maxEvaluations = builder.getMaxEvaluations();
-        bounds = builder.getBounds();
         samples = builder.getSamples();
         crossoverOperator = builder.getCrossoverOperator();
         mutationOperator = builder.getMutationOperator();
@@ -65,18 +64,26 @@ public class HypE<S extends Solution> implements Algorithm<List<S>> {
     @Override
     public void run() {
         population = new ArrayList<>(populationSize);
-        S reference = problem.createSolution();
-        for (int i = 0; i < reference.getNumberOfObjectives(); i++) {
-            reference.setObjective(i, bounds);
-        }
+        S reference = (S) (new Nadir(problem)).getReference();
         evaluations = 0;
         HypEFitnessAssignment fs = new HypEFitnessAssignment();
+        double max = Double.MIN_VALUE, mini = Double.MAX_VALUE;
         for (int i = 0; i < populationSize; i++) {
             S newSolution = problem.createSolution();
             problem.evaluate(newSolution);
+            for (int j = 0; j < problem.getNumberOfObjectives(); j++) {
+                if (newSolution.getObjective(j) > max) {
+                    max = newSolution.getObjective(j);
+                }
+                if (newSolution.getObjective(j) < mini) {
+                    mini = newSolution.getObjective(j);
+                }
+            }
             evaluations++;
             population.add(newSolution);
         }
+
+        System.out.println(max + "  " + mini);
 
         while (evaluations < maxEvaluations) {
 

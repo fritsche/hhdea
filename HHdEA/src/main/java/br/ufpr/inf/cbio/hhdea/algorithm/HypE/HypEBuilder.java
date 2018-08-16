@@ -35,7 +35,6 @@ public class HypEBuilder<S extends Solution> implements AlgorithmBuilder<HypE<S>
     private final Problem<S> problem;
     private int populationSize;
     private int maxEvaluations;
-    private int bounds;
     private int samples;
     private CrossoverOperator<S> crossoverOperator;
     private MutationOperator<S> mutationOperator;
@@ -65,15 +64,6 @@ public class HypEBuilder<S extends Solution> implements AlgorithmBuilder<HypE<S>
 
     public HypEBuilder setMaxEvaluations(int maxEvaluations) {
         this.maxEvaluations = maxEvaluations;
-        return this;
-    }
-
-    public int getBounds() {
-        return bounds;
-    }
-
-    public HypEBuilder setBounds(int bounds) {
-        this.bounds = bounds;
         return this;
     }
 
@@ -116,5 +106,5 @@ public class HypEBuilder<S extends Solution> implements AlgorithmBuilder<HypE<S>
     public Problem<S> getProblem() {
         return problem;
     }
-    
+
 }

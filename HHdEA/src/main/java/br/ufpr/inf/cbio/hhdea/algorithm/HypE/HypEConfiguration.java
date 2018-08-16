@@ -36,7 +36,6 @@ import org.uma.jmetal.util.comparator.FitnessComparator;
 public class HypEConfiguration<S extends Solution> implements AlgorithmConfiguration<HypE<?>> {
 
     private Problem<S> problem;
-    private int bounds;
     private int samples;
     private CrossoverOperator crossoverOperator;
     private MutationOperator mutationOperator;
@@ -46,14 +45,13 @@ public class HypEConfiguration<S extends Solution> implements AlgorithmConfigura
     public HypE<?> configure(Problem problem, int popSize, int generations) {
         this.problem = problem;
         setup();
-        return new HypEBuilder<>(problem).setBounds(bounds).setCrossoverOperator(crossoverOperator)
+        return new HypEBuilder<>(problem).setCrossoverOperator(crossoverOperator)
                 .setMaxEvaluations(popSize * generations).setMutationOperator(mutationOperator).setPopulationSize(popSize)
                 .setSamples(samples).setSelectionOperator(selectionOperator).build();
     }
 
     @Override
     public void setup() {
-        this.bounds = 200;
         this.samples = 10000;
         double crossoverProbability = 1.0;
         double crossoverDistributionIndex = 20.0;
