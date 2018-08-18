@@ -82,7 +82,7 @@ public class HypE<S extends Solution> implements Algorithm<List<S>> {
         }
 
         while (evaluations < maxEvaluations) {
-            
+
             offspringPopulation = new ArrayList<>(populationSize);
 
             fs.setHypEFitness(population, reference, populationSize, samples);
@@ -92,13 +92,13 @@ public class HypE<S extends Solution> implements Algorithm<List<S>> {
                     parents.add(selectionOperator.execute(population));
                     parents.add(selectionOperator.execute(population));
                     List<S> offSpring = crossoverOperator.execute(parents);
-                    mutationOperator.execute(offSpring.get(0));
                     mutationOperator.execute(offSpring.get(1));
+                    mutationOperator.execute(offSpring.get(0));
                     problem.evaluate(offSpring.get(0));
                     problem.evaluate(offSpring.get(1));
                     evaluations += 2;
-                    offspringPopulation.add(offSpring.get(0));
                     offspringPopulation.add(offSpring.get(1));
+                    offspringPopulation.add(offSpring.get(0));
                 }
             }
             union = new ArrayList<>();
