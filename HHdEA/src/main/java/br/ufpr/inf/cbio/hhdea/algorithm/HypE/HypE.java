@@ -85,15 +85,33 @@ public class HypE<S extends Solution> implements Algorithm<List<S>> {
 
             offspringPopulation = new ArrayList<>(populationSize);
 
+            if (evaluations / populationSize == 5) {
+                System.out.println("break;");
+            }
+
             fs.setHypEFitness(population, reference, populationSize, samples);
             for (int i = 0; i < (populationSize / 2); i++) {
                 if (evaluations < maxEvaluations) {
                     List<S> parents = new ArrayList<>();
+
                     parents.add(selectionOperator.execute(population));
                     parents.add(selectionOperator.execute(population));
+
+//                    System.out.println("Selection:");
+//                    System.out.println("eval: " + evaluations / populationSize);
+//                    print(parents.get(0));
+//                    print(parents.get(1));
                     List<S> offSpring = crossoverOperator.execute(parents);
-                    mutationOperator.execute(offSpring.get(1));
+
+//                    System.out.println("Crossover:");
+//                    print(offSpring.get(0));
+//                    print(offSpring.get(1));
                     mutationOperator.execute(offSpring.get(0));
+                    mutationOperator.execute(offSpring.get(1));
+
+//                    System.out.println("Mutation:");
+//                    print(offSpring.get(0));
+//                    print(offSpring.get(1));
                     problem.evaluate(offSpring.get(0));
                     problem.evaluate(offSpring.get(1));
                     evaluations += 2;
@@ -149,6 +167,10 @@ public class HypE<S extends Solution> implements Algorithm<List<S>> {
                 }
             }
         }
+
+//        population.forEach((s) -> {
+//            print(s);
+//        });
     }
 
     @Override
@@ -164,6 +186,17 @@ public class HypE<S extends Solution> implements Algorithm<List<S>> {
     @Override
     public String getDescription() {
         return "An Algorithm for Fast Hypervolume-Based Many-Objective Optimization";
+    }
+
+    public void print(S s) {
+        for (int i = 0; i < s.getNumberOfVariables(); i++) {
+            System.out.print(s.getVariableValue(i) + " ");
+        }
+        System.out.println();
+        for (int i = 0; i < s.getNumberOfObjectives(); i++) {
+            System.out.print(s.getObjective(i) + " ");
+        }
+        System.out.println("\n" + s.getAttribute(fitness.getAttributeIdentifier()));
     }
 
 }
