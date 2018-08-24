@@ -16,13 +16,13 @@
  */
 package br.ufpr.inf.cbio.hhdea.algorithm.HypE;
 
-import br.ufpr.inf.cbio.hhdea.algorithm.operators.SBXCrossover;
 import br.ufpr.inf.cbio.hhdea.config.AlgorithmConfiguration;
 import br.ufpr.inf.cbio.hhdea.util.MaxFitnessComparator;
 import java.util.List;
 import org.uma.jmetal.operator.CrossoverOperator;
 import org.uma.jmetal.operator.MutationOperator;
 import org.uma.jmetal.operator.SelectionOperator;
+import org.uma.jmetal.operator.impl.crossover.SBXCrossover;
 import org.uma.jmetal.operator.impl.mutation.PolynomialMutation;
 import org.uma.jmetal.operator.impl.selection.BinaryTournamentSelection;
 import org.uma.jmetal.problem.Problem;
