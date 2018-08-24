@@ -35,11 +35,11 @@ import org.uma.jmetal.solution.Solution;
  */
 public class HypEConfiguration<S extends Solution> implements AlgorithmConfiguration<HypE<?>> {
 
-    private Problem<S> problem;
-    private int samples;
-    private CrossoverOperator crossoverOperator;
-    private MutationOperator mutationOperator;
-    private SelectionOperator<List<S>, S> selectionOperator;
+    Problem<S> problem;
+    int samples;
+    CrossoverOperator crossoverOperator;
+    MutationOperator mutationOperator;
+    SelectionOperator<List<S>, S> selectionOperator;
 
     @Override
     public HypE<?> configure(Problem problem, int popSize, int generations) {
