@@ -38,8 +38,10 @@ import org.uma.jmetal.util.JMetalException;
 import org.uma.jmetal.util.SolutionListUtils;
 
 /**
+ * Based on the source distributed by Yuan Yuan
+ * (https://github.com/yyxhdy/ManyEAs) <yyxhdy at gmail.com>
  *
- * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
+ * @author Gian Fritsche <gmfritsche at inf.ufpr.br>
  * @param <S>
  */
 public class ThetaDEA<S extends Solution> implements Algorithm<List<S>> {
