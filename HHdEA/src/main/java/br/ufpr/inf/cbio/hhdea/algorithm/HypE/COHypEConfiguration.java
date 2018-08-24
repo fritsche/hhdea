@@ -25,13 +25,13 @@ import org.uma.jmetal.problem.Problem;
 public class COHypEConfiguration extends HypEConfiguration {
 
     @Override
-    public HypE configure(Problem problem, int popSize, int generations) {
+    public COHypE configure(Problem problem, int popSize, int generations) {
 
         this.problem = problem;
 
         setup();
 
-        return (new COHypEBuilder(problem)).setCrossoverOperator(crossoverOperator).setMaxEvaluations(generations).setMutationOperator(mutationOperator).setPopulationSize(popSize).setSamples(samples).setSelectionOperator(selectionOperator).build();
+        return (COHypE) (new COHypEBuilder(problem)).setCrossoverOperator(crossoverOperator).setMaxEvaluations(generations).setMutationOperator(mutationOperator).setPopulationSize(popSize).setSamples(samples).setSelectionOperator(selectionOperator).build();
     }
 
 }
