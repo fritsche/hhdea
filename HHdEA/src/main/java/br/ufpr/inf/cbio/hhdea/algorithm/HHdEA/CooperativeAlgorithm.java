@@ -29,6 +29,7 @@ public interface CooperativeAlgorithm<S extends Solution<?>> {
     public void init(int populationSize);
     public void doIteration();
     public List<S> getPopulation();
+    public List<S> getOffspring();
     public void receive(List<S> solutions);
 
 }

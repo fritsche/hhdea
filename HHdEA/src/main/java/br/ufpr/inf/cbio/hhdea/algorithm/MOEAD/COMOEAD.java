@@ -17,6 +17,7 @@
 package br.ufpr.inf.cbio.hhdea.algorithm.MOEAD;
 
 import br.ufpr.inf.cbio.hhdea.algorithm.HHdEA.CooperativeAlgorithm;
+import java.util.ArrayList;
 import java.util.List;
 import org.uma.jmetal.algorithm.multiobjective.moead.MOEAD;
 import org.uma.jmetal.algorithm.multiobjective.moead.util.MOEADUtils;
@@ -34,8 +35,11 @@ import org.uma.jmetal.util.pseudorandom.JMetalRandom;
  */
 public class COMOEAD<S extends Solution<?>> extends MOEAD implements CooperativeAlgorithm<S> {
 
+    private List<S> offspring;
+
     public COMOEAD(Problem<DoubleSolution> problem, int populationSize, int resultPopulationSize, int maxEvaluations, MutationOperator<DoubleSolution> mutation, CrossoverOperator<DoubleSolution> crossover, FunctionType functionType, String dataDirectory, double neighborhoodSelectionProbability, int maximumNumberOfReplacedSolutions, int neighborSize) {
         super(problem, populationSize, resultPopulationSize, maxEvaluations, mutation, crossover, functionType, dataDirectory, neighborhoodSelectionProbability, maximumNumberOfReplacedSolutions, neighborSize);
+        offspring = new ArrayList<>(populationSize);
     }
 
     @Override
@@ -48,6 +52,10 @@ public class COMOEAD<S extends Solution<?>> extends MOEAD implements Cooperative
 
     @Override
     public void doIteration() {
+
+        // all solutions generated in this iteration
+        offspring.clear();
+
         int[] permutation = new int[populationSize];
         MOEADUtils.randomPermutation(permutation, populationSize);
 
@@ -63,6 +71,7 @@ public class COMOEAD<S extends Solution<?>> extends MOEAD implements Cooperative
             DoubleSolution child = children.get(0);
             mutationOperator.execute(child);
             problem.evaluate(child);
+            offspring.add((S) child);
 
             updateIdealPoint(child);
             updateNeighborhood(child, subProblemId, neighborType);
@@ -83,5 +92,10 @@ public class COMOEAD<S extends Solution<?>> extends MOEAD implements Cooperative
             updateNeighborhood((DoubleSolution) s, subProblemId, neighborType);
         }
 
+    }
+
+    @Override
+    public List<S> getOffspring() {
+        return offspring;
     }
 }

@@ -34,6 +34,8 @@ import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
  */
 public class CONSGAII<S extends Solution<?>> extends NSGAII implements CooperativeAlgorithm<S> {
 
+    public List<S> offspringPopulation;
+
     public CONSGAII(Problem problem, int maxEvaluations, int populationSize, CrossoverOperator crossoverOperator, MutationOperator mutationOperator, SelectionOperator selectionOperator, Comparator dominanceComparator, SolutionListEvaluator evaluator) {
         super(problem, maxEvaluations, populationSize, crossoverOperator, mutationOperator, selectionOperator, dominanceComparator, evaluator);
     }
@@ -47,7 +49,6 @@ public class CONSGAII<S extends Solution<?>> extends NSGAII implements Cooperati
 
     @Override
     public void doIteration() {
-        List<S> offspringPopulation;
         List<S> matingPopulation;
         matingPopulation = selection(population);
         offspringPopulation = reproduction(matingPopulation);
@@ -60,4 +61,8 @@ public class CONSGAII<S extends Solution<?>> extends NSGAII implements Cooperati
         population = replacement(population, solutions);
     }
 
+    @Override
+    public List<S> getOffspring() {
+        return offspringPopulation;
+    }
 }

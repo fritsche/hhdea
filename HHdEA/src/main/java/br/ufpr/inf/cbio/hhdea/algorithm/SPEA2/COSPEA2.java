@@ -35,6 +35,7 @@ import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
  */
 public class COSPEA2<S extends Solution<?>> extends SPEA2<S> implements CooperativeAlgorithm<S> {
 
+    public List<S> offspringPopulation;
     public EnvironmentalSelection<S> environmentalSelectionOverride;
 
     public COSPEA2(Problem problem, int maxIterations, int populationSize, CrossoverOperator crossoverOperator, MutationOperator mutationOperator, SelectionOperator selectionOperator, SolutionListEvaluator evaluator) {
@@ -61,7 +62,6 @@ public class COSPEA2<S extends Solution<?>> extends SPEA2<S> implements Cooperat
 
     @Override
     public void doIteration() {
-        List<S> offspringPopulation;
         List<S> matingPopulation;
         matingPopulation = selection(population);
         offspringPopulation = reproduction(matingPopulation);
@@ -72,5 +72,10 @@ public class COSPEA2<S extends Solution<?>> extends SPEA2<S> implements Cooperat
     @Override
     public void receive(List<S> solutions) {
         selection(solutions);
+    }
+
+    @Override
+    public List<S> getOffspring() {
+        return offspringPopulation;
     }
 }

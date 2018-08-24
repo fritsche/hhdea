@@ -120,4 +120,9 @@ public class CONSGAIII<S extends Solution<?>> extends NSGAIII<S> implements Coop
         environmentalSelection();
     }
 
+    @Override
+    public List<S> getOffspring() {
+        return offspringPopulation_;
+    }
+
 }

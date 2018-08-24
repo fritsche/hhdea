@@ -30,8 +30,11 @@ import org.uma.jmetal.util.solutionattribute.impl.DominanceRanking;
  */
 public class COMOEADD<S extends Solution<?>> extends MOEADD<S> implements CooperativeAlgorithm<S> {
 
+    private List<S> offspring;
+
     public COMOEADD(MOEADDBuilder builder) {
         super(builder);
+        offspring = new ArrayList<>(builder.getPopulationSize());
     }
 
     public void initPopulation(List<S> initialPop) {
@@ -86,6 +89,10 @@ public class COMOEADD<S extends Solution<?>> extends MOEADD<S> implements Cooper
 
     @Override
     public void doIteration() {
+
+        // all solutions generated in this iteration
+        offspring.clear();
+
         int[] permutation = new int[populationSize_];
         Utils.randomPermutation(permutation, populationSize_);
 
@@ -116,6 +123,9 @@ public class COMOEADD<S extends Solution<?>> extends MOEADD<S> implements Cooper
 
             evaluations_ += 2;
 
+            offspring.add(offSpring.get(0));
+            offspring.add(offSpring.get(1));
+
             // update ideal points
             updateReference(offSpring.get(0), zp_);
             updateReference(offSpring.get(1), zp_);
@@ -143,4 +153,8 @@ public class COMOEADD<S extends Solution<?>> extends MOEADD<S> implements Cooper
         }
     }
 
+    @Override
+    public List<S> getOffspring() {
+        return offspring;
+    }
 }

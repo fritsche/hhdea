@@ -74,4 +74,9 @@ public class COThetaDEA<S extends Solution<?>> extends ThetaDEA implements Coope
         environmentalSelection();
     }
 
+    @Override
+    public List<S> getOffspring() {
+        return offspringPopulation_;
+    }
+
 }

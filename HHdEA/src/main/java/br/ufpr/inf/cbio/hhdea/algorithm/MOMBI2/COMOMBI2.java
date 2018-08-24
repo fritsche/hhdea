@@ -32,6 +32,8 @@ import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
  */
 public class COMOMBI2<S extends Solution<?>> extends MOMBI2<S> implements CooperativeAlgorithm<S> {
 
+    public List<S> offspringPopulation;
+
     public COMOMBI2(Problem<S> problem, int maxIterations, CrossoverOperator<S> crossover, MutationOperator<S> mutation, SelectionOperator<List<S>, S> selection, SolutionListEvaluator<S> evaluator, String pathWeights) {
         super(problem, maxIterations, crossover, mutation, selection, evaluator, pathWeights);
     }
@@ -46,7 +48,6 @@ public class COMOMBI2<S extends Solution<?>> extends MOMBI2<S> implements Cooper
 
     @Override
     public void doIteration() {
-        List<S> offspringPopulation;
         List<S> matingPopulation;
         matingPopulation = selection(this.getPopulation());
         offspringPopulation = reproduction(matingPopulation);
@@ -61,6 +62,11 @@ public class COMOMBI2<S extends Solution<?>> extends MOMBI2<S> implements Cooper
         this.setPopulation(replacement(this.getPopulation(), solutions));
         // specific GA needed computations
         this.specificMOEAComputations();
+    }
+
+    @Override
+    public List<S> getOffspring() {
+        return offspringPopulation;
     }
 
 }

@@ -74,8 +74,10 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
             }
             alg.doIteration();
             generations++;
+
+            // solutions generatedy by alg
             List<S> offspring = new ArrayList<>();
-            for (S s : alg.getPopulation()) {
+            for (S s : alg.getOffspring()) {
                 offspring.add((S) s.copy());
             }
 
