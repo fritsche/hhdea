@@ -199,7 +199,6 @@ public class HypEFitness {
             if (i < S.length - 1) {
                 extrusion = S[i + 1][actDim] - S[i][actDim];
             } else {
-                //		System.out.println(actDim);
                 extrusion = bounds[actDim] - S[i][actDim];
             }
 

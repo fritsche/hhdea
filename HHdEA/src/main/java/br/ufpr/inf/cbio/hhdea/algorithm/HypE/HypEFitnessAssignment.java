@@ -60,7 +60,6 @@ public class HypEFitnessAssignment<S extends Solution> {
         double[] result = hy.hypeIndicatorExact(points, bounds, k);
 
         for (int i = 1; i <= size; i++) {
-            System.out.println(result[i]);
             fitness.setAttribute(population.get(i - 1), result[i]);
         }
 

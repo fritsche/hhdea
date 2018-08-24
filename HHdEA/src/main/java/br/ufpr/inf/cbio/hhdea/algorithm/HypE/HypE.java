@@ -85,10 +85,6 @@ public class HypE<S extends Solution> implements Algorithm<List<S>> {
 
             offspringPopulation = new ArrayList<>(populationSize);
 
-            if (evaluations / populationSize == 5) {
-                System.out.println("break;");
-            }
-
             fs.setHypEFitness(population, reference, populationSize, samples);
             for (int i = 0; i < (populationSize / 2); i++) {
                 if (evaluations < maxEvaluations) {
@@ -126,6 +122,19 @@ public class HypE<S extends Solution> implements Algorithm<List<S>> {
             // Ranking the union
             Ranking ranking = (new DominanceRanking()).computeRanking(union);
 
+            /* for (int f = 0; f < ranking.getNumberOfSubfronts(); f++) {
+                List<S> front = ranking.getSubfront(f);
+                for (S s : front) {
+                    for (int v = 0; v < s.getNumberOfVariables(); v++) {
+                        System.out.print(s.getVariableValue(v) + " ");
+                    }
+                    for (int o = 0; o < s.getNumberOfObjectives(); o++) {
+                        System.out.print(s.getObjective(o) + " ");
+                    }
+                    System.out.println();
+                }
+                System.out.println();
+            } */
             int remain = populationSize;
             int index = 0;
             List<S> front;
