@@ -20,6 +20,7 @@ import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.CastroRoulette;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.SelectionFunction;
 import br.ufpr.inf.cbio.hhdea.metrics.MetricsEvaluator;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.multiobjective.moead.util.MOEADUtils;
@@ -40,6 +41,7 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
     private final int populationSize;
     private final String name;
     private MetricsEvaluator metrics;
+    private int[] count;
 
     public HHdEA(List<CooperativeAlgorithm<S>> algorithms, int populationSize, int maxGenerations, Problem problem, String name) {
         this.algorithms = algorithms;
@@ -47,6 +49,7 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
         this.maxGenerations = maxGenerations;
         this.problem = problem;
         this.name = name;
+        this.count = new int[algorithms.size()];
     }
 
     @Override
@@ -66,6 +69,7 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
 
             // heuristic selection
             CooperativeAlgorithm<S> alg = selection.getNext();
+            count[algorithms.indexOf(alg)]++;
 
             // apply selected heuristic
             List<S> parents = new ArrayList<>();
@@ -101,6 +105,13 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
                 }
             }
         }
+
+        System.out.print("Count:\t");
+        for (int a = 0; a < count.length; a++) {
+            System.out.print(count[a] + "\t");
+        }
+        System.out.println();
+        
     }
 
     @Override

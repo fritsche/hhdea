@@ -35,20 +35,22 @@ import org.uma.jmetal.util.solutionattribute.impl.Fitness;
  * @author Gian Fritsche <gmfritsche at inf.ufpr.br>
  * @param <S>
  */
-public class HypE<S extends Solution> implements Algorithm<List<S>> {
+public class HypE<S extends Solution<?>> implements Algorithm<List<S>> {
 
-    private int populationSize;
+    int populationSize;
     private int maxEvaluations;
-    private int samples;
-    private int evaluations;
-    private List<S> population;
-    private List<S> offspringPopulation;
-    private List<S> union;
-    private CrossoverOperator<S> crossoverOperator;
-    private MutationOperator<S> mutationOperator;
-    private SelectionOperator<List<S>, S> selectionOperator;
+    int samples;
+    int evaluations;
+    List<S> population;
+    List<S> offspringPopulation;
+    HypEFitnessAssignment fs = new HypEFitnessAssignment();
+    S reference;
+    List<S> union;
+    CrossoverOperator<S> crossoverOperator;
+    MutationOperator<S> mutationOperator;
+    SelectionOperator<List<S>, S> selectionOperator;
     protected final Problem<S> problem;
-    private final Fitness fitness = new Fitness();
+    final Fitness fitness = new Fitness();
 
     public HypE(HypEBuilder<S> builder) {
         problem = builder.getProblem();
@@ -60,12 +62,61 @@ public class HypE<S extends Solution> implements Algorithm<List<S>> {
         selectionOperator = builder.getSelectionOperator();
     }
 
+    public void environmentalSelection() {
+        union = new ArrayList<>();
+        union.addAll(population);
+        union.addAll(offspringPopulation);
+
+        // Ranking the union
+        Ranking ranking = (new DominanceRanking()).computeRanking(union);
+
+        int remain = populationSize;
+        int index = 0;
+        List<S> front;
+        population.clear();
+
+        // Obtain the next front
+        front = ranking.getSubfront(index);
+
+        while ((remain > 0) && (remain >= front.size())) {
+
+            for (int k = 0; k < front.size(); k++) {
+                population.add(front.get(k));
+            }
+            // Decrement remain
+            remain = remain - front.size();
+            // Obtain the next front
+            index++;
+            if (remain > 0) {
+                front = ranking.getSubfront(index);
+            } // if
+        }
+        if (remain > 0) { // front contains individuals to insert
+            int k = front.size() - remain;
+            while (k > 0) {
+                fs.setHypEFitness(front, reference, k, samples);
+                int loc = -1;
+                double min = Double.MAX_VALUE;
+                for (int u = 0; u < front.size(); u++) {
+                    if ((Double) fitness.getAttribute(front.get(u)) < min) {
+                        min = (Double) fitness.getAttribute(front.get(u));
+                        loc = u;
+                    }
+                }
+                front.remove(loc);
+                k--;
+            }
+            for (int u = 0; u < front.size(); u++) {
+                population.add(front.get(u));
+            }
+        }
+    }
+
     @Override
     public void run() {
         population = new ArrayList<>(populationSize);
-        S reference = problem.createSolution();
+        reference = problem.createSolution();
         evaluations = 0;
-        HypEFitnessAssignment fs = new HypEFitnessAssignment();
         for (int i = 0; i < populationSize; i++) {
             S newSolution = problem.createSolution();
             problem.evaluate(newSolution);
@@ -93,21 +144,11 @@ public class HypE<S extends Solution> implements Algorithm<List<S>> {
                     parents.add(selectionOperator.execute(population));
                     parents.add(selectionOperator.execute(population));
 
-//                    System.out.println("Selection:");
-//                    System.out.println("eval: " + evaluations / populationSize);
-//                    print(parents.get(0));
-//                    print(parents.get(1));
                     List<S> offSpring = crossoverOperator.execute(parents);
 
-//                    System.out.println("Crossover:");
-//                    print(offSpring.get(0));
-//                    print(offSpring.get(1));
                     mutationOperator.execute(offSpring.get(0));
                     mutationOperator.execute(offSpring.get(1));
 
-//                    System.out.println("Mutation:");
-//                    print(offSpring.get(0));
-//                    print(offSpring.get(1));
                     problem.evaluate(offSpring.get(0));
                     problem.evaluate(offSpring.get(1));
                     evaluations += 2;
@@ -115,71 +156,10 @@ public class HypE<S extends Solution> implements Algorithm<List<S>> {
                     offspringPopulation.add(offSpring.get(0));
                 }
             }
-            union = new ArrayList<>();
-            union.addAll(population);
-            union.addAll(offspringPopulation);
 
-            // Ranking the union
-            Ranking ranking = (new DominanceRanking()).computeRanking(union);
-
-            /* for (int f = 0; f < ranking.getNumberOfSubfronts(); f++) {
-                List<S> front = ranking.getSubfront(f);
-                for (S s : front) {
-                    for (int v = 0; v < s.getNumberOfVariables(); v++) {
-                        System.out.print(s.getVariableValue(v) + " ");
-                    }
-                    for (int o = 0; o < s.getNumberOfObjectives(); o++) {
-                        System.out.print(s.getObjective(o) + " ");
-                    }
-                    System.out.println();
-                }
-                System.out.println();
-            } */
-            int remain = populationSize;
-            int index = 0;
-            List<S> front;
-            population.clear();
-
-            // Obtain the next front
-            front = ranking.getSubfront(index);
-
-            while ((remain > 0) && (remain >= front.size())) {
-
-                for (int k = 0; k < front.size(); k++) {
-                    population.add(front.get(k));
-                }
-                // Decrement remain
-                remain = remain - front.size();
-                // Obtain the next front
-                index++;
-                if (remain > 0) {
-                    front = ranking.getSubfront(index);
-                } // if
-            }
-            if (remain > 0) { // front contains individuals to insert
-                int k = front.size() - remain;
-                while (k > 0) {
-                    fs.setHypEFitness(front, reference, k, samples);
-                    int loc = -1;
-                    double min = Double.MAX_VALUE;
-                    for (int u = 0; u < front.size(); u++) {
-                        if ((Double) fitness.getAttribute(front.get(u)) < min) {
-                            min = (Double) fitness.getAttribute(front.get(u));
-                            loc = u;
-                        }
-                    }
-                    front.remove(loc);
-                    k--;
-                }
-                for (int u = 0; u < front.size(); u++) {
-                    population.add(front.get(u));
-                }
-            }
+            environmentalSelection();
         }
 
-//        population.forEach((s) -> {
-//            print(s);
-//        });
     }
 
     @Override

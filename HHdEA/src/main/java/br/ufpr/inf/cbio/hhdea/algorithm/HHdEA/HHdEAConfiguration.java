@@ -16,12 +16,14 @@
  */
 package br.ufpr.inf.cbio.hhdea.algorithm.HHdEA;
 
+import br.ufpr.inf.cbio.hhdea.algorithm.HypE.COHypEConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.MOEAD.COMOEADConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.MOEADD.COMOEADDConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.MOMBI2.COMOMBI2Configuration;
 import br.ufpr.inf.cbio.hhdea.algorithm.NSGAII.CONSGAIIConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.NSGAIII.CONSGAIIIConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.SPEA2.COSPEA2Configuration;
+import br.ufpr.inf.cbio.hhdea.algorithm.SPEA2SDE.COSPEA2SDEConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.ThetaDEA.COThetaDEAConfiguration;
 import br.ufpr.inf.cbio.hhdea.config.AlgorithmConfiguration;
 import org.uma.jmetal.algorithm.Algorithm;
@@ -58,6 +60,12 @@ public class HHdEAConfiguration<S extends Solution> implements AlgorithmConfigur
             case "COSPEA2":
                 builder.addAlgorithm(new COSPEA2Configuration().configure(problem, popSize, generations));
                 break;
+            case "COSPEA2SDE":
+                builder.addAlgorithm(new COSPEA2SDEConfiguration().configure(problem, popSize, generations));
+                break;
+            case "COHypE":
+                builder.addAlgorithm(new COHypEConfiguration().configure(problem, popSize, generations));
+                break;
             case "COMOMBI2":
                 builder.addAlgorithm(new COMOMBI2Configuration().configure(problem, popSize, generations));
                 break;
@@ -80,6 +88,8 @@ public class HHdEAConfiguration<S extends Solution> implements AlgorithmConfigur
                         .addAlgorithm(new COMOMBI2Configuration().configure(problem, popSize, generations))                        
                         .addAlgorithm(new CONSGAIIIConfiguration().configure(problem, popSize, generations))
                         .addAlgorithm(new COThetaDEAConfiguration().configure(problem, popSize, generations))
+                        .addAlgorithm(new COSPEA2SDEConfiguration().configure(problem, popSize, generations))
+                        .addAlgorithm(new COHypEConfiguration().configure(problem, popSize, generations))
                         ;
             // }
         }

@@ -35,10 +35,10 @@ import org.uma.jmetal.util.evaluator.impl.SequentialSolutionListEvaluator;
  */
 public class SPEA2SDEConfiguration<S extends Solution> implements AlgorithmConfiguration<SPEA2SDE<?>> {
 
-    private Problem<S> problem;
-    private CrossoverOperator crossoverOperator;
-    private MutationOperator mutationOperator;
-    private SelectionOperator<List<S>, S> selectionOperator;
+    Problem<S> problem;
+    CrossoverOperator crossoverOperator;
+    MutationOperator mutationOperator;
+    SelectionOperator<List<S>, S> selectionOperator;
 
     @Override
     public void setup() {

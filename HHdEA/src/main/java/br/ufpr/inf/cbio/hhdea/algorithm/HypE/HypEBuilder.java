@@ -30,7 +30,7 @@ import org.uma.jmetal.util.AlgorithmBuilder;
  * @author Gian Fritsche <gmfritsche at inf.ufpr.br>
  * @param <S>
  */
-public class HypEBuilder<S extends Solution> implements AlgorithmBuilder<HypE<S>> {
+public class HypEBuilder<S extends Solution<?>> implements AlgorithmBuilder<HypE<S>> {
 
     private final Problem<S> problem;
     private int populationSize;
