@@ -65,4 +65,11 @@ public class CONSGAII<S extends Solution<?>> extends NSGAII implements Cooperati
     public List<S> getOffspring() {
         return offspringPopulation;
     }
+
+    @Override
+    public void copyPopulation(List<S> external) {
+        population.clear();
+        population.addAll(external);
+    }
+
 }

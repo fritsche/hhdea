@@ -40,8 +40,8 @@ public interface CooperativeAlgorithm<S extends Solution<?>> {
      * Used on the traditional hyper-heuristic framework to keep only one
      * population where the heuristics are applied
      *
-     * @param population
+     * @param external
      */
-    public void setPopulation(List<S> population);
+    public void copyPopulation(List<S> external);
 
 }

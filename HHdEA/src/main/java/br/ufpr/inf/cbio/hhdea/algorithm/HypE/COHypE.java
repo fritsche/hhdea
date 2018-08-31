@@ -95,4 +95,10 @@ public class COHypE<S extends Solution<?>> extends HypE implements CooperativeAl
         environmentalSelection();
     }
 
+    @Override
+    public void copyPopulation(List<S> external) {
+        population.clear();
+        population.addAll(external);
+    }
+
 }

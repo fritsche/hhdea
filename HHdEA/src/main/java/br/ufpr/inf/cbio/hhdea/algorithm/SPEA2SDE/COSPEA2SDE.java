@@ -76,4 +76,10 @@ public class COSPEA2SDE<S extends Solution<?>> extends SPEA2SDE<S> implements Co
     public List<S> getOffspring() {
         return offspringPopulation;
     }
+
+    @Override
+    public void copyPopulation(List<S> external) {
+        population.clear();
+        population.addAll(external);
+    }
 }

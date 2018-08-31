@@ -79,4 +79,10 @@ public class COThetaDEA<S extends Solution<?>> extends ThetaDEA implements Coope
         return offspringPopulation_;
     }
 
+    @Override
+    public void copyPopulation(List<S> external) {
+        population_.clear();
+        population_.addAll(external);
+    }
+
 }

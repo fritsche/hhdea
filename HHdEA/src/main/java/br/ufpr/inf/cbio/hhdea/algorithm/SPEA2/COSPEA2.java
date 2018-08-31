@@ -78,4 +78,10 @@ public class COSPEA2<S extends Solution<?>> extends SPEA2<S> implements Cooperat
     public List<S> getOffspring() {
         return offspringPopulation;
     }
+
+    @Override
+    public void copyPopulation(List<S> external) {
+        population.clear();
+        population.addAll(external);
+    }
 }

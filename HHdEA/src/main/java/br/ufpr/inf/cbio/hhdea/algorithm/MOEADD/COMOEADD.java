@@ -157,4 +157,10 @@ public class COMOEADD<S extends Solution<?>> extends MOEADD<S> implements Cooper
     public List<S> getOffspring() {
         return offspring;
     }
+
+    @Override
+    public void copyPopulation(List<S> external) {
+        population_.clear();
+        population_.addAll(external);
+    }
 }
