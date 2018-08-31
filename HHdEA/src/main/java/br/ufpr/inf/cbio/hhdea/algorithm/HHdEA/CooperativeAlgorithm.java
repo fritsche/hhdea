@@ -27,9 +27,21 @@ import org.uma.jmetal.solution.Solution;
 public interface CooperativeAlgorithm<S extends Solution<?>> {
 
     public void init(int populationSize);
+
     public void doIteration();
+
     public List<S> getPopulation();
+
     public List<S> getOffspring();
+
     public void receive(List<S> solutions);
+
+    /**
+     * Used on the traditional hyper-heuristic framework to keep only one
+     * population where the heuristics are applied
+     *
+     * @param population
+     */
+    public void setPopulation(List<S> population);
 
 }
