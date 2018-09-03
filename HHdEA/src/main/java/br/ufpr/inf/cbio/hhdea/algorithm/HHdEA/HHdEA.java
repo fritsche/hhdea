@@ -90,6 +90,7 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
             // metrics.log(alg.getClass().getSimpleName());
 
             // compute reward
+            System.out.println("R2: " + metrics.getMetric(MetricsEvaluator.Metrics.FIR_R2_THC));
             selection.creditAssignment(metrics.getMetric(MetricsEvaluator.Metrics.FIR_R2_THC));
 
             // move acceptance
@@ -111,7 +112,7 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
             System.out.print(count[a] + "\t");
         }
         System.out.println();
-        
+
     }
 
     @Override
