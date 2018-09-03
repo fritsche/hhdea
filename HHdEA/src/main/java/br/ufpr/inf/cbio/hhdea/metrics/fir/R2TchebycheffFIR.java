@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Gian Fritsche <gmfritsche@inf.ufpr.br>
+ * Copyright (C) 2018 Gian Fritsche <gmfritsche at inf.ufpr.br>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,8 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package br.ufpr.inf.cbio.hhdea.metrics;
+package br.ufpr.inf.cbio.hhdea.metrics.fir;
 
+import br.ufpr.inf.cbio.hhdea.metrics.FitnessImprovementRate;
+import br.ufpr.inf.cbio.hhdea.metrics.R2;
 import br.ufpr.inf.cbio.hhdea.metrics.utilityfunction.Tchebycheff;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -31,46 +33,20 @@ import org.uma.jmetal.util.front.imp.ArrayFront;
 
 /**
  *
- * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
- * @param <S>
+ * @author Gian Fritsche <gmfritsche at inf.ufpr.br>
  */
-public class MetricsEvaluator<S extends Solution<?>> {
+public class R2TchebycheffFIR implements FitnessImprovementRate<Solution<?>> {
 
-    private int populationSize;
-    private Problem problem;
     private double[][] lambda;
-    protected double[] zp_; 	// ideal point for Pareto-based population
-    protected int m;
-    protected R2 r2;
+    private final int m;
 
-    public enum Metrics {
-        FIR_R2_THC
-    };
-
-    private double[] metrics;
-
-    public double getMetric(Metrics metric) {
-        return metrics[metric.ordinal()];
-    }
-
-    public double[] getMetrics() {
-        return metrics;
-    }
-
-    public void setMetrics(double[] metrics) {
-        this.metrics = metrics;
-    }
-
-    public MetricsEvaluator(Problem problem, int populationSize) {
+    public R2TchebycheffFIR(Problem problem, int populationSize) {
+        initializeUniformWeight(problem, populationSize);
         this.m = problem.getNumberOfObjectives();
-        this.problem = problem;
-        this.populationSize = populationSize;
-        this.zp_ = new double[m];
-        this.metrics = new double[Metrics.values().length];
-        initializeUniformWeight();
     }
 
-    public void extractMetrics(List<S> parents, List<S> offspring) {
+    @Override
+    public double getFitnessImprovementRate(List<Solution<?>> parents, List<Solution<?>> offspring) {
         int points = parents.size() + offspring.size();
         Front reference = new ArrayFront(points, m);
         Front parentsFront = new ArrayFront(parents);
@@ -82,39 +58,13 @@ public class MetricsEvaluator<S extends Solution<?>> {
         for (int o = 0; o < offspring.size(); o++, i++) {
             reference.setPoint(i, offspringFront.getPoint(o));
         }
-
-        r2 = new R2(lambda, reference, new Tchebycheff());
+        R2 r2 = new R2(lambda, reference, new Tchebycheff());
         double parentR2 = r2.r2(parentsFront);
         double offspringR2 = r2.r2(offspringFront);
-        metrics[Metrics.FIR_R2_THC.ordinal()] = (parentR2 - offspringR2) / offspringR2;
-
+        return (parentR2 - offspringR2) / offspringR2;
     }
 
-    public void log(String prefix) {
-        for (Metrics metric : Metrics.values()) {
-            System.out.print("[" + prefix + "] " + metric + ":\t");
-            System.out.print(metrics[metric.ordinal()] + "\t");
-            System.out.println();
-        }
-    }
-
-    public double norm_vector(double[] z, int m) {
-        double sum = 0;
-        for (int i = 0; i < m; i++) {
-            sum += z[i] * z[i];
-        }
-        return Math.sqrt(sum);
-    }
-
-    public double innerproduct(double[] vec1, double[] vec2) {
-        double sum = 0;
-        for (int i = 0; i < vec1.length; i++) {
-            sum += vec1[i] * vec2[i];
-        }
-        return sum;
-    }
-
-    private void initializeUniformWeight() {
+    private void initializeUniformWeight(Problem problem, int populationSize) {
         String dataFileName;
         dataFileName = "W" + problem.getNumberOfObjectives() + "D_"
                 + populationSize + ".dat";
@@ -143,32 +93,6 @@ public class MetricsEvaluator<S extends Solution<?>> {
         } catch (IOException | NumberFormatException e) {
             throw new JMetalException("initializeUniformWeight: failed when reading for file: /WeightVectors/" + dataFileName, e);
         }
-    }
-
-    public double PBI(Solution indiv, double[] lambda) {
-        double fitness;
-
-        double theta; // penalty parameter
-        theta = 5.0;
-        // normalize the weight vector (line segment)
-        double nd = norm_vector(lambda, m);
-        for (int i = 0; i < m; i++) {
-            lambda[i] = lambda[i] / nd;
-        }
-        double[] realA = new double[m];
-        double[] realB = new double[m];
-        // difference between current point and reference point
-        for (int n = 0; n < m; n++) {
-            realA[n] = (indiv.getObjective(n) - zp_[n]);
-        }   // distance along the line segment
-        double d1 = Math.abs(innerproduct(realA, lambda));
-        // distance to the line segment
-        for (int n = 0; n < m; n++) {
-            realB[n] = (indiv.getObjective(n) - (zp_[n] + d1 * lambda[n]));
-        }
-        double d2 = norm_vector(realB, m);
-        fitness = d1 + theta * d2;
-        return fitness;
     }
 
 }

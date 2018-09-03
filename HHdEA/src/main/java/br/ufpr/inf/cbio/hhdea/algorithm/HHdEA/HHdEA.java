@@ -18,9 +18,9 @@ package br.ufpr.inf.cbio.hhdea.algorithm.HHdEA;
 
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.CastroRoulette;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.SelectionFunction;
-import br.ufpr.inf.cbio.hhdea.metrics.MetricsEvaluator;
+import br.ufpr.inf.cbio.hhdea.metrics.FitnessImprovementRate;
+import br.ufpr.inf.cbio.hhdea.metrics.fir.R2TchebycheffFIR;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.multiobjective.moead.util.MOEADUtils;
@@ -40,8 +40,8 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
     protected List<CooperativeAlgorithm<S>> algorithms;
     private final int populationSize;
     private final String name;
-    private MetricsEvaluator metrics;
-    private int[] count;
+    private FitnessImprovementRate fir;
+    private final int[] count;
 
     public HHdEA(List<CooperativeAlgorithm<S>> algorithms, int populationSize, int maxGenerations, Problem problem, String name) {
         this.algorithms = algorithms;
@@ -63,7 +63,7 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
         selection.init();
 
         int generations = algorithms.size();
-        this.metrics = new MetricsEvaluator(problem, populationSize);
+        this.fir = new R2TchebycheffFIR(problem, populationSize);
 
         while (generations <= maxGenerations) {
 
@@ -86,12 +86,11 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
             }
 
             // extract metrics
-            metrics.extractMetrics(parents, offspring);
-            // metrics.log(alg.getClass().getSimpleName());
-
+            double value = fir.getFitnessImprovementRate(parents, offspring);
+            
             // compute reward
-            System.out.println("R2: " + metrics.getMetric(MetricsEvaluator.Metrics.FIR_R2_THC));
-            selection.creditAssignment(metrics.getMetric(MetricsEvaluator.Metrics.FIR_R2_THC));
+            System.out.println("FIR: " + value);
+            selection.creditAssignment(value);
 
             // move acceptance
             // ALL MOVES
