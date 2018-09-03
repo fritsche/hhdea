@@ -25,11 +25,11 @@ import org.uma.jmetal.util.point.Point;
 public class ASF implements UtilityFunction {
 
     @Override
-    public double execute(double[] lambda, Point point, int m, double[] minimumValues, double[] maximumValues) {
-        double result = Math.abs(point.getDimensionValue(0)) / ((lambda[0] > 0.0) ? lambda[0] : 1e-2);
+    public double execute(double[] lambda, Point point, int m) {
+
+        double result = point.getDimensionValue(0) / ((lambda[0] > 0.0) ? lambda[0] : 1e-2);
         for (int n = 1; n < m; n++) {
-            result = Math.max(result,
-                    Math.abs(point.getDimensionValue(n)) / ((lambda[n] > 0.0) ? lambda[n] : 1e-2));
+            result = Math.max(result, point.getDimensionValue(n) / ((lambda[n] > 0.0) ? lambda[n] : 1e-2));
         }
         return result;
     }

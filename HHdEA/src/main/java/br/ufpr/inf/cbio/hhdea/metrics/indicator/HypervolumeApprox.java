@@ -1,4 +1,4 @@
-package br.ufpr.inf.cbio.hhdea.metrics;
+package br.ufpr.inf.cbio.hhdea.metrics.indicator;
 
 import org.uma.jmetal.qualityindicator.impl.Hypervolume;
 import org.uma.jmetal.solution.Solution;

@@ -16,8 +16,7 @@
  */
 package br.ufpr.inf.cbio.hhdea.metrics.fir;
 
-import br.ufpr.inf.cbio.hhdea.metrics.FitnessImprovementRate;
-import br.ufpr.inf.cbio.hhdea.metrics.R2;
+import br.ufpr.inf.cbio.hhdea.metrics.indicator.R2;
 import br.ufpr.inf.cbio.hhdea.metrics.utilityfunction.Tchebycheff;
 import java.io.BufferedReader;
 import java.io.IOException;

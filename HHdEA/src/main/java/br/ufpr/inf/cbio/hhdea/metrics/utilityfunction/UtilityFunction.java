@@ -23,5 +23,15 @@ import org.uma.jmetal.util.point.Point;
  * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
  */
 public interface UtilityFunction {
-    public double execute(double lambda[], Point point, int m, double[] minimumValues, double[] maximumValues);
+
+    /**
+     * Execute a utility function given a reference vetor lambda and a
+     * normalized Point point.
+     *
+     * @param lambda reference vector
+     * @param point normalized point
+     * @param m number of objectives
+     * @return utility value
+     */
+    public double execute(double lambda[], Point point, int m);
 }

@@ -18,7 +18,7 @@ package br.ufpr.inf.cbio.hhdea.algorithm.HHdEA;
 
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.CastroRoulette;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.SelectionFunction;
-import br.ufpr.inf.cbio.hhdea.metrics.FitnessImprovementRate;
+import br.ufpr.inf.cbio.hhdea.metrics.fir.FitnessImprovementRate;
 import br.ufpr.inf.cbio.hhdea.metrics.fir.R2TchebycheffFIR;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +43,8 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
     private FitnessImprovementRate fir;
     private final int[] count;
 
-    public HHdEA(List<CooperativeAlgorithm<S>> algorithms, int populationSize, int maxGenerations, Problem problem, String name) {
+    public HHdEA(List<CooperativeAlgorithm<S>> algorithms, int populationSize, 
+            int maxGenerations, Problem problem, String name) {
         this.algorithms = algorithms;
         this.populationSize = populationSize;
         this.maxGenerations = maxGenerations;
@@ -122,7 +123,8 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
         }
 
         if (problem.getName().startsWith("MaF")) {
-            return MOEADUtils.getSubsetOfEvenlyDistributedSolutions(SolutionListUtils.getNondominatedSolutions(union), 240);
+            return MOEADUtils.getSubsetOfEvenlyDistributedSolutions(
+                    SolutionListUtils.getNondominatedSolutions(union), 240);
         } else {
             return SolutionListUtils.getNondominatedSolutions(union);
         }
