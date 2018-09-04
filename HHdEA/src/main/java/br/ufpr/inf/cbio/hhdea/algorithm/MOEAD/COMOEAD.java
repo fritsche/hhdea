@@ -18,7 +18,6 @@ package br.ufpr.inf.cbio.hhdea.algorithm.MOEAD;
 
 import br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.CooperativeAlgorithm;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import org.uma.jmetal.algorithm.multiobjective.moead.MOEAD;
 import org.uma.jmetal.algorithm.multiobjective.moead.util.MOEADUtils;
@@ -36,7 +35,7 @@ import org.uma.jmetal.util.pseudorandom.JMetalRandom;
  */
 public class COMOEAD<S extends Solution<?>> extends MOEAD implements CooperativeAlgorithm<S> {
 
-    private List<S> offspring;
+    private final List<S> offspring;
 
     public COMOEAD(Problem<DoubleSolution> problem, int populationSize, int resultPopulationSize, int maxEvaluations, MutationOperator<DoubleSolution> mutation, CrossoverOperator<DoubleSolution> crossover, FunctionType functionType, String dataDirectory, double neighborhoodSelectionProbability, int maximumNumberOfReplacedSolutions, int neighborSize) {
         super(problem, populationSize, resultPopulationSize, maxEvaluations, mutation, crossover, functionType, dataDirectory, neighborhoodSelectionProbability, maximumNumberOfReplacedSolutions, neighborSize);

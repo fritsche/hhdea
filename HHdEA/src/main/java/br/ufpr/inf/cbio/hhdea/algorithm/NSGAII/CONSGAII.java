@@ -26,6 +26,7 @@ import org.uma.jmetal.operator.SelectionOperator;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
+import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
 /**
  *
@@ -69,6 +70,10 @@ public class CONSGAII<S extends Solution<?>> extends NSGAII implements Cooperati
     @Override
     public void overridePopulation(List<S> external) {
         population = external;
+        if (population.size() % 2 == 1) {
+            int index = JMetalRandom.getInstance().nextInt(0, population.size() - 1);
+            population.add(((S) population.get(index)).copy());
+        }
     }
 
 }

@@ -20,6 +20,7 @@ import br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.CooperativeAlgorithm;
 import java.util.ArrayList;
 import java.util.List;
 import org.uma.jmetal.solution.Solution;
+import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 import org.uma.jmetal.util.solutionattribute.Ranking;
 import org.uma.jmetal.util.solutionattribute.impl.DominanceRanking;
 
@@ -128,6 +129,10 @@ class CONSGAIII<S extends Solution<?>> extends NSGAIII<S> implements Cooperative
     @Override
     public void overridePopulation(List<S> external) {
         population_ = external;
+        if (population_.size() % 2 == 1) {
+            int index = JMetalRandom.getInstance().nextInt(0, population_.size() - 1);
+            population_.add((S) population_.get(index).copy());
+        }
     }
 
 }

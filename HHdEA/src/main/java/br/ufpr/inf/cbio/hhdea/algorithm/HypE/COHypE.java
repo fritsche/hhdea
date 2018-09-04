@@ -20,6 +20,7 @@ import br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.CooperativeAlgorithm;
 import java.util.ArrayList;
 import java.util.List;
 import org.uma.jmetal.solution.Solution;
+import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
 /**
  *
@@ -34,6 +35,9 @@ public class COHypE<S extends Solution<?>> extends HypE implements CooperativeAl
 
     @Override
     public void init(int populationSize) {
+        if (populationSize % 2 != 0) {
+            populationSize += 1;
+        }
         population = new ArrayList<>(populationSize);
         reference = (S) problem.createSolution();
         evaluations = 0;
@@ -98,6 +102,10 @@ public class COHypE<S extends Solution<?>> extends HypE implements CooperativeAl
     @Override
     public void overridePopulation(List<S> external) {
         population = external;
+        if (population.size() % 2 == 1) {
+            int index = JMetalRandom.getInstance().nextInt(0, population.size() - 1);
+            population.add(((S) population.get(index)).copy());
+        }
     }
 
 }
