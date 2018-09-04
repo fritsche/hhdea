@@ -19,12 +19,15 @@ package br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.traditional;
 import br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.CooperativeAlgorithm;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.SelectionFunction;
 import br.ufpr.inf.cbio.hhdea.metrics.fir.FitnessImprovementRate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.JMetalLogger;
+import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
+import org.uma.jmetal.util.evaluator.impl.SequentialSolutionListEvaluator;
 
 /**
  * An online learning hyper-heuristic selection based on low-level heursitics.
@@ -48,6 +51,8 @@ public class Traditional<S extends Solution<?>> implements Algorithm<List<S>> {
     private final SelectionFunction<CooperativeAlgorithm> selection;
     private final int[] count;
     private final FitnessImprovementRate fir;
+    private List<S> population;
+    protected final SolutionListEvaluator<S> evaluator = new SequentialSolutionListEvaluator<>();
 
     public Traditional(List<CooperativeAlgorithm<S>> algorithms, int populationSize,
             int maxGenerations, Problem problem,
@@ -66,7 +71,19 @@ public class Traditional<S extends Solution<?>> implements Algorithm<List<S>> {
 
     @Override
     public void run() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+        for (CooperativeAlgorithm alg : algorithms) {
+            alg.init(getPopulationSize());
+            selection.add(alg);
+        }
+        selection.init();
+
+        population = createInitialPopulation();
+        population = evaluator.evaluate(population, getProblem());
+        int generations = 1;
+        while (generations <= maxGenerations) {
+
+        }
     }
 
     /**
@@ -87,6 +104,43 @@ public class Traditional<S extends Solution<?>> implements Algorithm<List<S>> {
     @Override
     public String getDescription() {
         return "An online learning hyper-heuristic selection based on low-level heursitics.";
+    }
+
+    protected List<S> createInitialPopulation() {
+        List<S> population_ = new ArrayList<>(getPopulationSize());
+        for (int i = 0; i < getPopulationSize(); i++) {
+            S newIndividual = (S) getProblem().createSolution();
+            population_.add(newIndividual);
+        }
+        return population_;
+    }
+
+    public List<CooperativeAlgorithm<S>> getAlgorithms() {
+        return algorithms;
+    }
+
+    public int getPopulationSize() {
+        return populationSize;
+    }
+
+    public int getMaxGenerations() {
+        return maxGenerations;
+    }
+
+    public Problem getProblem() {
+        return problem;
+    }
+
+    public SelectionFunction<CooperativeAlgorithm> getSelection() {
+        return selection;
+    }
+
+    public int[] getCount() {
+        return count;
+    }
+
+    public FitnessImprovementRate getFir() {
+        return fir;
     }
 
 }
