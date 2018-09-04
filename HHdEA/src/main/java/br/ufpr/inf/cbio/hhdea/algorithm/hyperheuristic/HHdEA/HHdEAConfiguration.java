@@ -30,7 +30,7 @@ import br.ufpr.inf.cbio.hhdea.config.AlgorithmConfiguration;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.CastroRoulette;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.SelectionFunction;
 import br.ufpr.inf.cbio.hhdea.metrics.fir.FitnessImprovementRate;
-import br.ufpr.inf.cbio.hhdea.metrics.fir.R2TchebycheffFIR;
+import br.ufpr.inf.cbio.hhdea.metrics.fir.R2ASFFIR;
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
@@ -110,7 +110,7 @@ public class HHdEAConfiguration<S extends Solution> implements AlgorithmConfigur
     @Override
     public void setup() {
         this.selection = new CastroRoulette<>();
-        this.fir = new R2TchebycheffFIR(problem, popSize);
+        this.fir = new R2ASFFIR(problem, popSize);
     }
 
 }
