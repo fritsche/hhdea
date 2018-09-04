@@ -26,6 +26,7 @@ import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.JMetalLogger;
+import org.uma.jmetal.util.SolutionListUtils;
 import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
 import org.uma.jmetal.util.evaluator.impl.SequentialSolutionListEvaluator;
 
@@ -73,6 +74,8 @@ public class Traditional<S extends Solution<?>> implements Algorithm<List<S>> {
     public void run() {
 
         for (CooperativeAlgorithm alg : algorithms) {
+            // populations generated here will be later overrided
+            // however other parameters are also initialized
             alg.init(getPopulationSize());
             selection.add(alg);
         }
@@ -85,14 +88,33 @@ public class Traditional<S extends Solution<?>> implements Algorithm<List<S>> {
             // heuristic selection
             CooperativeAlgorithm<S> alg = selection.getNext();
             count[algorithms.indexOf(alg)]++;
-            // send population to algorithm
-            
+            // copy current population
             List<S> populationCopy = new ArrayList<>();
-            
-            
-            alg.overridePopulation(population);
-            
+            for (S s : population) {
+                populationCopy.add((S) s.copy());
+            }
+            // send the copy to the selected algorithm
+            alg.overridePopulation(populationCopy);
+            // apply heuristic
+            alg.doIteration();
+            generations++;
+            // get new population
+            List<S> newPopulation = alg.getPopulation();
+            // extract metrics
+            double value = fir.getFitnessImprovementRate(population, newPopulation);
+            // reward algorithm
+            System.out.println("FIR: " + value);
+            selection.creditAssignment(value);
+            // move acceptance
+            // ALL MOVES
+            population = newPopulation;
         }
+
+        System.out.print("Count:\t");
+        for (int a = 0; a < count.length; a++) {
+            System.out.print(count[a] + "\t");
+        }
+        System.out.println();
     }
 
     /**
@@ -102,7 +124,7 @@ public class Traditional<S extends Solution<?>> implements Algorithm<List<S>> {
      */
     @Override
     public List<S> getResult() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return SolutionListUtils.getNondominatedSolutions(population);
     }
 
     @Override
