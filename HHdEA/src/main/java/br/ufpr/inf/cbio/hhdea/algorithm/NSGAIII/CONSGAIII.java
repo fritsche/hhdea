@@ -16,7 +16,7 @@
  */
 package br.ufpr.inf.cbio.hhdea.algorithm.NSGAIII;
 
-import br.ufpr.inf.cbio.hhdea.algorithm.HHdEA.CooperativeAlgorithm;
+import br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.CooperativeAlgorithm;
 import java.util.ArrayList;
 import java.util.List;
 import org.uma.jmetal.solution.Solution;
@@ -28,7 +28,7 @@ import org.uma.jmetal.util.solutionattribute.impl.DominanceRanking;
  * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
  * @param <S>
  */
-public class CONSGAIII<S extends Solution<?>> extends NSGAIII<S> implements CooperativeAlgorithm<S> {
+class CONSGAIII<S extends Solution<?>> extends NSGAIII<S> implements CooperativeAlgorithm<S> {
 
     public CONSGAIII(NSGAIIIBuilder builder) {
         super(builder);
@@ -123,6 +123,12 @@ public class CONSGAIII<S extends Solution<?>> extends NSGAIII<S> implements Coop
     @Override
     public List<S> getOffspring() {
         return offspringPopulation_;
+    }
+
+    @Override
+    public void overridePopulation(List<S> external) {
+        population_.clear();
+        population_.addAll(external);
     }
 
 }

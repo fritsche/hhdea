@@ -14,12 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package br.ufpr.inf.cbio.hhdea.algorithm.HHdEA;
+package br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.HHdEA;
 
-import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.CastroRoulette;
+import br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.CooperativeAlgorithm;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.SelectionFunction;
 import br.ufpr.inf.cbio.hhdea.metrics.fir.FitnessImprovementRate;
-import br.ufpr.inf.cbio.hhdea.metrics.fir.R2TchebycheffFIR;
 import java.util.ArrayList;
 import java.util.List;
 import org.uma.jmetal.algorithm.Algorithm;
@@ -40,23 +39,26 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
     protected List<CooperativeAlgorithm<S>> algorithms;
     private final int populationSize;
     private final String name;
-    private FitnessImprovementRate fir;
+    private final SelectionFunction<CooperativeAlgorithm> selection;
     private final int[] count;
+    private final FitnessImprovementRate fir;
 
-    public HHdEA(List<CooperativeAlgorithm<S>> algorithms, int populationSize, 
-            int maxGenerations, Problem problem, String name) {
+    public HHdEA(List<CooperativeAlgorithm<S>> algorithms, int populationSize, int maxGenerations,
+            Problem problem, String name, SelectionFunction<CooperativeAlgorithm> selection,
+            FitnessImprovementRate fir) {
         this.algorithms = algorithms;
         this.populationSize = populationSize;
         this.maxGenerations = maxGenerations;
         this.problem = problem;
         this.name = name;
+        this.selection = selection;
+        this.fir = fir;
         this.count = new int[algorithms.size()];
     }
 
     @Override
     public void run() {
 
-        SelectionFunction<CooperativeAlgorithm> selection = new CastroRoulette<>();
         for (CooperativeAlgorithm alg : algorithms) {
             alg.init(populationSize);
             selection.add(alg);
@@ -64,7 +66,6 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
         selection.init();
 
         int generations = algorithms.size();
-        this.fir = new R2TchebycheffFIR(problem, populationSize);
 
         while (generations <= maxGenerations) {
 
@@ -88,7 +89,7 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
 
             // extract metrics
             double value = fir.getFitnessImprovementRate(parents, offspring);
-            
+
             // compute reward
             System.out.println("FIR: " + value);
             selection.creditAssignment(value);

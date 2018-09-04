@@ -16,7 +16,7 @@
  */
 package br.ufpr.inf.cbio.hhdea.algorithm.SPEA2SDE;
 
-import br.ufpr.inf.cbio.hhdea.algorithm.HHdEA.CooperativeAlgorithm;
+import br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.CooperativeAlgorithm;
 import java.util.ArrayList;
 import java.util.List;
 import org.uma.jmetal.operator.CrossoverOperator;
@@ -75,5 +75,11 @@ public class COSPEA2SDE<S extends Solution<?>> extends SPEA2SDE<S> implements Co
     @Override
     public List<S> getOffspring() {
         return offspringPopulation;
+    }
+
+    @Override
+    public void overridePopulation(List<S> external) {
+        population.clear();
+        population.addAll(external);
     }
 }

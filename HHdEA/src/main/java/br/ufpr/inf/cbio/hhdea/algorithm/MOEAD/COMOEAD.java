@@ -16,8 +16,9 @@
  */
 package br.ufpr.inf.cbio.hhdea.algorithm.MOEAD;
 
-import br.ufpr.inf.cbio.hhdea.algorithm.HHdEA.CooperativeAlgorithm;
+import br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.CooperativeAlgorithm;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import org.uma.jmetal.algorithm.multiobjective.moead.MOEAD;
 import org.uma.jmetal.algorithm.multiobjective.moead.util.MOEADUtils;
@@ -97,5 +98,11 @@ public class COMOEAD<S extends Solution<?>> extends MOEAD implements Cooperative
     @Override
     public List<S> getOffspring() {
         return offspring;
+    }
+
+    @Override
+    public void overridePopulation(List<S> external) {
+        population.clear();
+        population.addAll((Collection<? extends DoubleSolution>) external);
     }
 }

@@ -16,7 +16,7 @@
  */
 package br.ufpr.inf.cbio.hhdea.algorithm.NSGAII;
 
-import br.ufpr.inf.cbio.hhdea.algorithm.HHdEA.CooperativeAlgorithm;
+import br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.CooperativeAlgorithm;
 import java.util.Comparator;
 import java.util.List;
 import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAII;
@@ -65,4 +65,11 @@ public class CONSGAII<S extends Solution<?>> extends NSGAII implements Cooperati
     public List<S> getOffspring() {
         return offspringPopulation;
     }
+
+    @Override
+    public void overridePopulation(List<S> external) {
+        population.clear();
+        population.addAll(external);
+    }
+
 }

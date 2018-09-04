@@ -16,7 +16,7 @@
  */
 package br.ufpr.inf.cbio.hhdea.algorithm.HypE;
 
-import br.ufpr.inf.cbio.hhdea.algorithm.HHdEA.CooperativeAlgorithm;
+import br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.CooperativeAlgorithm;
 import java.util.ArrayList;
 import java.util.List;
 import org.uma.jmetal.solution.Solution;
@@ -93,6 +93,12 @@ public class COHypE<S extends Solution<?>> extends HypE implements CooperativeAl
     public void receive(List<S> solutions) {
         offspringPopulation = solutions;
         environmentalSelection();
+    }
+
+    @Override
+    public void overridePopulation(List<S> external) {
+        population.clear();
+        population.addAll(external);
     }
 
 }

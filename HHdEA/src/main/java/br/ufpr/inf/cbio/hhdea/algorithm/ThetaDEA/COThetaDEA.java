@@ -16,7 +16,7 @@
  */
 package br.ufpr.inf.cbio.hhdea.algorithm.ThetaDEA;
 
-import br.ufpr.inf.cbio.hhdea.algorithm.HHdEA.CooperativeAlgorithm;
+import br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.CooperativeAlgorithm;
 import java.util.ArrayList;
 import java.util.List;
 import org.uma.jmetal.solution.Solution;
@@ -77,6 +77,12 @@ public class COThetaDEA<S extends Solution<?>> extends ThetaDEA implements Coope
     @Override
     public List<S> getOffspring() {
         return offspringPopulation_;
+    }
+
+    @Override
+    public void overridePopulation(List<S> external) {
+        population_.clear();
+        population_.addAll(external);
     }
 
 }

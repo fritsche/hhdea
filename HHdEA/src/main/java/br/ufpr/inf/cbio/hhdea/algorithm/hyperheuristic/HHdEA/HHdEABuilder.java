@@ -14,8 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package br.ufpr.inf.cbio.hhdea.algorithm.HHdEA;
+package br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.HHdEA;
 
+import br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.CooperativeAlgorithm;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.SelectionFunction;
+import br.ufpr.inf.cbio.hhdea.metrics.fir.FitnessImprovementRate;
 import java.util.ArrayList;
 import java.util.List;
 import org.uma.jmetal.problem.Problem;
@@ -34,6 +37,8 @@ public class HHdEABuilder<S extends Solution<?>> implements AlgorithmBuilder<HHd
     private int maxGenerations;
     private final Problem problem;
     private String name;
+    private SelectionFunction<CooperativeAlgorithm> selection;
+    private FitnessImprovementRate fir;
 
     public HHdEABuilder(Problem problem) {
         this.problem = problem;
@@ -84,9 +89,28 @@ public class HHdEABuilder<S extends Solution<?>> implements AlgorithmBuilder<HHd
         return this;
     }
 
+    public SelectionFunction<CooperativeAlgorithm> getSelection() {
+        return selection;
+    }
+
+    public HHdEABuilder setSelection(SelectionFunction<CooperativeAlgorithm> selection) {
+        this.selection = selection;
+        return this;
+    }
+
+    public FitnessImprovementRate getFir() {
+        return fir;
+    }
+
+    public HHdEABuilder setFir(FitnessImprovementRate fir) {
+        this.fir = fir;
+        return this;
+    }
+
     @Override
     public HHdEA build() {
-        return new HHdEA(algorithms, populationSize, maxGenerations, problem, name);
+        return new HHdEA(algorithms, populationSize, maxGenerations, problem, name,
+                selection, fir);
     }
 
 }
