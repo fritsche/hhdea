@@ -16,16 +16,25 @@
  */
 package br.ufpr.inf.cbio.hhdea.config;
 
+import br.ufpr.inf.cbio.hhdea.algorithm.HypE.HypE;
 import br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.HHdEA.HHdEAConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.HypE.HypEConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.MOEAD.MOEADConfiguration;
+import br.ufpr.inf.cbio.hhdea.algorithm.MOEADD.MOEADD;
 import br.ufpr.inf.cbio.hhdea.algorithm.MOEADD.MOEADDConfiguration;
+import br.ufpr.inf.cbio.hhdea.algorithm.MOMBI2.MOMBI2;
 import br.ufpr.inf.cbio.hhdea.algorithm.MOMBI2.MOMBI2Configuration;
 import br.ufpr.inf.cbio.hhdea.algorithm.NSGAII.NSGAIIConfiguration;
+import br.ufpr.inf.cbio.hhdea.algorithm.NSGAIII.NSGAIII;
 import br.ufpr.inf.cbio.hhdea.algorithm.NSGAIII.NSGAIIIConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.SPEA2.SPEA2Configuration;
+import br.ufpr.inf.cbio.hhdea.algorithm.SPEA2SDE.SPEA2SDE;
 import br.ufpr.inf.cbio.hhdea.algorithm.SPEA2SDE.SPEA2SDEConfiguration;
+import br.ufpr.inf.cbio.hhdea.algorithm.ThetaDEA.ThetaDEA;
 import br.ufpr.inf.cbio.hhdea.algorithm.ThetaDEA.ThetaDEAConfiguration;
+import org.uma.jmetal.algorithm.multiobjective.moead.MOEAD;
+import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAII;
+import org.uma.jmetal.algorithm.multiobjective.spea2.SPEA2;
 
 /**
  *
@@ -34,28 +43,26 @@ import br.ufpr.inf.cbio.hhdea.algorithm.ThetaDEA.ThetaDEAConfiguration;
 public class AlgorithmConfigurationFactory {
 
     public static AlgorithmConfiguration getAlgorithmConfiguration(String algorithm) {
-        switch (algorithm) {
-            case "ThetaDEA":
-                return new ThetaDEAConfiguration();
-            case "NSGAIII":
-                return new NSGAIIIConfiguration();
-            case "MOEADD":
-                return new MOEADDConfiguration();
-            case "MOEAD":
-                return new MOEADConfiguration();
-            case "NSGAII":
-                return new NSGAIIConfiguration();
-            case "SPEA2":
-                return new SPEA2Configuration();
-            case "SPEA2SDE":
-                return new SPEA2SDEConfiguration();
-            case "HypE":
-                return new HypEConfiguration();
-            case "MOMBI2":
-                return new MOMBI2Configuration();
-            default:
-                return new HHdEAConfiguration(algorithm);
+        if (algorithm.equals(ThetaDEA.class.getSimpleName())) {
+            return new ThetaDEAConfiguration();
+        } else if (algorithm.equals(NSGAIII.class.getSimpleName())) {
+            return new NSGAIIIConfiguration();
+        } else if (algorithm.equals(MOEADD.class.getSimpleName())) {
+            return new MOEADDConfiguration();
+        } else if (algorithm.equals(MOEAD.class.getSimpleName())) {
+            return new MOEADConfiguration();
+        } else if (algorithm.equals(NSGAII.class.getSimpleName())) {
+            return new NSGAIIConfiguration();
+        } else if (algorithm.equals(SPEA2.class.getSimpleName())) {
+            return new SPEA2Configuration();
+        } else if (algorithm.equals(SPEA2SDE.class.getSimpleName())) {
+            return new SPEA2SDEConfiguration();
+        } else if (algorithm.equals(HypE.class.getSimpleName())) {
+            return new HypEConfiguration();
+        } else if (algorithm.equals(MOMBI2.class.getSimpleName())) {
+            return new MOMBI2Configuration();
+        } else {
+            return new HHdEAConfiguration(algorithm);
         }
     }
-
 }

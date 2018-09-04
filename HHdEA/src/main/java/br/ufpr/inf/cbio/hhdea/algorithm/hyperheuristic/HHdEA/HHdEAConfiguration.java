@@ -45,8 +45,8 @@ public class HHdEAConfiguration<S extends Solution> implements AlgorithmConfigur
     private final String name;
     private SelectionFunction<CooperativeAlgorithm> selection;
     private FitnessImprovementRate fir;
-    Problem problem;
-    int popSize;
+    private Problem problem;
+    private int popSize;
 
     public HHdEAConfiguration(String name) {
         this.name = name;
