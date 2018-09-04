@@ -14,8 +14,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package br.ufpr.inf.cbio.hhdea.algorithm.HHdEA;
+package br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.HHdEA;
 
+import br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.CooperativeAlgorithm;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.CastroRoulette;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.SelectionFunction;
 import br.ufpr.inf.cbio.hhdea.metrics.MetricsEvaluator;
@@ -39,22 +40,24 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
     protected List<CooperativeAlgorithm<S>> algorithms;
     private final int populationSize;
     private final String name;
+    private final SelectionFunction<CooperativeAlgorithm> selection;
     private MetricsEvaluator metrics;
     private int[] count;
 
-    public HHdEA(List<CooperativeAlgorithm<S>> algorithms, int populationSize, int maxGenerations, Problem problem, String name) {
+    public HHdEA(List<CooperativeAlgorithm<S>> algorithms, int populationSize, int maxGenerations, Problem problem, String name, SelectionFunction<CooperativeAlgorithm> selection) {
         this.algorithms = algorithms;
         this.populationSize = populationSize;
         this.maxGenerations = maxGenerations;
         this.problem = problem;
         this.name = name;
+        this.selection = selection;
         this.count = new int[algorithms.size()];
     }
 
     @Override
     public void run() {
 
-        SelectionFunction<CooperativeAlgorithm> selection = new CastroRoulette<>();
+//        SelectionFunction<CooperativeAlgorithm> selection = new CastroRoulette<>();
         for (CooperativeAlgorithm alg : algorithms) {
             alg.init(populationSize);
             selection.add(alg);
@@ -110,7 +113,7 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
             System.out.print(count[a] + "\t");
         }
         System.out.println();
-        
+
     }
 
     @Override

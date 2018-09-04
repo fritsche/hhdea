@@ -16,7 +16,7 @@
  */
 package br.ufpr.inf.cbio.hhdea.algorithm.SPEA2;
 
-import br.ufpr.inf.cbio.hhdea.algorithm.HHdEA.CooperativeAlgorithm;
+import br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.CooperativeAlgorithm;
 import java.util.ArrayList;
 import java.util.List;
 import org.uma.jmetal.algorithm.multiobjective.spea2.SPEA2;
@@ -80,7 +80,7 @@ public class COSPEA2<S extends Solution<?>> extends SPEA2<S> implements Cooperat
     }
 
     @Override
-    public void copyPopulation(List<S> external) {
+    public void overridePopulation(List<S> external) {
         population.clear();
         population.addAll(external);
     }

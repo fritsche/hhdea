@@ -19,6 +19,10 @@ package br.ufpr.inf.cbio.hhdea.hyperheuristic.selection;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
 /**
+ * Roulette wheel heuristic selection method. (Castro 2018) Castro, O.R.,
+ * Fritsche, G.M. & Pozo A. Evaluating selection methods on hyper-heuristic
+ * multi-objective particle swarm optimization. J Heuristics (2018) 24: 581.
+ * https://doi.org/10.1007/s10732-018-9369-x
  *
  * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
  * @param <T>
@@ -73,7 +77,6 @@ public class CastroRoulette<T> extends SelectionFunction<T> {
 //        for (int i = 0; i < size; i++) {
 //            System.out.println("PROBABILITY:\t" + lowlevelheuristics.get(i).getClass().getSimpleName() + "\t" + probabilities[i]);
 //        }
-
         if (reward >= 0.0) {
             probabilities[s] += increment;
             double dsize = (double) size;

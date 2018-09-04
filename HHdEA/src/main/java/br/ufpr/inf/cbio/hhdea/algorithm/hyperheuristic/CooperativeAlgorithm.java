@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package br.ufpr.inf.cbio.hhdea.algorithm.HHdEA;
+package br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic;
 
 import java.util.List;
 import org.uma.jmetal.solution.Solution;
@@ -42,6 +42,6 @@ public interface CooperativeAlgorithm<S extends Solution<?>> {
      *
      * @param external
      */
-    public void copyPopulation(List<S> external);
+    public void overridePopulation(List<S> external);
 
 }

@@ -16,7 +16,7 @@
  */
 package br.ufpr.inf.cbio.hhdea.config;
 
-import br.ufpr.inf.cbio.hhdea.algorithm.HHdEA.HHdEAConfiguration;
+import br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.HHdEA.HHdEAConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.HypE.HypEConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.MOEAD.MOEADConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.MOEADD.MOEADDConfiguration;

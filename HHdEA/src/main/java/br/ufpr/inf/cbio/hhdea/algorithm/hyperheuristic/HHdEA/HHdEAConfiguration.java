@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package br.ufpr.inf.cbio.hhdea.algorithm.HHdEA;
+package br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.HHdEA;
 
 import br.ufpr.inf.cbio.hhdea.algorithm.HypE.COHypEConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.MOEAD.COMOEADConfiguration;
@@ -25,7 +25,10 @@ import br.ufpr.inf.cbio.hhdea.algorithm.NSGAIII.CONSGAIIIConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.SPEA2.COSPEA2Configuration;
 import br.ufpr.inf.cbio.hhdea.algorithm.SPEA2SDE.COSPEA2SDEConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.ThetaDEA.COThetaDEAConfiguration;
+import br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.CooperativeAlgorithm;
 import br.ufpr.inf.cbio.hhdea.config.AlgorithmConfiguration;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.CastroRoulette;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.SelectionFunction;
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
@@ -38,6 +41,7 @@ import org.uma.jmetal.solution.Solution;
 public class HHdEAConfiguration<S extends Solution> implements AlgorithmConfiguration<Algorithm<S>> {
 
     private final String name;
+    private SelectionFunction<CooperativeAlgorithm> selection;
 
     public HHdEAConfiguration(String name) {
         this.name = name;
@@ -79,29 +83,26 @@ public class HHdEAConfiguration<S extends Solution> implements AlgorithmConfigur
                 builder.addAlgorithm(new COMOEADDConfiguration().configure(problem, popSize, generations));
                 break;
             default: // ALL
-                // for (int i = 0; i < 6; i++) {
                 builder
                         .addAlgorithm(new COSPEA2Configuration().configure(problem, popSize, generations))
                         .addAlgorithm(new COMOEADConfiguration().configure(problem, popSize, generations))
                         .addAlgorithm(new CONSGAIIConfiguration().configure(problem, popSize, generations))
                         .addAlgorithm(new COMOEADDConfiguration().configure(problem, popSize, generations))
-                        .addAlgorithm(new COMOMBI2Configuration().configure(problem, popSize, generations))                        
+                        .addAlgorithm(new COMOMBI2Configuration().configure(problem, popSize, generations))
                         .addAlgorithm(new CONSGAIIIConfiguration().configure(problem, popSize, generations))
                         .addAlgorithm(new COThetaDEAConfiguration().configure(problem, popSize, generations))
                         .addAlgorithm(new COSPEA2SDEConfiguration().configure(problem, popSize, generations))
-                        .addAlgorithm(new COHypEConfiguration().configure(problem, popSize, generations))
-                        ;
-            // }
+                        .addAlgorithm(new COHypEConfiguration().configure(problem, popSize, generations));
         }
 
-        return builder.setName(name)
+        return builder.setName(name).setSelection(selection)
                 .setMaxGenerations(generations)
                 .setPopulationSize(popSize).build();
     }
 
     @Override
     public void setup() {
-
+        this.selection = new CastroRoulette<>();
     }
 
 }

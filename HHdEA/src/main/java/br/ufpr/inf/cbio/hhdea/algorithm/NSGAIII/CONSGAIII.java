@@ -16,7 +16,7 @@
  */
 package br.ufpr.inf.cbio.hhdea.algorithm.NSGAIII;
 
-import br.ufpr.inf.cbio.hhdea.algorithm.HHdEA.CooperativeAlgorithm;
+import br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.CooperativeAlgorithm;
 import java.util.ArrayList;
 import java.util.List;
 import org.uma.jmetal.solution.Solution;
@@ -126,7 +126,7 @@ class CONSGAIII<S extends Solution<?>> extends NSGAIII<S> implements Cooperative
     }
 
     @Override
-    public void copyPopulation(List<S> external) {
+    public void overridePopulation(List<S> external) {
         population_.clear();
         population_.addAll(external);
     }
