@@ -24,6 +24,7 @@ import org.uma.jmetal.operator.SelectionOperator;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
+import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
 /**
  *
@@ -72,6 +73,9 @@ public class COMOMBI2<S extends Solution<?>> extends MOMBI2<S> implements Cooper
     @Override
     public void overridePopulation(List<S> external) {
         this.population = external;
+        while (population.size() > getMaxPopulationSize()) {
+            population.remove(JMetalRandom.getInstance().nextInt(0, population.size() - 1));
+        }
     }
 
 }

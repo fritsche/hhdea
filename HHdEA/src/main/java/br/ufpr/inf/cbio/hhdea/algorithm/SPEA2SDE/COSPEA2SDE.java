@@ -25,6 +25,7 @@ import org.uma.jmetal.operator.SelectionOperator;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
+import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
 /**
  *
@@ -80,5 +81,8 @@ public class COSPEA2SDE<S extends Solution<?>> extends SPEA2SDE<S> implements Co
     @Override
     public void overridePopulation(List<S> external) {
         population = external;
+        while (population.size() > getMaxPopulationSize()) {
+            population.remove(JMetalRandom.getInstance().nextInt(0, population.size() - 1));
+        }
     }
 }

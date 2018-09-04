@@ -102,5 +102,8 @@ public class COMOEAD<S extends Solution<?>> extends MOEAD implements Cooperative
     @Override
     public void overridePopulation(List<S> external) {
         population = (List<DoubleSolution>) external;
+        while (population.size() > populationSize) {
+            population.remove(JMetalRandom.getInstance().nextInt(0, population.size() - 1));
+        }
     }
 }

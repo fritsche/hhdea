@@ -20,6 +20,7 @@ import br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.CooperativeAlgorithm;
 import java.util.ArrayList;
 import java.util.List;
 import org.uma.jmetal.solution.Solution;
+import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
 /**
  *
@@ -82,6 +83,9 @@ public class COThetaDEA<S extends Solution<?>> extends ThetaDEA implements Coope
     @Override
     public void overridePopulation(List<S> external) {
         population_ = external;
+        while (population_.size() > populationSize_) {
+            population_.remove(JMetalRandom.getInstance().nextInt(0, population_.size() - 1));
+        }
     }
 
 }

@@ -82,7 +82,16 @@ public class Traditional<S extends Solution<?>> implements Algorithm<List<S>> {
         population = evaluator.evaluate(population, getProblem());
         int generations = 1;
         while (generations <= maxGenerations) {
-
+            // heuristic selection
+            CooperativeAlgorithm<S> alg = selection.getNext();
+            count[algorithms.indexOf(alg)]++;
+            // send population to algorithm
+            
+            List<S> populationCopy = new ArrayList<>();
+            
+            
+            alg.overridePopulation(population);
+            
         }
     }
 
