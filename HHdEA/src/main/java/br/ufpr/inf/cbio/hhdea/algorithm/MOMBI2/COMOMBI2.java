@@ -40,7 +40,7 @@ public class COMOMBI2<S extends Solution<?>> extends MOMBI2<S> implements Cooper
 
     @Override
     public void init(int populationSize) {
-        this.overridePopulation(createInitialPopulation());
+        this.setPopulation(createInitialPopulation());
         this.evaluatePopulation(this.getPopulation());
         this.initProgress();
         this.specificMOEAComputations();
@@ -52,14 +52,14 @@ public class COMOMBI2<S extends Solution<?>> extends MOMBI2<S> implements Cooper
         matingPopulation = selection(this.getPopulation());
         offspringPopulation = reproduction(matingPopulation);
         offspringPopulation = evaluatePopulation(offspringPopulation);
-        this.overridePopulation(replacement(this.getPopulation(), offspringPopulation));
+        this.setPopulation(replacement(this.getPopulation(), offspringPopulation));
         // specific GA needed computations
         this.specificMOEAComputations();
     }
 
     @Override
     public void receive(List<S> solutions) {
-        this.overridePopulation(replacement(this.getPopulation(), solutions));
+        this.setPopulation(replacement(this.getPopulation(), solutions));
         // specific GA needed computations
         this.specificMOEAComputations();
     }
