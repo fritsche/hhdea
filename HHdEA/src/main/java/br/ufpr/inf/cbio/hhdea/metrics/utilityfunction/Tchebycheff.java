@@ -25,7 +25,7 @@ import org.uma.jmetal.util.point.Point;
 public class Tchebycheff implements UtilityFunction {
 
     @Override
-    public double execute(double[] lambda, Point point, int m, double[] minimumValues, double[] maximumValues) {
+    public double execute(double[] lambda, Point point, int m) {
         double result = lambda[0] * Math.abs(point.getDimensionValue(0));
         for (int n = 1; n < m; n++) {
             result = Math.max(result,

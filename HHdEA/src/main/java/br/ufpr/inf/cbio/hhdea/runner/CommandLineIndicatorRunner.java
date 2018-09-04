@@ -1,6 +1,6 @@
 package br.ufpr.inf.cbio.hhdea.runner;
 
-import br.ufpr.inf.cbio.hhdea.metrics.HypervolumeApprox;
+import br.ufpr.inf.cbio.hhdea.metrics.indicator.HypervolumeApprox;
 import org.uma.jmetal.qualityindicator.QualityIndicator;
 import org.uma.jmetal.qualityindicator.impl.Epsilon;
 import org.uma.jmetal.qualityindicator.impl.ErrorRatio;

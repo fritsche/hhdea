@@ -29,6 +29,8 @@ import br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.CooperativeAlgorithm;
 import br.ufpr.inf.cbio.hhdea.config.AlgorithmConfiguration;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.CastroRoulette;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.SelectionFunction;
+import br.ufpr.inf.cbio.hhdea.metrics.fir.FitnessImprovementRate;
+import br.ufpr.inf.cbio.hhdea.metrics.fir.R2TchebycheffFIR;
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
@@ -42,6 +44,9 @@ public class HHdEAConfiguration<S extends Solution> implements AlgorithmConfigur
 
     private final String name;
     private SelectionFunction<CooperativeAlgorithm> selection;
+    private FitnessImprovementRate fir;
+    Problem problem;
+    int popSize;
 
     public HHdEAConfiguration(String name) {
         this.name = name;
@@ -49,6 +54,9 @@ public class HHdEAConfiguration<S extends Solution> implements AlgorithmConfigur
 
     @Override
     public Algorithm<S> configure(Problem problem, int popSize, int generations) {
+
+        this.problem = problem;
+        this.popSize = popSize;
 
         setup();
 
@@ -95,14 +103,14 @@ public class HHdEAConfiguration<S extends Solution> implements AlgorithmConfigur
                         .addAlgorithm(new COHypEConfiguration().configure(problem, popSize, generations));
         }
 
-        return builder.setName(name).setSelection(selection)
-                .setMaxGenerations(generations)
-                .setPopulationSize(popSize).build();
+        return builder.setName(name).setSelection(selection).setFir(fir).
+                setMaxGenerations(generations).setPopulationSize(popSize).build();
     }
 
     @Override
     public void setup() {
         this.selection = new CastroRoulette<>();
+        this.fir = new R2TchebycheffFIR(problem, popSize);
     }
 
 }

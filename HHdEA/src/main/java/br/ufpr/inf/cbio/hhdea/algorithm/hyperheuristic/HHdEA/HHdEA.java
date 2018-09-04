@@ -17,9 +17,8 @@
 package br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.HHdEA;
 
 import br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.CooperativeAlgorithm;
-import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.CastroRoulette;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.SelectionFunction;
-import br.ufpr.inf.cbio.hhdea.metrics.MetricsEvaluator;
+import br.ufpr.inf.cbio.hhdea.metrics.fir.FitnessImprovementRate;
 import java.util.ArrayList;
 import java.util.List;
 import org.uma.jmetal.algorithm.Algorithm;
@@ -41,23 +40,25 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
     private final int populationSize;
     private final String name;
     private final SelectionFunction<CooperativeAlgorithm> selection;
-    private MetricsEvaluator metrics;
-    private int[] count;
+    private final int[] count;
+    private final FitnessImprovementRate fir;
 
-    public HHdEA(List<CooperativeAlgorithm<S>> algorithms, int populationSize, int maxGenerations, Problem problem, String name, SelectionFunction<CooperativeAlgorithm> selection) {
+    public HHdEA(List<CooperativeAlgorithm<S>> algorithms, int populationSize, int maxGenerations,
+            Problem problem, String name, SelectionFunction<CooperativeAlgorithm> selection,
+            FitnessImprovementRate fir) {
         this.algorithms = algorithms;
         this.populationSize = populationSize;
         this.maxGenerations = maxGenerations;
         this.problem = problem;
         this.name = name;
         this.selection = selection;
+        this.fir = fir;
         this.count = new int[algorithms.size()];
     }
 
     @Override
     public void run() {
 
-//        SelectionFunction<CooperativeAlgorithm> selection = new CastroRoulette<>();
         for (CooperativeAlgorithm alg : algorithms) {
             alg.init(populationSize);
             selection.add(alg);
@@ -65,7 +66,6 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
         selection.init();
 
         int generations = algorithms.size();
-        this.metrics = new MetricsEvaluator(problem, populationSize);
 
         while (generations <= maxGenerations) {
 
@@ -88,11 +88,11 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
             }
 
             // extract metrics
-            metrics.extractMetrics(parents, offspring);
-            // metrics.log(alg.getClass().getSimpleName());
+            double value = fir.getFitnessImprovementRate(parents, offspring);
 
             // compute reward
-            selection.creditAssignment(metrics.getMetric(MetricsEvaluator.Metrics.FIR_R2_THC));
+            System.out.println("FIR: " + value);
+            selection.creditAssignment(value);
 
             // move acceptance
             // ALL MOVES
@@ -124,7 +124,8 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
         }
 
         if (problem.getName().startsWith("MaF")) {
-            return MOEADUtils.getSubsetOfEvenlyDistributedSolutions(SolutionListUtils.getNondominatedSolutions(union), 240);
+            return MOEADUtils.getSubsetOfEvenlyDistributedSolutions(
+                    SolutionListUtils.getNondominatedSolutions(union), 240);
         } else {
             return SolutionListUtils.getNondominatedSolutions(union);
         }
