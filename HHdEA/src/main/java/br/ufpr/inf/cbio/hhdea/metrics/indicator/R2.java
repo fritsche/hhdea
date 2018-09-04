@@ -1,4 +1,4 @@
-package br.ufpr.inf.cbio.hhdea.metrics;
+package br.ufpr.inf.cbio.hhdea.metrics.indicator;
 
 import br.ufpr.inf.cbio.hhdea.metrics.utilityfunction.UtilityFunction;
 import org.uma.jmetal.qualityindicator.QualityIndicator;
@@ -164,7 +164,7 @@ public class R2<Evaluate extends List<? extends Solution<?>>>
         double[][] matrix = new double[front.getNumberOfPoints()][lambda.length];
         for (int i = 0; i < front.getNumberOfPoints(); i++) {
             for (int j = 0; j < lambda.length; j++) {
-                matrix[i][j] = function.execute(lambda[j], front.getPoint(i), numberOfObjectives, minimumValues, maximumValues);
+                matrix[i][j] = function.execute(lambda[j], front.getPoint(i), numberOfObjectives);
             }
         }
 
@@ -180,7 +180,7 @@ public class R2<Evaluate extends List<? extends Solution<?>>>
     }
 
     private Front getNormalizedFront(Front front, double[] maximumValues, double[] minimumValues) {
-        
+
         Front normalizedFront = new ArrayFront(front);
         int numberOfPointDimensions = front.getPoint(0).getNumberOfDimensions();
 
@@ -190,8 +190,8 @@ public class R2<Evaluate extends List<? extends Solution<?>>>
                     normalizedFront.getPoint(i).setDimensionValue(j, 0.0);
                 } else {
 
-                normalizedFront.getPoint(i).setDimensionValue(j, (front.getPoint(i).getDimensionValue(j)
-                        - minimumValues[j]) / (maximumValues[j] - minimumValues[j]));
+                    normalizedFront.getPoint(i).setDimensionValue(j, (front.getPoint(i).getDimensionValue(j)
+                            - minimumValues[j]) / (maximumValues[j] - minimumValues[j]));
                 }
             }
         }

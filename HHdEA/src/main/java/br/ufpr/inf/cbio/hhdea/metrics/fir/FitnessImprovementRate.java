@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Gian Fritsche <gmfritsche@inf.ufpr.br>
+ * Copyright (C) 2018 Gian Fritsche <gmfritsche at inf.ufpr.br>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,24 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package br.ufpr.inf.cbio.hhdea.metrics.utilityfunction;
+package br.ufpr.inf.cbio.hhdea.metrics.fir;
 
-import org.uma.jmetal.util.point.Point;
+import java.util.List;
+import org.uma.jmetal.solution.Solution;
 
 /**
  *
- * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
+ * @author Gian Fritsche <gmfritsche at inf.ufpr.br>
+ * @param <S>
  */
-public class ASF implements UtilityFunction {
+public interface FitnessImprovementRate<S extends Solution<?>> {
 
-    @Override
-    public double execute(double[] lambda, Point point, int m) {
-
-        double result = point.getDimensionValue(0) / ((lambda[0] > 0.0) ? lambda[0] : 1e-2);
-        for (int n = 1; n < m; n++) {
-            result = Math.max(result, point.getDimensionValue(n) / ((lambda[n] > 0.0) ? lambda[n] : 1e-2));
-        }
-        return result;
-    }
+    public double getFitnessImprovementRate(List<S> parents, List<S> offspring);
 
 }
