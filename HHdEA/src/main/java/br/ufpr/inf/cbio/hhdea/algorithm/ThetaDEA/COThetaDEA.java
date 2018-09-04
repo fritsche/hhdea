@@ -81,8 +81,7 @@ public class COThetaDEA<S extends Solution<?>> extends ThetaDEA implements Coope
 
     @Override
     public void overridePopulation(List<S> external) {
-        population_.clear();
-        population_.addAll(external);
+        population_ = external;
     }
 
 }

@@ -17,10 +17,14 @@
 package br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.traditional;
 
 import br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.CooperativeAlgorithm;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.SelectionFunction;
+import br.ufpr.inf.cbio.hhdea.metrics.fir.FitnessImprovementRate;
 import java.util.List;
+import java.util.logging.Level;
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
+import org.uma.jmetal.util.JMetalLogger;
 
 /**
  * An online learning hyper-heuristic selection based on low-level heursitics.
@@ -41,13 +45,23 @@ public class Traditional<S extends Solution<?>> implements Algorithm<List<S>> {
     private final int populationSize;
     private final int maxGenerations;
     private final Problem problem;
+    private final SelectionFunction<CooperativeAlgorithm> selection;
+    private final int[] count;
+    private final FitnessImprovementRate fir;
 
     public Traditional(List<CooperativeAlgorithm<S>> algorithms, int populationSize,
-            int maxGenerations, Problem problem) {
+            int maxGenerations, Problem problem,
+            SelectionFunction<CooperativeAlgorithm> selection,
+            FitnessImprovementRate fir) {
         this.algorithms = algorithms;
         this.populationSize = populationSize;
         this.maxGenerations = maxGenerations;
         this.problem = problem;
+        this.selection = selection;
+        JMetalLogger.logger.log(Level.CONFIG, "Selection Function: {0}", selection.getClass());
+        this.fir = fir;
+        JMetalLogger.logger.log(Level.CONFIG, "Fitness Improvement Rate: {0}", selection.getClass());
+        this.count = new int[algorithms.size()];
     }
 
     @Override

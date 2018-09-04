@@ -68,8 +68,7 @@ public class CONSGAII<S extends Solution<?>> extends NSGAII implements Cooperati
 
     @Override
     public void overridePopulation(List<S> external) {
-        population.clear();
-        population.addAll(external);
+        population = external;
     }
 
 }

@@ -81,7 +81,6 @@ public class COSPEA2<S extends Solution<?>> extends SPEA2<S> implements Cooperat
 
     @Override
     public void overridePopulation(List<S> external) {
-        population.clear();
-        population.addAll(external);
+        population = external;
     }
 }

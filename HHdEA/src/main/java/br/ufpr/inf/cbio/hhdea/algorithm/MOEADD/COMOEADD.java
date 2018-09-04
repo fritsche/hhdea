@@ -30,7 +30,7 @@ import org.uma.jmetal.util.solutionattribute.impl.DominanceRanking;
  */
 public class COMOEADD<S extends Solution<?>> extends MOEADD<S> implements CooperativeAlgorithm<S> {
 
-    private List<S> offspring;
+    private final List<S> offspring;
 
     public COMOEADD(MOEADDBuilder builder) {
         super(builder);
@@ -160,7 +160,6 @@ public class COMOEADD<S extends Solution<?>> extends MOEADD<S> implements Cooper
 
     @Override
     public void overridePopulation(List<S> external) {
-        population_.clear();
-        population_.addAll(external);
+        population_ = external;
     }
 }

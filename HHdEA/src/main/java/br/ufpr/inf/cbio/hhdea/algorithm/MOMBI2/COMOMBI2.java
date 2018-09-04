@@ -71,8 +71,7 @@ public class COMOMBI2<S extends Solution<?>> extends MOMBI2<S> implements Cooper
 
     @Override
     public void overridePopulation(List<S> external) {
-        this.population.clear();
-        this.population.addAll(external);
+        this.population = external;
     }
 
 }

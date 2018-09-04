@@ -97,8 +97,7 @@ public class COHypE<S extends Solution<?>> extends HypE implements CooperativeAl
 
     @Override
     public void overridePopulation(List<S> external) {
-        population.clear();
-        population.addAll(external);
+        population = external;
     }
 
 }

@@ -127,8 +127,7 @@ class CONSGAIII<S extends Solution<?>> extends NSGAIII<S> implements Cooperative
 
     @Override
     public void overridePopulation(List<S> external) {
-        population_.clear();
-        population_.addAll(external);
+        population_ = external;
     }
 
 }

@@ -102,7 +102,6 @@ public class COMOEAD<S extends Solution<?>> extends MOEAD implements Cooperative
 
     @Override
     public void overridePopulation(List<S> external) {
-        population.clear();
-        population.addAll((Collection<? extends DoubleSolution>) external);
+        population = (List<DoubleSolution>) external;
     }
 }
