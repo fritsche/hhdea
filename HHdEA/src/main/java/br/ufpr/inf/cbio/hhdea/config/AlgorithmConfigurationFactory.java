@@ -32,6 +32,8 @@ import br.ufpr.inf.cbio.hhdea.algorithm.SPEA2SDE.SPEA2SDE;
 import br.ufpr.inf.cbio.hhdea.algorithm.SPEA2SDE.SPEA2SDEConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.ThetaDEA.ThetaDEA;
 import br.ufpr.inf.cbio.hhdea.algorithm.ThetaDEA.ThetaDEAConfiguration;
+import br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.traditional.Traditional;
+import br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.traditional.TraditionalConfiguration;
 import org.uma.jmetal.algorithm.multiobjective.moead.MOEAD;
 import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAII;
 import org.uma.jmetal.algorithm.multiobjective.spea2.SPEA2;
@@ -61,6 +63,8 @@ public class AlgorithmConfigurationFactory {
             return new HypEConfiguration();
         } else if (algorithm.equals(MOMBI2.class.getSimpleName())) {
             return new MOMBI2Configuration();
+        } else if (algorithm.equals(Traditional.class.getSimpleName())) {
+            return new TraditionalConfiguration();
         } else {
             return new HHdEAConfiguration(algorithm);
         }
