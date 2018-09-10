@@ -18,6 +18,7 @@ package br.ufpr.inf.cbio.hhdea.algorithm.MOEAD;
 
 import br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.CooperativeAlgorithm;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import org.uma.jmetal.algorithm.multiobjective.moead.MOEAD;
 import org.uma.jmetal.algorithm.multiobjective.moead.util.MOEADUtils;
@@ -44,7 +45,20 @@ public class COMOEAD<S extends Solution<?>> extends MOEAD implements Cooperative
 
     @Override
     public void init(int populationSize) {
-        initializePopulation();
+        List<DoubleSolution> initial = new ArrayList<>(populationSize);
+        for (int i = 0; i < populationSize; i++) {
+            DoubleSolution newSolution = (DoubleSolution) problem.createSolution();
+            problem.evaluate(newSolution);
+            initial.add(newSolution);
+        }
+        init((List<S>) initial);
+    }
+
+    @Override
+    public void init(List<S> initialPopulation) {
+        populationSize = initialPopulation.size();
+        population = new ArrayList<>(populationSize);
+        population.addAll((Collection<? extends DoubleSolution>) initialPopulation);
         initializeUniformWeight();
         initializeNeighborhood();
         initializeIdealPoint();
@@ -99,11 +113,4 @@ public class COMOEAD<S extends Solution<?>> extends MOEAD implements Cooperative
         return offspring;
     }
 
-    @Override
-    public void overridePopulation(List<S> external) {
-        population = (List<DoubleSolution>) external;
-        while (population.size() > populationSize) {
-            population.remove(JMetalRandom.getInstance().nextInt(0, population.size() - 1));
-        }
-    }
 }

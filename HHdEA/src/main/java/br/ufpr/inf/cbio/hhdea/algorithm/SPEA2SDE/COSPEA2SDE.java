@@ -25,7 +25,6 @@ import org.uma.jmetal.operator.SelectionOperator;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
-import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
 /**
  *
@@ -54,9 +53,16 @@ public class COSPEA2SDE<S extends Solution<?>> extends SPEA2SDE<S> implements Co
     @Override
     public void init(int populationSize) {
         setMaxPopulationSize(populationSize);
-        population = createInitialPopulation();
-        population = evaluatePopulation(population);
-        this.environmentalSelectionOverride = new EnvironmentalSelectionSDE<>(populationSize);
+        List<S> initial = createInitialPopulation();
+        initial = evaluatePopulation(initial);
+        init(initial);
+    }
+
+    @Override
+    public void init(List<S> initialPopulation) {
+        setMaxPopulationSize(initialPopulation.size());
+        population = initialPopulation;
+        this.environmentalSelectionOverride = new EnvironmentalSelectionSDE<>(getMaxPopulationSize());
     }
 
     @Override
@@ -78,11 +84,4 @@ public class COSPEA2SDE<S extends Solution<?>> extends SPEA2SDE<S> implements Co
         return offspringPopulation;
     }
 
-    @Override
-    public void overridePopulation(List<S> external) {
-        population = external;
-        while (population.size() > getMaxPopulationSize()) {
-            population.remove(JMetalRandom.getInstance().nextInt(0, population.size() - 1));
-        }
-    }
 }

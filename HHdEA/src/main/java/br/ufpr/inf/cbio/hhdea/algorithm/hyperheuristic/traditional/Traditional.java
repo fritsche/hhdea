@@ -94,7 +94,7 @@ public class Traditional<S extends Solution<?>> implements Algorithm<List<S>> {
                 populationCopy.add((S) s.copy());
             }
             // send the copy to the selected algorithm
-            alg.overridePopulation(populationCopy);
+            alg.init(populationCopy);
             // apply heuristic
             alg.doIteration();
             generations++;

@@ -20,7 +20,6 @@ import br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.CooperativeAlgorithm;
 import java.util.ArrayList;
 import java.util.List;
 import org.uma.jmetal.solution.Solution;
-import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
 /**
  *
@@ -50,9 +49,20 @@ public class COThetaDEA<S extends Solution<?>> extends ThetaDEA implements Coope
 
     @Override
     public void init(int populationSize) {
-        this.populationSize_ = populationSize;
+        List<S> initial = new ArrayList<>(populationSize_);
+        for (int i = 0; i < populationSize_; i++) {
+            S newSolution = (S) problem_.createSolution();
+            problem_.evaluate(newSolution);
+            initial.add(newSolution);
+        }
+        init(initial);
+    }
+
+    @Override
+    public void init(List<S> initialPopulation) {
+        this.populationSize_ = initialPopulation.size();
         initializeUniformWeight();
-        initPopulation();   // initialize the population;
+        population_ = initialPopulation;
         initIdealPoint();  // initialize the ideal point
         initNadirPoint();    // initialize the nadir point
         initExtremePoints(); // initialize the extreme points
@@ -78,14 +88,6 @@ public class COThetaDEA<S extends Solution<?>> extends ThetaDEA implements Coope
     @Override
     public List<S> getOffspring() {
         return offspringPopulation_;
-    }
-
-    @Override
-    public void overridePopulation(List<S> external) {
-        population_ = external;
-        while (population_.size() > populationSize_) {
-            population_.remove(JMetalRandom.getInstance().nextInt(0, population_.size() - 1));
-        }
     }
 
 }

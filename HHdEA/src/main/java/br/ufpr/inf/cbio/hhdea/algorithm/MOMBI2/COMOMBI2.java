@@ -24,7 +24,6 @@ import org.uma.jmetal.operator.SelectionOperator;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
-import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
 /**
  *
@@ -41,7 +40,13 @@ public class COMOMBI2<S extends Solution<?>> extends MOMBI2<S> implements Cooper
 
     @Override
     public void init(int populationSize) {
-        this.setPopulation(createInitialPopulation());
+        setMaxPopulationSize(populationSize);
+        init(createInitialPopulation());
+    }
+
+    @Override
+    public void init(List<S> initialPopulation) {
+        this.setPopulation(initialPopulation);
         this.evaluatePopulation(this.getPopulation());
         this.initProgress();
         this.specificMOEAComputations();
@@ -68,14 +73,6 @@ public class COMOMBI2<S extends Solution<?>> extends MOMBI2<S> implements Cooper
     @Override
     public List<S> getOffspring() {
         return offspringPopulation;
-    }
-
-    @Override
-    public void overridePopulation(List<S> external) {
-        this.population = external;
-        while (population.size() > getMaxPopulationSize()) {
-            population.remove(JMetalRandom.getInstance().nextInt(0, population.size() - 1));
-        }
     }
 
 }

@@ -20,7 +20,6 @@ import br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.CooperativeAlgorithm;
 import java.util.ArrayList;
 import java.util.List;
 import org.uma.jmetal.solution.Solution;
-import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 import org.uma.jmetal.util.solutionattribute.Ranking;
 import org.uma.jmetal.util.solutionattribute.impl.DominanceRanking;
 
@@ -38,18 +37,21 @@ public class COMOEADD<S extends Solution<?>> extends MOEADD<S> implements Cooper
         offspring = new ArrayList<>(builder.getPopulationSize());
     }
 
-    public void initPopulation(List<S> initialPop) {
-        population_ = new ArrayList<>(populationSize_);
-        for (int i = 0; i < populationSize_; i++) {
-            population_.add(initialPop.get(i));
-            subregionIdx_[i][i] = 1;
-        }
-    } // initPopulation
-
     @Override
     public void init(int populationSize) {
+        List<S> initial = new ArrayList<>(populationSize);
+        for (int i = 0; i < populationSize_; i++) {
+            S newSolution = problem_.createSolution();
+            problem_.evaluate(newSolution);
+            evaluations_++;
+            initial.add(newSolution);
+        }
+        init(initial);
+    }
 
-        this.populationSize_ = populationSize;
+    @Override
+    public void init(List<S> initialPopulation) {
+        this.populationSize_ = initialPopulation.size();
         T_ = 20;
         delta_ = 0.9;
 
@@ -68,7 +70,12 @@ public class COMOEADD<S extends Solution<?>> extends MOEADD<S> implements Cooper
         // STEP 1. Initialization
         initUniformWeight();
         initNeighborhood();
-        initPopulation();
+
+        population_.addAll(initialPopulation);
+        for (int i = 0; i < populationSize_; i++) {
+            subregionIdx_[i][i] = 1;
+        }
+
         initIdealPoint();
         initNadirPoint();
 
@@ -146,7 +153,8 @@ public class COMOEADD<S extends Solution<?>> extends MOEADD<S> implements Cooper
     }
 
     @Override
-    public void receive(List<S> solutions) {
+    public void receive(List<S> solutions
+    ) {
         for (S s : solutions) {
             updateReference(s, zp_);
             updateNadirPoint(s, nzp_);
@@ -159,11 +167,4 @@ public class COMOEADD<S extends Solution<?>> extends MOEADD<S> implements Cooper
         return offspring;
     }
 
-    @Override
-    public void overridePopulation(List<S> external) {
-        population_ = external;
-        while (population_.size() > populationSize_) {
-            population_.remove(JMetalRandom.getInstance().nextInt(0, population_.size() - 1));
-        }
-    }
 }

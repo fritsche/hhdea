@@ -34,27 +34,51 @@ public class COHypE<S extends Solution<?>> extends HypE implements CooperativeAl
     }
 
     @Override
-    public void init(int populationSize) {
-        if (populationSize % 2 != 0) {
-            populationSize += 1;
-        }
-        population = new ArrayList<>(populationSize);
+    public void init(List<S> initialPopulation) {
+        populationSize = initialPopulation.size();
+        // set populationSize to even
+        populationSize += (populationSize % 2);
+        // init reference point
         reference = (S) problem.createSolution();
+        // find nadir
+        for (S s : initialPopulation) {
+            for (int i = 0; i < s.getNumberOfObjectives(); i++) {
+                if (s.getObjective(i) > reference.getObjective(i)) {
+                    reference.setObjective(i, s.getObjective(i));
+                }
+            }
+        }
+        // shift reference point
+        for (int j = 0; j < problem.getNumberOfObjectives(); j++) {
+            reference.setObjective(j, reference.getObjective(j) * 1.2);
+        }
+        // init population
+        population = new ArrayList<>(populationSize);
+        population.addAll(initialPopulation);
+        // fit populationSize if initialPopulation is larger
+        while (population.size() > populationSize) {
+            int index = JMetalRandom.getInstance().nextInt(0, population.size() - 1);
+            population.remove(index);
+        }
+        // fit populationSize if initialPopulation is smaller
+        while (population.size() > populationSize) {
+            int index = JMetalRandom.getInstance().nextInt(0, population.size() - 1);
+            population.add(((S) population.get(index)).copy());
+        }
+    }
+
+    @Override
+    public void init(int populationSize) {
+        populationSize += (populationSize % 2);
+        List<S> initial = new ArrayList<>(populationSize);
         evaluations = 0;
         for (int i = 0; i < populationSize; i++) {
             S newSolution = (S) problem.createSolution();
             problem.evaluate(newSolution);
-            for (int j = 0; j < problem.getNumberOfObjectives(); j++) {
-                if (newSolution.getObjective(j) > reference.getObjective(j)) {
-                    reference.setObjective(j, newSolution.getObjective(j));
-                }
-            }
             evaluations++;
-            population.add(newSolution);
+            initial.add(newSolution);
         }
-        for (int j = 0; j < problem.getNumberOfObjectives(); j++) {
-            reference.setObjective(j, reference.getObjective(j) * 1.2);
-        }
+        init(initial);
     }
 
     @Override
@@ -97,15 +121,6 @@ public class COHypE<S extends Solution<?>> extends HypE implements CooperativeAl
     public void receive(List<S> solutions) {
         offspringPopulation = solutions;
         environmentalSelection();
-    }
-
-    @Override
-    public void overridePopulation(List<S> external) {
-        population = external;
-        if (population.size() % 2 == 1) {
-            int index = JMetalRandom.getInstance().nextInt(0, population.size() - 1);
-            population.add(((S) population.get(index)).copy());
-        }
     }
 
 }
