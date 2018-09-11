@@ -17,7 +17,7 @@
 package br.ufpr.inf.cbio.hhdea.config;
 
 import br.ufpr.inf.cbio.hhdea.algorithm.HypE.HypE;
-import br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.HHdEA.HHdEAConfiguration;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA.HHdEAConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.HypE.HypEConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.MOEAD.MOEADConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.MOEADD.MOEADD;
@@ -32,8 +32,8 @@ import br.ufpr.inf.cbio.hhdea.algorithm.SPEA2SDE.SPEA2SDE;
 import br.ufpr.inf.cbio.hhdea.algorithm.SPEA2SDE.SPEA2SDEConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.ThetaDEA.ThetaDEA;
 import br.ufpr.inf.cbio.hhdea.algorithm.ThetaDEA.ThetaDEAConfiguration;
-import br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.traditional.Traditional;
-import br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.traditional.TraditionalConfiguration;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.traditional.Traditional;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.traditional.TraditionalConfiguration;
 import org.uma.jmetal.algorithm.multiobjective.moead.MOEAD;
 import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAII;
 import org.uma.jmetal.algorithm.multiobjective.spea2.SPEA2;

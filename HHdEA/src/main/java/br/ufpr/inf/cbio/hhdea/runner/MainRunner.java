@@ -130,7 +130,7 @@ public class MainRunner<S extends Solution<?>, Result> extends ExecuteAlgorithms
     public static void main(String[] args) {
 
         // do not print info
-        JMetalLogger.logger.setLevel(Level.INFO);
+        JMetalLogger.logger.setLevel(Level.ALL);
         
         if (args.length != 6) {
             throw new JMetalException("Needed arguments: "

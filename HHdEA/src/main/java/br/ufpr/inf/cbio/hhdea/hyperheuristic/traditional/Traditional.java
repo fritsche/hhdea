@@ -14,9 +14,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.traditional;
+package br.ufpr.inf.cbio.hhdea.hyperheuristic.traditional;
 
-import br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.CooperativeAlgorithm;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.CooperativeAlgorithm;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.SelectionFunction;
 import br.ufpr.inf.cbio.hhdea.metrics.fir.FitnessImprovementRate;
 import java.util.ArrayList;
@@ -64,9 +64,9 @@ public class Traditional<S extends Solution<?>> implements Algorithm<List<S>> {
         this.maxGenerations = maxGenerations;
         this.problem = problem;
         this.selection = selection;
-        JMetalLogger.logger.log(Level.CONFIG, "Selection Function: {0}", selection.getClass());
+        JMetalLogger.logger.log(Level.CONFIG, "Selection Function: {0}", selection.getClass().getSimpleName());
         this.fir = fir;
-        JMetalLogger.logger.log(Level.CONFIG, "Fitness Improvement Rate: {0}", selection.getClass());
+        JMetalLogger.logger.log(Level.CONFIG, "Fitness Improvement Rate: {0}", fir.getClass().getSimpleName());
         this.count = new int[algorithms.size()];
     }
 

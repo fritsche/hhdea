@@ -16,7 +16,7 @@
  */
 package br.ufpr.inf.cbio.hhdea.algorithm.MOEADD;
 
-import br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.CooperativeAlgorithm;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.CooperativeAlgorithm;
 import java.util.ArrayList;
 import java.util.List;
 import org.uma.jmetal.solution.Solution;
@@ -39,6 +39,9 @@ public class COMOEADD<S extends Solution<?>> extends MOEADD<S> implements Cooper
 
     @Override
     public void init(int populationSize) {
+        this.populationSize_ = populationSize;
+        lambda_ = new double[populationSize_][problem_.getNumberOfObjectives()];
+        initUniformWeight();
         List<S> initial = new ArrayList<>(populationSize);
         for (int i = 0; i < populationSize_; i++) {
             S newSolution = problem_.createSolution();
@@ -51,14 +54,12 @@ public class COMOEADD<S extends Solution<?>> extends MOEADD<S> implements Cooper
 
     @Override
     public void init(List<S> initialPopulation) {
-        this.populationSize_ = initialPopulation.size();
         T_ = 20;
         delta_ = 0.9;
 
         population_ = new ArrayList<>(populationSize_);
 
         neighborhood_ = new int[populationSize_][T_];
-        lambda_ = new double[populationSize_][problem_.getNumberOfObjectives()];
 
         zp_ = new double[problem_.getNumberOfObjectives()]; // ideal point for Pareto-based population
         nzp_ = new double[problem_.getNumberOfObjectives()]; // nadir point for Pareto-based population
@@ -68,7 +69,6 @@ public class COMOEADD<S extends Solution<?>> extends MOEADD<S> implements Cooper
         subregionDist_ = new double[populationSize_][populationSize_];
 
         // STEP 1. Initialization
-        initUniformWeight();
         initNeighborhood();
 
         population_.addAll(initialPopulation);

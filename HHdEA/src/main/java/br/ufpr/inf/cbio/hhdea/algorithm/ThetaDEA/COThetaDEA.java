@@ -16,7 +16,7 @@
  */
 package br.ufpr.inf.cbio.hhdea.algorithm.ThetaDEA;
 
-import br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.CooperativeAlgorithm;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.CooperativeAlgorithm;
 import java.util.ArrayList;
 import java.util.List;
 import org.uma.jmetal.solution.Solution;
@@ -49,6 +49,8 @@ public class COThetaDEA<S extends Solution<?>> extends ThetaDEA implements Coope
 
     @Override
     public void init(int populationSize) {
+        this.populationSize_ = populationSize;
+        initializeUniformWeight();
         List<S> initial = new ArrayList<>(populationSize_);
         for (int i = 0; i < populationSize_; i++) {
             S newSolution = (S) problem_.createSolution();
@@ -60,8 +62,6 @@ public class COThetaDEA<S extends Solution<?>> extends ThetaDEA implements Coope
 
     @Override
     public void init(List<S> initialPopulation) {
-        this.populationSize_ = initialPopulation.size();
-        initializeUniformWeight();
         population_ = initialPopulation;
         initIdealPoint();  // initialize the ideal point
         initNadirPoint();    // initialize the nadir point

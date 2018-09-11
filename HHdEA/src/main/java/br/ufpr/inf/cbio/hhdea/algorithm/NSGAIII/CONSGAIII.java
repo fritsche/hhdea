@@ -16,7 +16,7 @@
  */
 package br.ufpr.inf.cbio.hhdea.algorithm.NSGAIII;
 
-import br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.CooperativeAlgorithm;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.CooperativeAlgorithm;
 import java.util.ArrayList;
 import java.util.List;
 import org.uma.jmetal.solution.Solution;
@@ -76,9 +76,11 @@ public class CONSGAIII<S extends Solution<?>> extends NSGAIII<S> implements Coop
 
     @Override
     public void init(int populationSize) {
-        populationSize_ += (populationSize_ % 2);
-        List<S> initial = new ArrayList<>(populationSize_);
-        for (int i = 0; i < populationSize_; i++) {
+        this.populationSize_ = populationSize;
+        initializeUniformWeight();
+        populationSize += (populationSize % 2);
+        List<S> initial = new ArrayList<>(populationSize);
+        for (int i = 0; i < populationSize; i++) {
             S newSolution = problem_.createSolution();
             problem_.evaluate(newSolution);
             initial.add(newSolution);
@@ -88,8 +90,6 @@ public class CONSGAIII<S extends Solution<?>> extends NSGAIII<S> implements Coop
 
     @Override
     public void init(List<S> initialPopulation) {
-        this.populationSize_ = initialPopulation.size();
-        initializeUniformWeight();
         populationSize_ += (populationSize_ % 2);
         population_ = new ArrayList<>(populationSize_);
         population_.addAll(initialPopulation);
