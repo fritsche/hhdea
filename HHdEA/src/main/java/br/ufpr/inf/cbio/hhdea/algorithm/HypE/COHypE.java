@@ -61,7 +61,7 @@ public class COHypE<S extends Solution<?>> extends HypE implements CooperativeAl
             population.remove(index);
         }
         // fit populationSize if initialPopulation is smaller
-        while (population.size() > populationSize) {
+        while (population.size() < populationSize) {
             int index = JMetalRandom.getInstance().nextInt(0, population.size() - 1);
             population.add(((S) population.get(index)).copy());
         }

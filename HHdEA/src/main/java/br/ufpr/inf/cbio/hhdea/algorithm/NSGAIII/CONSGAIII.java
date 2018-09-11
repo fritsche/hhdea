@@ -99,7 +99,7 @@ public class CONSGAIII<S extends Solution<?>> extends NSGAIII<S> implements Coop
             population_.remove(index);
         }
         // fit populationSize if initialPopulation is smaller
-        while (population_.size() > populationSize_) {
+        while (population_.size() < populationSize_) {
             int index = JMetalRandom.getInstance().nextInt(0, population_.size() - 1);
             population_.add((S) population_.get(index).copy());
         }
