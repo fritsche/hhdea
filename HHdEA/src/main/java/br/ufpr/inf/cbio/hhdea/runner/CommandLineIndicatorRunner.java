@@ -17,7 +17,7 @@ import org.uma.jmetal.util.front.Front;
 import org.uma.jmetal.util.front.imp.ArrayFront;
 import org.uma.jmetal.util.front.util.FrontNormalizer;
 import org.uma.jmetal.util.front.util.FrontUtils;
-import org.uma.jmetal.util.point.util.PointSolution;
+import org.uma.jmetal.util.point.PointSolution;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -69,12 +69,15 @@ public class CommandLineIndicatorRunner {
     private static boolean checkAboutNormalization(String args[]) {
         boolean normalize = false;
         if (args.length >= 4) {
-            if (args[3].equals("TRUE")) {
-                normalize = true;
-            } else if (args[3].equals("FALSE")) {
-                normalize = false;
-            } else {
-                throw new JMetalException("The value for normalizing must be TRUE or FALSE");
+            switch (args[3]) {
+                case "TRUE":
+                    normalize = true;
+                    break;
+                case "FALSE":
+                    normalize = false;
+                    break;
+                default:
+                    throw new JMetalException("The value for normalizing must be TRUE or FALSE");
             }
         }
 
@@ -113,7 +116,7 @@ public class CommandLineIndicatorRunner {
             FrontNormalizer frontNormalizer = new FrontNormalizer(referenceFront);
             referenceFront = frontNormalizer.normalize(referenceFront);
             front = frontNormalizer.normalize(front);
-            JMetalLogger.logger.info("The fronts are NORMALIZED before computing the indicators");;
+            JMetalLogger.logger.info("The fronts are NORMALIZED before computing the indicators");
         } else {
             JMetalLogger.logger.info("The fronts are NOT NORMALIZED before computing the indicators");
         }
@@ -198,7 +201,7 @@ public class CommandLineIndicatorRunner {
 
     private static void setseed(String args[]) {
         if (args.length >= 5) {
-            int seed = Integer.parseInt(args[4]);        
+            int seed = Integer.parseInt(args[4]);
             JMetalLogger.logger.log(Level.INFO, "SEED: {0}", seed);
             JMetalRandom.getInstance().setSeed(seed);
         }
