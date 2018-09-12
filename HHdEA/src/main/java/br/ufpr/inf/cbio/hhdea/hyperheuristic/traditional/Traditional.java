@@ -47,7 +47,7 @@ public class Traditional<S extends Solution<?>> implements Algorithm<List<S>> {
 
     protected List<CooperativeAlgorithm<S>> algorithms;
     private final int populationSize;
-    private final int maxGenerations;
+    private final int maxEvaluations;
     private final Problem problem;
     private final SelectionFunction<CooperativeAlgorithm> selection;
     private final int[] count;
@@ -56,12 +56,12 @@ public class Traditional<S extends Solution<?>> implements Algorithm<List<S>> {
     protected final SolutionListEvaluator<S> evaluator = new SequentialSolutionListEvaluator<>();
 
     public Traditional(List<CooperativeAlgorithm<S>> algorithms, int populationSize,
-            int maxGenerations, Problem problem,
+            int maxEvaluations, Problem problem,
             SelectionFunction<CooperativeAlgorithm> selection,
             FitnessImprovementRate fir) {
         this.algorithms = algorithms;
         this.populationSize = populationSize;
-        this.maxGenerations = maxGenerations;
+        this.maxEvaluations = maxEvaluations;
         this.problem = problem;
         this.selection = selection;
         JMetalLogger.logger.log(Level.CONFIG, "Selection Function: {0}", selection.getClass().getSimpleName());
@@ -83,23 +83,24 @@ public class Traditional<S extends Solution<?>> implements Algorithm<List<S>> {
 
         population = createInitialPopulation();
         population = evaluator.evaluate(population, getProblem());
-        int generations = 1;
-        while (generations <= maxGenerations) {
+        int evaluations = population.size();
+        while (evaluations < maxEvaluations) {
             // heuristic selection
             CooperativeAlgorithm<S> alg = selection.getNext();
             count[algorithms.indexOf(alg)]++;
             // copy current population
             List<S> populationCopy = new ArrayList<>();
-            for (S s : population) {
+            population.forEach((s) -> {
                 populationCopy.add((S) s.copy());
-            }
+            });
             // send the copy to the selected algorithm
             alg.init(populationCopy);
             // apply heuristic
             alg.doIteration();
-            generations++;
             // get new population
             List<S> newPopulation = alg.getPopulation();
+            // count FE from alg
+            evaluations += newPopulation.size();
             // extract metrics
             double value = fir.getFitnessImprovementRate(population, newPopulation);
             // reward algorithm
@@ -154,8 +155,8 @@ public class Traditional<S extends Solution<?>> implements Algorithm<List<S>> {
         return populationSize;
     }
 
-    public int getMaxGenerations() {
-        return maxGenerations;
+    public int getMaxEvaluations() {
+        return maxEvaluations;
     }
 
     public Problem getProblem() {

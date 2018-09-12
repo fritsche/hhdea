@@ -66,7 +66,7 @@ public class NSGAIIIConfiguration implements AlgorithmConfiguration<NSGAIII<?>> 
                 .setMutation(mutation)
                 .setSelection(selection)
                 .setNormalize(normalize)
-                .setMaxGenerations(generations)
+                .setMaxEvaluations(generations * popSize)
                 .setPopulationSize(popSize).build();
     }
 

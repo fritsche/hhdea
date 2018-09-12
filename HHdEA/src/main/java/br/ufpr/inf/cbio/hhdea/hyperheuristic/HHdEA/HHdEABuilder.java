@@ -34,7 +34,7 @@ public class HHdEABuilder<S extends Solution<?>> implements AlgorithmBuilder<HHd
 
     private List<CooperativeAlgorithm> algorithms;
     private int populationSize;
-    private int maxGenerations;
+    private int maxEvaluations;
     private final Problem problem;
     private String name;
     private SelectionFunction<CooperativeAlgorithm> selection;
@@ -80,12 +80,12 @@ public class HHdEABuilder<S extends Solution<?>> implements AlgorithmBuilder<HHd
         return this;
     }
 
-    public int getMaxGenerations() {
-        return maxGenerations;
+    public int getMaxEvaluations() {
+        return maxEvaluations;
     }
 
-    public HHdEABuilder setMaxGenerations(int maxGenerations) {
-        this.maxGenerations = maxGenerations;
+    public HHdEABuilder setMaxEvaluations(int maxEvaluations) {
+        this.maxEvaluations = maxEvaluations;
         return this;
     }
 
@@ -109,7 +109,7 @@ public class HHdEABuilder<S extends Solution<?>> implements AlgorithmBuilder<HHd
 
     @Override
     public HHdEA build() {
-        return new HHdEA(algorithms, populationSize, maxGenerations, problem, name,
+        return new HHdEA(algorithms, populationSize, maxEvaluations, problem, name,
                 selection, fir);
     }
 

@@ -35,7 +35,7 @@ public class CONSGAIIIConfiguration extends NSGAIIIConfiguration {
                 .setMutation(mutation)
                 .setSelection(selection)
                 .setNormalize(normalize)
-                .setMaxGenerations(generations)
+                .setMaxEvaluations(generations * popSize)
                 .setPopulationSize(popSize)).build();
     }
 

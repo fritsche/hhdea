@@ -31,7 +31,7 @@ import org.uma.jmetal.util.AlgorithmBuilder;
 public class NSGAIIIBuilder<S extends Solution> implements AlgorithmBuilder<NSGAIII<S>> {
 
     private final Problem<S> problem;
-    private int maxGenerations;
+    private int maxEvaluations;
     private boolean normalize;
     private int populationSize;
     private CrossoverOperator crossover;
@@ -46,8 +46,8 @@ public class NSGAIIIBuilder<S extends Solution> implements AlgorithmBuilder<NSGA
         return this.problem;
     }
 
-    public NSGAIIIBuilder setMaxGenerations(int maxGenerations) {
-        this.maxGenerations = maxGenerations;
+    public NSGAIIIBuilder setMaxEvaluations(int maxEvaluations) {
+        this.maxEvaluations = maxEvaluations;
         return this;
     }
 
@@ -81,8 +81,8 @@ public class NSGAIIIBuilder<S extends Solution> implements AlgorithmBuilder<NSGA
         return new NSGAIII(this);
     }
 
-    public int getMaxGenerations() {
-        return this.maxGenerations;
+    public int getMaxEvaluations() {
+        return this.maxEvaluations;
     }
 
     public boolean getNormalize() {

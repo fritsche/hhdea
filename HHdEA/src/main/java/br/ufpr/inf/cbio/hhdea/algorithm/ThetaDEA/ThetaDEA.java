@@ -53,7 +53,7 @@ public class ThetaDEA<S extends Solution> implements Algorithm<List<S>> {
 
     List<S> union_;    // the union of current population and offspring population
 
-    int generations_;   // generations
+    int evaluations;   // evaluations
 
     protected SolutionListEvaluator<S> evaluator;
 
@@ -75,13 +75,13 @@ public class ThetaDEA<S extends Solution> implements Algorithm<List<S>> {
 
     protected Problem<S> problem_;
 
-    protected int maxGenerations;
+    protected int maxEvaluations;
 
     public ThetaDEA(ThetaDEABuilder<S> builder) {
 
         this.problem_ = builder.getProblem();
         /* set parameters */
-        maxGenerations = builder.getMaxGenerations();
+        maxEvaluations = builder.getMaxEvaluations();
 
         theta_ = builder.getTheta();
 
@@ -470,7 +470,7 @@ public class ThetaDEA<S extends Solution> implements Algorithm<List<S>> {
     @Override
     public void run() {
 
-        generations_ = 0;
+        evaluations = 0;
 
         initializeUniformWeight();
 
@@ -482,7 +482,7 @@ public class ThetaDEA<S extends Solution> implements Algorithm<List<S>> {
 
         initExtremePoints(); // initialize the extreme points
 
-        while (generations_ < maxGenerations) {
+        while (evaluations < maxEvaluations) {
 
             createOffSpringPopulation();  // create the offspring population
 
@@ -504,7 +504,7 @@ public class ThetaDEA<S extends Solution> implements Algorithm<List<S>> {
 
             getNextPopulation(stPopulation);  // select the next population using theta-non-dominated ranking
 
-            generations_++;
+            evaluations += populationSize_;
 
         }
 

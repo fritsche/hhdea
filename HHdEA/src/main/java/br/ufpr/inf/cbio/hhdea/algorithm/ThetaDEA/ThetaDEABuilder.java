@@ -30,7 +30,7 @@ import org.uma.jmetal.util.AlgorithmBuilder;
 public class ThetaDEABuilder<S extends Solution> implements AlgorithmBuilder<ThetaDEA<S>> {
 
     private final Problem<S> problem;
-    private int maxGenerations;
+    private int maxEvaluations;
     private double theta;
     private boolean normalize;
     private int populationSize;
@@ -45,8 +45,8 @@ public class ThetaDEABuilder<S extends Solution> implements AlgorithmBuilder<The
         return this.problem;
     }
 
-    public ThetaDEABuilder setMaxGenerations(int maxGenerations) {
-        this.maxGenerations = maxGenerations;
+    public ThetaDEABuilder setMaxEvaluations(int maxEvaluations) {
+        this.maxEvaluations = maxEvaluations;
         return this;
     }
 
@@ -80,8 +80,8 @@ public class ThetaDEABuilder<S extends Solution> implements AlgorithmBuilder<The
         return new ThetaDEA(this);
     }
 
-    public int getMaxGenerations() {
-        return this.maxGenerations;
+    public int getMaxEvaluations() {
+        return this.maxEvaluations;
     }
 
     public double getTheta() {

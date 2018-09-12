@@ -36,7 +36,7 @@ import org.uma.jmetal.util.SolutionListUtils;
  */
 public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
 
-    protected int maxGenerations;
+    protected int maxEvaluations;
     protected Problem<S> problem;
     protected List<CooperativeAlgorithm<S>> algorithms;
     private final int populationSize;
@@ -45,12 +45,12 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
     private final int[] count;
     private final FitnessImprovementRate fir;
 
-    public HHdEA(List<CooperativeAlgorithm<S>> algorithms, int populationSize, int maxGenerations,
+    public HHdEA(List<CooperativeAlgorithm<S>> algorithms, int populationSize, int maxEvaluations,
             Problem problem, String name, SelectionFunction<CooperativeAlgorithm> selection,
             FitnessImprovementRate fir) {
         this.algorithms = algorithms;
         this.populationSize = populationSize;
-        this.maxGenerations = maxGenerations;
+        this.maxEvaluations = maxEvaluations;
         this.problem = problem;
         this.name = name;
         this.selection = selection;
@@ -63,15 +63,15 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
     @Override
     public void run() {
 
+        int evaluations = 0;
         for (CooperativeAlgorithm alg : algorithms) {
             alg.init(populationSize);
+            evaluations += alg.getPopulation().size();
             selection.add(alg);
         }
         selection.init();
 
-        int generations = algorithms.size();
-
-        while (generations <= maxGenerations) {
+        while (evaluations < maxEvaluations) {
 
             // heuristic selection
             CooperativeAlgorithm<S> alg = selection.getNext();
@@ -83,12 +83,13 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
                 parents.add((S) s.copy());
             }
             alg.doIteration();
-            generations++;
 
             // copy the solutions generatedy by alg
             List<S> offspring = new ArrayList<>();
             for (S s : alg.getOffspring()) {
                 offspring.add((S) s.copy());
+                // count evaluations used by alg
+                evaluations++;
             }
 
             // extract metrics

@@ -17,7 +17,6 @@
 package br.ufpr.inf.cbio.hhdea.hyperheuristic.traditional;
 
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.CooperativeAlgorithm;
-import br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA.HHdEABuilder;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.SelectionFunction;
 import br.ufpr.inf.cbio.hhdea.metrics.fir.FitnessImprovementRate;
 import java.util.ArrayList;
@@ -35,7 +34,7 @@ public class TraditionalBuilder<S extends Solution<?>> implements AlgorithmBuild
 
     private List<CooperativeAlgorithm<S>> algorithms;
     private int populationSize;
-    private int maxGenerations;
+    private int maxEvaluations;
     private final Problem problem;
     private SelectionFunction<CooperativeAlgorithm> selection;
     private FitnessImprovementRate fir;
@@ -52,8 +51,8 @@ public class TraditionalBuilder<S extends Solution<?>> implements AlgorithmBuild
         return populationSize;
     }
 
-    public int getMaxGenerations() {
-        return maxGenerations;
+    public int getMaxEvaluations() {
+        return maxEvaluations;
     }
 
     public Problem getProblem() {
@@ -78,8 +77,8 @@ public class TraditionalBuilder<S extends Solution<?>> implements AlgorithmBuild
         return this;
     }
 
-    public TraditionalBuilder setMaxGenerations(int maxGenerations) {
-        this.maxGenerations = maxGenerations;
+    public TraditionalBuilder setMaxEvaluations(int maxEvaluations) {
+        this.maxEvaluations = maxEvaluations;
         return this;
     }
 
@@ -103,7 +102,7 @@ public class TraditionalBuilder<S extends Solution<?>> implements AlgorithmBuild
 
     @Override
     public Traditional<S> build() {
-        return new Traditional<>(algorithms, populationSize, maxGenerations, problem,
+        return new Traditional<>(algorithms, populationSize, maxEvaluations, problem,
                 selection, fir);
     }
 

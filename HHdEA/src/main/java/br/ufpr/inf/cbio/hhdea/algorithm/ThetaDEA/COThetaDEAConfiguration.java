@@ -23,8 +23,7 @@ import org.uma.jmetal.problem.Problem;
  * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
  */
 public class COThetaDEAConfiguration extends ThetaDEAConfiguration {
-    
-    
+
     @Override
     public COThetaDEA configure(Problem problem, int popSize, int generations) {
 
@@ -36,8 +35,8 @@ public class COThetaDEAConfiguration extends ThetaDEAConfiguration {
                 .setMutation(mutation)
                 .setNormalize(normalize)
                 .setTheta(theta)
-                .setMaxGenerations(generations)
+                .setMaxEvaluations(generations * popSize)
                 .setPopulationSize(popSize)).build();
     }
-    
+
 }

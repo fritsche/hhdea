@@ -104,7 +104,7 @@ public class HHdEAConfiguration<S extends Solution> implements AlgorithmConfigur
         }
 
         return builder.setName(name).setSelection(selection).setFir(fir).
-                setMaxGenerations(generations).setPopulationSize(popSize).build();
+                setMaxEvaluations(generations * popSize).setPopulationSize(popSize).build();
     }
 
     @Override

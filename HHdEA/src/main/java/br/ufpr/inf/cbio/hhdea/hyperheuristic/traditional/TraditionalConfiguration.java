@@ -67,7 +67,7 @@ public class TraditionalConfiguration<S extends Solution> implements AlgorithmCo
                 .addAlgorithm(new COHypEConfiguration().configure(problem, popSize, generations));
 
         return builder.setSelection(selection).setFir(fir).
-                setMaxGenerations(generations).setPopulationSize(popSize).build();
+                setMaxEvaluations(generations * popSize).setPopulationSize(popSize).build();
     }
 
     @Override

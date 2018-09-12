@@ -70,14 +70,14 @@ public class NSGAIIConfiguration implements AlgorithmConfiguration<NSGAII<?>> {
 
         this.problem = problem;
         this.generations = generations;
-        this.popSize = (popSize % 2 == 0) ? (popSize) : (popSize + 1);
+        this.popSize = popSize;
 
         setup();
 
         return new NSGAIIBuilder<>(problem, crossover, mutation)
                 .setSelectionOperator(selection)
                 .setMaxEvaluations(maxEvaluations)
-                .setPopulationSize(this.popSize)
+                .setPopulationSize(this.popSize + (this.popSize % 2))
                 .build();
     }
 

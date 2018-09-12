@@ -49,7 +49,7 @@ public class NSGAIII<S extends Solution> implements Algorithm<List<S>> {
     List<S> offspringPopulation_;
     List<S> union_;
 
-    int generations_;
+    int evaluations;
 
     CrossoverOperator<S> crossover_;
     MutationOperator<S> mutation_;
@@ -61,13 +61,13 @@ public class NSGAIII<S extends Solution> implements Algorithm<List<S>> {
 
     protected final Problem<S> problem_;
 
-    protected int maxGenerations_;
+    protected int maxEvaluations;
 
     public NSGAIII(NSGAIIIBuilder<S> builder) {
 
         problem_ = builder.getProblem();
 
-        maxGenerations_ = builder.getMaxGenerations();
+        maxEvaluations = builder.getMaxEvaluations();
 
         normalize_ = builder.getNormalize();
 
@@ -115,7 +115,7 @@ public class NSGAIII<S extends Solution> implements Algorithm<List<S>> {
     @Override
     public void run() {
 
-        generations_ = 0;
+        evaluations = 0;
 
         initializeUniformWeight();
 
@@ -124,11 +124,12 @@ public class NSGAIII<S extends Solution> implements Algorithm<List<S>> {
         }
 
         initPopulation();
+        evaluations += populationSize_;
 
-        while (generations_ < maxGenerations_) {
+        while (evaluations < maxEvaluations) {
             offspringPopulation_ = new ArrayList<>(populationSize_);
             for (int i = 0; i < (populationSize_ / 2); i++) {
-                if (generations_ < maxGenerations_) {
+                if (evaluations < maxEvaluations) {
                     // obtain parents
 
                     List<S> parents = new ArrayList<>();
@@ -142,6 +143,7 @@ public class NSGAIII<S extends Solution> implements Algorithm<List<S>> {
 
                     problem_.evaluate(offSpring.get(0));
                     problem_.evaluate(offSpring.get(1));
+                    evaluations += 2;
 
                     offspringPopulation_.add(offSpring.get(0));
                     offspringPopulation_.add(offSpring.get(1));
@@ -181,12 +183,9 @@ public class NSGAIII<S extends Solution> implements Algorithm<List<S>> {
             }
 
             if (remain > 0) { // front contains individuals to insert
-
                 new Niching(population_, front, lambda_, remain, normalize_)
                         .execute();
             }
-
-            generations_++;
 
         }
 

@@ -63,7 +63,7 @@ public class ThetaDEAConfiguration implements AlgorithmConfiguration<ThetaDEA<?>
                 .setMutation(mutation)
                 .setNormalize(normalize)
                 .setTheta(theta)
-                .setMaxGenerations(generations)
+                .setMaxEvaluations(generations * popSize)
                 .setPopulationSize(popSize).build();
     }
 
