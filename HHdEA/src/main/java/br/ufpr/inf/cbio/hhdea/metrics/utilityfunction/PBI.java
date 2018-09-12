@@ -38,12 +38,12 @@ public class PBI implements UtilityFunction {
         double[] realB = new double[m];
         // difference between current point and reference point
         for (int n = 0; n < m; n++) {
-            realA[n] = point.getDimensionValue(n);
+            realA[n] = point.getValue(n);
         }   // distance along the line segment
         double d1 = Math.abs(innerproduct(realA, lambda));
         // distance to the line segment
         for (int n = 0; n < m; n++) {
-            realB[n] = (point.getDimensionValue(n) - d1 * lambda[n]);
+            realB[n] = (point.getValue(n) - d1 * lambda[n]);
         }
         double d2 = norm_vector(realB, m);
         fitness = d1 + theta * d2;

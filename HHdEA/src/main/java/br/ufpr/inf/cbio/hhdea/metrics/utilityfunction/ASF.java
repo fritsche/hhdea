@@ -27,9 +27,9 @@ public class ASF implements UtilityFunction {
     @Override
     public double execute(double[] lambda, Point point, int m) {
 
-        double result = point.getDimensionValue(0) / ((lambda[0] > 0.0) ? lambda[0] : 1e-2);
+        double result = point.getValue(0) / ((lambda[0] > 0.0) ? lambda[0] : 1e-2);
         for (int n = 1; n < m; n++) {
-            result = Math.max(result, point.getDimensionValue(n) / ((lambda[n] > 0.0) ? lambda[n] : 1e-2));
+            result = Math.max(result, point.getValue(n) / ((lambda[n] > 0.0) ? lambda[n] : 1e-2));
         }
         return result;
     }

@@ -26,10 +26,10 @@ public class Tchebycheff implements UtilityFunction {
 
     @Override
     public double execute(double[] lambda, Point point, int m) {
-        double result = lambda[0] * Math.abs(point.getDimensionValue(0));
+        double result = lambda[0] * Math.abs(point.getValue(0));
         for (int n = 1; n < m; n++) {
             result = Math.max(result,
-                    lambda[n] * Math.abs(point.getDimensionValue(n)));
+                    lambda[n] * Math.abs(point.getValue(n)));
         }
         return result;
     }

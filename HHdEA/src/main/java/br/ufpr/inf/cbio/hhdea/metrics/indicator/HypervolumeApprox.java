@@ -64,8 +64,8 @@ public class HypervolumeApprox<S extends Solution<?>> extends Hypervolume<S> {
             // normalize solutions
             for (int i = 0; i < front.getNumberOfPoints(); i++) {
                 Point point = front.getPoint(i);
-                for (int j = 0; j < point.getNumberOfDimensions(); j++) {
-                    point.setDimensionValue(j, point.getDimensionValue(j) / (offset * referencePoint.getDimensionValue(j)));
+                for (int j = 0; j < point.getDimension(); j++) {
+                    point.setValue(j, point.getValue(j) / (offset * referencePoint.getValue(j)));
                 }
             }
 
@@ -80,7 +80,7 @@ public class HypervolumeApprox<S extends Solution<?>> extends Hypervolume<S> {
                     Point point = front.getPoint(k);
                     boolean dominatedTmp = true;
                     for (int d = 0; d < numberOfObjectives; d++) {
-                        if (point.getDimensionValue(d) > generated[d]) {
+                        if (point.getValue(d) > generated[d]) {
                             dominatedTmp = false;
                             break;
                         }
@@ -116,12 +116,12 @@ public class HypervolumeApprox<S extends Solution<?>> extends Hypervolume<S> {
         if (referencePoint == null) {
             referencePoint = new ArrayPoint(numberOfObjectives);
             for (int i = 0; i < numberOfObjectives; i++) {
-                referencePoint.setDimensionValue(i, Double.MAX_VALUE);
+                referencePoint.setValue(i, Double.MAX_VALUE);
             }
         }
 
-        for (int i = 0; i < referencePoint.getNumberOfDimensions(); i++) {
-            referencePoint.setDimensionValue(i, maxObjectives[i] + offset);
+        for (int i = 0; i < referencePoint.getDimension(); i++) {
+            referencePoint.setValue(i, maxObjectives[i] + offset);
         }
     }
 
@@ -136,8 +136,8 @@ public class HypervolumeApprox<S extends Solution<?>> extends Hypervolume<S> {
 
         for (int i = 0; i < front.getNumberOfPoints(); i++) {
             for (int j = 0; j < numberOfObjectives; j++) {
-                if (maxObjectives[j] < front.getPoint(i).getDimensionValue(j)) {
-                    maxObjectives[j] = front.getPoint(i).getDimensionValue(j);
+                if (maxObjectives[j] < front.getPoint(i).getValue(j)) {
+                    maxObjectives[j] = front.getPoint(i).getValue(j);
                 }
             }
         }
@@ -145,12 +145,12 @@ public class HypervolumeApprox<S extends Solution<?>> extends Hypervolume<S> {
         if (referencePoint == null) {
             referencePoint = new ArrayPoint(numberOfObjectives);
             for (int i = 0; i < numberOfObjectives; i++) {
-                referencePoint.setDimensionValue(i, Double.MAX_VALUE);
+                referencePoint.setValue(i, Double.MAX_VALUE);
             }
         }
 
-        for (int i = 0; i < referencePoint.getNumberOfDimensions(); i++) {
-            referencePoint.setDimensionValue(i, maxObjectives[i] + offset);
+        for (int i = 0; i < referencePoint.getDimension(); i++) {
+            referencePoint.setValue(i, maxObjectives[i] + offset);
         }
     }
 

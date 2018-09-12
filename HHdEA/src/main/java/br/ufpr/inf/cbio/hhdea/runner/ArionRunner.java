@@ -17,125 +17,26 @@
 package br.ufpr.inf.cbio.hhdea.runner;
 
 import br.ufpr.inf.cbio.hhdea.config.AlgorithmConfigurationFactory;
-import br.ufpr.inf.cbio.hhdea.problem.InvertedProblem;
-import java.util.ArrayList;
+import br.ufpr.inf.cbio.hhdea.problem.ProblemFactory;
+import br.ufpr.inf.cbio.hhdea.util.OutputUtils;
 import java.util.List;
 import java.util.logging.Level;
-import org.uma.jmetal.problem.DoubleProblem;
-import org.uma.jmetal.problem.multiobjective.dtlz.DTLZ1;
-import org.uma.jmetal.problem.multiobjective.dtlz.DTLZ2;
-import org.uma.jmetal.problem.multiobjective.dtlz.DTLZ3;
-import org.uma.jmetal.problem.multiobjective.dtlz.DTLZ4;
-import org.uma.jmetal.problem.multiobjective.dtlz.DTLZ5;
-import org.uma.jmetal.problem.multiobjective.dtlz.DTLZ6;
-import org.uma.jmetal.problem.multiobjective.dtlz.DTLZ7;
-import org.uma.jmetal.problem.multiobjective.wfg.WFG1;
-import org.uma.jmetal.problem.multiobjective.wfg.WFG2;
-import org.uma.jmetal.problem.multiobjective.wfg.WFG3;
-import org.uma.jmetal.problem.multiobjective.wfg.WFG4;
-import org.uma.jmetal.problem.multiobjective.wfg.WFG5;
-import org.uma.jmetal.problem.multiobjective.wfg.WFG6;
-import org.uma.jmetal.problem.multiobjective.wfg.WFG7;
-import org.uma.jmetal.problem.multiobjective.wfg.WFG8;
-import org.uma.jmetal.problem.multiobjective.wfg.WFG9;
+import org.uma.jmetal.algorithm.Algorithm;
+import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.DoubleSolution;
-import org.uma.jmetal.solution.Solution;
+import org.uma.jmetal.util.AbstractAlgorithmRunner;
+import org.uma.jmetal.util.AlgorithmRunner;
 import org.uma.jmetal.util.JMetalException;
 import org.uma.jmetal.util.JMetalLogger;
-import org.uma.jmetal.util.experiment.Experiment;
-import org.uma.jmetal.util.experiment.ExperimentBuilder;
-import org.uma.jmetal.util.experiment.util.ExperimentAlgorithm;
-import org.uma.jmetal.util.experiment.util.ExperimentProblem;
+import org.uma.jmetal.util.fileoutput.SolutionListOutput;
+import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
 /**
  *
  * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
- * @param <S>
- * @param <Result>
  */
-public class ArionRunner<S extends Solution<?>, Result> extends ExecuteAlgorithms<S, Result> {
-
-    private final int id;
-
-    public static List<ExperimentProblem<DoubleSolution>> getProblemList(String problem, int m) {
-        List<ExperimentProblem<DoubleSolution>> problemList = new ArrayList<>();
-
-        if (problem.startsWith("Minus")) {
-            problemList.add(new ExperimentProblem<>(new InvertedProblem((DoubleProblem) getProblemList(problem.substring(5), m).get(0).getProblem(), problem)));
-            return problemList;
-        }
-
-        int k;
-        switch (problem) {
-            case "DTLZ1":
-                k = 5;
-                problemList.add(new ExperimentProblem<>(new DTLZ1(m + k - 1, m)));
-                break;
-            case "DTLZ2":
-                k = 10;
-                problemList.add(new ExperimentProblem<>(new DTLZ2(m + k - 1, m)));
-                break;
-            case "DTLZ3":
-                k = 10;
-                problemList.add(new ExperimentProblem<>(new DTLZ3(m + k - 1, m)));
-                break;
-            case "DTLZ4":
-                k = 10;
-                problemList.add(new ExperimentProblem<>(new DTLZ4(m + k - 1, m)));
-                break;
-            case "DTLZ5":
-                k = 10;
-                problemList.add(new ExperimentProblem<>(new DTLZ5(m + k - 1, m)));
-                break;
-            case "DTLZ6":
-                k = 10;
-                problemList.add(new ExperimentProblem<>(new DTLZ6(m + k - 1, m)));
-                break;
-            case "DTLZ7":
-                k = 10;
-                problemList.add(new ExperimentProblem<>(new DTLZ7(m + k - 1, m)));
-            case "WFG1":
-                k = 2 * (m - 1);
-                problemList.add(new ExperimentProblem<>(new WFG1(k, 20, m)));
-                break;
-            case "WFG2":
-                k = 2 * (m - 1);
-                problemList.add(new ExperimentProblem<>(new WFG2(k, 20, m)));
-                break;
-            case "WFG3":
-                k = 2 * (m - 1);
-                problemList.add(new ExperimentProblem<>(new WFG3(k, 20, m)));
-                break;
-            case "WFG4":
-                k = 2 * (m - 1);
-                problemList.add(new ExperimentProblem<>(new WFG4(k, 20, m)));
-                break;
-            case "WFG5":
-                k = 2 * (m - 1);
-                problemList.add(new ExperimentProblem<>(new WFG5(k, 20, m)));
-                break;
-            case "WFG6":
-                k = 2 * (m - 1);
-                problemList.add(new ExperimentProblem<>(new WFG6(k, 20, m)));
-                break;
-            case "WFG7":
-                k = 2 * (m - 1);
-                problemList.add(new ExperimentProblem<>(new WFG7(k, 20, m)));
-                break;
-            case "WFG8":
-                k = 2 * (m - 1);
-                problemList.add(new ExperimentProblem<>(new WFG8(k, 20, m)));
-                break;
-            case "WFG9":
-                k = 2 * (m - 1);
-                problemList.add(new ExperimentProblem<>(new WFG9(k, 20, m)));
-                break;
-            default:
-                throw new JMetalException("There is no configurations for " + problem + " problem");
-        }
-        return problemList;
-    }
+public class ArionRunner extends AbstractAlgorithmRunner {
 
     public static void main(String[] args) {
 
@@ -147,56 +48,37 @@ public class ArionRunner<S extends Solution<?>, Result> extends ExecuteAlgorithm
                     + "outputDirectory algorithm problem m id seed");
         }
 
+        // parse arguments
         int i = 0;
         String experimentBaseDirectory = args[i++];
-        String algorithm = args[i++];
-        String problem = args[i++];
+        String algorithmName = args[i++];
+        String problemName = args[i++];
         int m = Integer.parseInt(args[i++]);
         int id = Integer.parseInt(args[i++]);
         int seed = Integer.parseInt(args[i++]);
-        int generations = getGenerationsNumber(problem, m);
-        int popSize = getPopSize(problem);
+        int generations = getGenerationsNumber(problemName, m);
+        int popSize = getPopSize(problemName);
 
+        // set seed
         JMetalRandom.getInstance().setSeed(seed);
 
-        List<ExperimentProblem<DoubleSolution>> problemList = getProblemList(problem, m);
-        List<ExperimentAlgorithm<DoubleSolution, List<DoubleSolution>>> algorithms = new ArrayList<>();
+        Algorithm<List<DoubleSolution>> algorithm = AlgorithmConfigurationFactory
+                .getAlgorithmConfiguration(algorithmName)
+                .configure(ProblemFactory.getProblem(problemName, m), popSize, generations);
+        AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
+                .execute();
 
-        algorithms.add(
-                new ExperimentAlgorithm<>(AlgorithmConfigurationFactory
-                        .getAlgorithmConfiguration(algorithm)
-                        .configure(problemList.get(0).getProblem(), popSize, generations),
-                        problemList.get(0).getTag()));
+        OutputUtils outputUtils = new OutputUtils(experimentBaseDirectory);
+        outputUtils.prepareOutputDirectory();
 
-        ExperimentBuilder<DoubleSolution, List<DoubleSolution>> study = new ExperimentBuilder<>(Integer.toString(m));
+        List population = algorithm.getResult();
+        new SolutionListOutput(population).setSeparator("\t")
+                .setVarFileOutputContext(new DefaultFileOutputContext(experimentBaseDirectory + "VAR" + id + ".tsv"))
+                .setFunFileOutputContext(new DefaultFileOutputContext(experimentBaseDirectory + "FUN" + id + ".tsv"))
+                .print();
+        long computingTime = algorithmRunner.getComputingTime();
+        JMetalLogger.logger.log(Level.INFO, "Total execution time: {0}ms", computingTime);
 
-        study.setAlgorithmList(algorithms);
-
-        study.setProblemList(problemList);
-
-        study.setExperimentBaseDirectory(experimentBaseDirectory);
-
-        study.setOutputParetoFrontFileName(
-                "FUN");
-        study.setOutputParetoSetFileName(
-                "VAR");
-        study.setIndependentRuns(
-                1);
-        study.setNumberOfCores(
-                1);
-        Experiment<DoubleSolution, List<DoubleSolution>> experiment = study.build();
-
-        new ArionRunner(experiment, id)
-                .run();
-
-    }
-
-    @Override
-    public void run() {
-        JMetalLogger.logger.info("ExecuteAlgorithms: Preparing output directory");
-        super.prepareOutputDirectory();
-        Experiment<S, Result> experiment = getExperiment();
-        experiment.getAlgorithmList().get(0).runAlgorithm(this.id, experiment);
     }
 
     public static int getGenerationsNumber(String problem, int m) {
@@ -208,10 +90,5 @@ public class ArionRunner<S extends Solution<?>, Result> extends ExecuteAlgorithm
             return 256;
         }
         return 128;
-    }
-
-    public ArionRunner(Experiment<S, Result> configuration, int id) {
-        super(configuration);
-        this.id = id;
     }
 }
