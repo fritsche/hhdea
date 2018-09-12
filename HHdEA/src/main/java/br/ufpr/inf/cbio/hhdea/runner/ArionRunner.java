@@ -22,7 +22,6 @@ import br.ufpr.inf.cbio.hhdea.util.OutputUtils;
 import java.util.List;
 import java.util.logging.Level;
 import org.uma.jmetal.algorithm.Algorithm;
-import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.DoubleSolution;
 import org.uma.jmetal.util.AbstractAlgorithmRunner;
 import org.uma.jmetal.util.AlgorithmRunner;
