@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic;
+package br.ufpr.inf.cbio.hhdea.hyperheuristic;
 
 import java.util.List;
 import org.uma.jmetal.solution.Solution;
@@ -26,7 +26,21 @@ import org.uma.jmetal.solution.Solution;
  */
 public interface CooperativeAlgorithm<S extends Solution<?>> {
 
+    /**
+     * Initialize the algorithm with a random population.
+     *
+     * @param populationSize
+     */
     public void init(int populationSize);
+
+    /**
+     * Initialize the algorithm with {@code initialPopulation}. Used on the
+     * traditional hyper-heuristic framework to keep only one population where
+     * the heuristics are applied.
+     *
+     * @param initialPopulation
+     */
+    public void init(List<S> initialPopulation);
 
     public void doIteration();
 
@@ -35,13 +49,5 @@ public interface CooperativeAlgorithm<S extends Solution<?>> {
     public List<S> getOffspring();
 
     public void receive(List<S> solutions);
-
-    /**
-     * Used on the traditional hyper-heuristic framework to keep only one
-     * population where the heuristics are applied
-     *
-     * @param external
-     */
-    public void overridePopulation(List<S> external);
 
 }

@@ -16,7 +16,7 @@
  */
 package br.ufpr.inf.cbio.hhdea.algorithm.MOEAD;
 
-import br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.CooperativeAlgorithm;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.CooperativeAlgorithm;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -36,7 +36,7 @@ import org.uma.jmetal.util.pseudorandom.JMetalRandom;
  */
 public class COMOEAD<S extends Solution<?>> extends MOEAD implements CooperativeAlgorithm<S> {
 
-    private List<S> offspring;
+    private final List<S> offspring;
 
     public COMOEAD(Problem<DoubleSolution> problem, int populationSize, int resultPopulationSize, int maxEvaluations, MutationOperator<DoubleSolution> mutation, CrossoverOperator<DoubleSolution> crossover, FunctionType functionType, String dataDirectory, double neighborhoodSelectionProbability, int maximumNumberOfReplacedSolutions, int neighborSize) {
         super(problem, populationSize, resultPopulationSize, maxEvaluations, mutation, crossover, functionType, dataDirectory, neighborhoodSelectionProbability, maximumNumberOfReplacedSolutions, neighborSize);
@@ -45,8 +45,26 @@ public class COMOEAD<S extends Solution<?>> extends MOEAD implements Cooperative
 
     @Override
     public void init(int populationSize) {
-        initializePopulation();
+        this.populationSize = populationSize;
         initializeUniformWeight();
+        List<DoubleSolution> initial = new ArrayList<>(populationSize);
+        for (int i = 0; i < populationSize; i++) {
+            DoubleSolution newSolution = (DoubleSolution) problem.createSolution();
+            problem.evaluate(newSolution);
+            initial.add(newSolution);
+        }
+        init((List<S>) initial);
+    }
+
+    @Override
+    public void init(List<S> initialPopulation) {
+        population = new ArrayList<>(populationSize);
+        population.addAll((Collection<? extends DoubleSolution>) initialPopulation);
+        // fit populationSize if initialPopulation is larger
+        while (population.size() > populationSize) {
+            int index = JMetalRandom.getInstance().nextInt(0, population.size() - 1);
+            population.remove(index);
+        }
         initializeNeighborhood();
         initializeIdealPoint();
     }
@@ -100,9 +118,4 @@ public class COMOEAD<S extends Solution<?>> extends MOEAD implements Cooperative
         return offspring;
     }
 
-    @Override
-    public void overridePopulation(List<S> external) {
-        population.clear();
-        population.addAll((Collection<? extends DoubleSolution>) external);
-    }
 }

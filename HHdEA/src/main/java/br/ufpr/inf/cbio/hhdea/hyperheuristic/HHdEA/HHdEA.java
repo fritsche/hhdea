@@ -14,17 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.HHdEA;
+package br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA;
 
-import br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.CooperativeAlgorithm;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.CooperativeAlgorithm;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.SelectionFunction;
 import br.ufpr.inf.cbio.hhdea.metrics.fir.FitnessImprovementRate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.multiobjective.moead.util.MOEADUtils;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
+import org.uma.jmetal.util.JMetalLogger;
 import org.uma.jmetal.util.SolutionListUtils;
 
 /**
@@ -52,7 +54,9 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
         this.problem = problem;
         this.name = name;
         this.selection = selection;
+        JMetalLogger.logger.log(Level.CONFIG, "Selection Function: {0}", selection.getClass().getSimpleName());
         this.fir = fir;
+        JMetalLogger.logger.log(Level.CONFIG, "Fitness Improvement Rate: {0}", fir.getClass().getSimpleName());
         this.count = new int[algorithms.size()];
     }
 
@@ -81,7 +85,7 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
             alg.doIteration();
             generations++;
 
-            // solutions generatedy by alg
+            // copy the solutions generatedy by alg
             List<S> offspring = new ArrayList<>();
             for (S s : alg.getOffspring()) {
                 offspring.add((S) s.copy());

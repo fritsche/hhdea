@@ -16,7 +16,7 @@
  */
 package br.ufpr.inf.cbio.hhdea.algorithm.NSGAII;
 
-import br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.CooperativeAlgorithm;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.CooperativeAlgorithm;
 import java.util.Comparator;
 import java.util.List;
 import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAII;
@@ -26,6 +26,7 @@ import org.uma.jmetal.operator.SelectionOperator;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
+import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
 /**
  *
@@ -43,8 +44,27 @@ public class CONSGAII<S extends Solution<?>> extends NSGAII implements Cooperati
     @Override
     public void init(int populationSize) {
         setMaxPopulationSize(populationSize + (populationSize % 2));
-        population = createInitialPopulation();
-        population = evaluatePopulation(population);
+        List<S> initial = createInitialPopulation();
+        initial = evaluatePopulation(initial);
+        init(initial);
+    }
+
+    @Override
+    public void init(List<S> initialPopulation) {
+        int populationSize = initialPopulation.size();
+        setMaxPopulationSize(populationSize + (populationSize % 2));
+        population = initialPopulation;
+
+        // fit populationSize if initialPopulation is larger
+        while (population.size() > populationSize) {
+            int index = JMetalRandom.getInstance().nextInt(0, population.size() - 1);
+            population.remove(index);
+        }
+        // fit populationSize if initialPopulation is smaller
+        while (population.size() < populationSize) {
+            int index = JMetalRandom.getInstance().nextInt(0, population.size() - 1);
+            population.add(((S) population.get(index)).copy());
+        }
     }
 
     @Override
@@ -64,12 +84,6 @@ public class CONSGAII<S extends Solution<?>> extends NSGAII implements Cooperati
     @Override
     public List<S> getOffspring() {
         return offspringPopulation;
-    }
-
-    @Override
-    public void overridePopulation(List<S> external) {
-        population.clear();
-        population.addAll(external);
     }
 
 }

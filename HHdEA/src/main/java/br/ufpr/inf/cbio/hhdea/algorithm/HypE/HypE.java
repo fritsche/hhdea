@@ -38,7 +38,7 @@ import org.uma.jmetal.util.solutionattribute.impl.Fitness;
 public class HypE<S extends Solution<?>> implements Algorithm<List<S>> {
 
     int populationSize;
-    private int maxEvaluations;
+    private final int maxEvaluations;
     int samples;
     int evaluations;
     List<S> population;
@@ -114,6 +114,10 @@ public class HypE<S extends Solution<?>> implements Algorithm<List<S>> {
 
     @Override
     public void run() {
+
+        if (populationSize % 2 != 0) {
+            populationSize += 1;
+        }
         population = new ArrayList<>(populationSize);
         reference = problem.createSolution();
         evaluations = 0;

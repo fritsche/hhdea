@@ -16,7 +16,7 @@
  */
 package br.ufpr.inf.cbio.hhdea.algorithm.SPEA2;
 
-import br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.CooperativeAlgorithm;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.CooperativeAlgorithm;
 import java.util.ArrayList;
 import java.util.List;
 import org.uma.jmetal.algorithm.multiobjective.spea2.SPEA2;
@@ -55,9 +55,16 @@ public class COSPEA2<S extends Solution<?>> extends SPEA2<S> implements Cooperat
     @Override
     public void init(int populationSize) {
         setMaxPopulationSize(populationSize);
-        population = createInitialPopulation();
-        population = evaluatePopulation(population);
-        environmentalSelectionOverride = new EnvironmentalSelection<>(populationSize);
+        List<S> initial = createInitialPopulation();
+        initial = evaluatePopulation(initial);
+        init(initial);
+    }
+
+    @Override
+    public void init(List<S> initialPopulation) {
+        setMaxPopulationSize(initialPopulation.size());
+        population = initialPopulation;
+        environmentalSelectionOverride = new EnvironmentalSelection<>(getMaxPopulationSize());
     }
 
     @Override
@@ -79,9 +86,4 @@ public class COSPEA2<S extends Solution<?>> extends SPEA2<S> implements Cooperat
         return offspringPopulation;
     }
 
-    @Override
-    public void overridePopulation(List<S> external) {
-        population.clear();
-        population.addAll(external);
-    }
 }

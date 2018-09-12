@@ -16,10 +16,11 @@
  */
 package br.ufpr.inf.cbio.hhdea.algorithm.NSGAIII;
 
-import br.ufpr.inf.cbio.hhdea.algorithm.hyperheuristic.CooperativeAlgorithm;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.CooperativeAlgorithm;
 import java.util.ArrayList;
 import java.util.List;
 import org.uma.jmetal.solution.Solution;
+import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 import org.uma.jmetal.util.solutionattribute.Ranking;
 import org.uma.jmetal.util.solutionattribute.impl.DominanceRanking;
 
@@ -28,7 +29,7 @@ import org.uma.jmetal.util.solutionattribute.impl.DominanceRanking;
  * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
  * @param <S>
  */
-class CONSGAIII<S extends Solution<?>> extends NSGAIII<S> implements CooperativeAlgorithm<S> {
+public class CONSGAIII<S extends Solution<?>> extends NSGAIII<S> implements CooperativeAlgorithm<S> {
 
     public CONSGAIII(NSGAIIIBuilder builder) {
         super(builder);
@@ -77,10 +78,31 @@ class CONSGAIII<S extends Solution<?>> extends NSGAIII<S> implements Cooperative
     public void init(int populationSize) {
         this.populationSize_ = populationSize;
         initializeUniformWeight();
-        if (populationSize_ % 2 != 0) {
-            populationSize_ += 1;
+        populationSize += (populationSize % 2);
+        List<S> initial = new ArrayList<>(populationSize);
+        for (int i = 0; i < populationSize; i++) {
+            S newSolution = problem_.createSolution();
+            problem_.evaluate(newSolution);
+            initial.add(newSolution);
         }
-        initPopulation();
+        init(initial);
+    }
+
+    @Override
+    public void init(List<S> initialPopulation) {
+        populationSize_ += (populationSize_ % 2);
+        population_ = new ArrayList<>(populationSize_);
+        population_.addAll(initialPopulation);
+        // fit populationSize if initialPopulation is larger
+        while (population_.size() > populationSize_) {
+            int index = JMetalRandom.getInstance().nextInt(0, population_.size() - 1);
+            population_.remove(index);
+        }
+        // fit populationSize if initialPopulation is smaller
+        while (population_.size() < populationSize_) {
+            int index = JMetalRandom.getInstance().nextInt(0, population_.size() - 1);
+            population_.add((S) population_.get(index).copy());
+        }
     }
 
     @Override
@@ -123,12 +145,6 @@ class CONSGAIII<S extends Solution<?>> extends NSGAIII<S> implements Cooperative
     @Override
     public List<S> getOffspring() {
         return offspringPopulation_;
-    }
-
-    @Override
-    public void overridePopulation(List<S> external) {
-        population_.clear();
-        population_.addAll(external);
     }
 
 }
