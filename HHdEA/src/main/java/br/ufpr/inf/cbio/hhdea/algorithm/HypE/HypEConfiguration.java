@@ -42,11 +42,12 @@ public class HypEConfiguration<S extends Solution> implements AlgorithmConfigura
     SelectionOperator<List<S>, S> selectionOperator;
 
     @Override
-    public HypE<?> configure(Problem problem, int popSize, int generations) {
+    public HypE<?> configure(int popSize, int maxFitnessEvaluations, Problem problem) {
         this.problem = problem;
         setup();
         return new HypEBuilder<>(problem).setCrossoverOperator(crossoverOperator)
-                .setMaxEvaluations(popSize * generations).setMutationOperator(mutationOperator).setPopulationSize(popSize)
+                .setMaxEvaluations(maxFitnessEvaluations)
+                .setMutationOperator(mutationOperator).setPopulationSize(popSize)
                 .setSamples(samples).setSelectionOperator(selectionOperator).build();
     }
 
