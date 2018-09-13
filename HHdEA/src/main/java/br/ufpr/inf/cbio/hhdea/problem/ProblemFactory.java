@@ -16,6 +16,21 @@
  */
 package br.ufpr.inf.cbio.hhdea.problem;
 
+import br.ufpr.inf.cbio.hhdea.problem.MaF.MaF01;
+import br.ufpr.inf.cbio.hhdea.problem.MaF.MaF02;
+import br.ufpr.inf.cbio.hhdea.problem.MaF.MaF03;
+import br.ufpr.inf.cbio.hhdea.problem.MaF.MaF04;
+import br.ufpr.inf.cbio.hhdea.problem.MaF.MaF05;
+import br.ufpr.inf.cbio.hhdea.problem.MaF.MaF06;
+import br.ufpr.inf.cbio.hhdea.problem.MaF.MaF07;
+import br.ufpr.inf.cbio.hhdea.problem.MaF.MaF08;
+import br.ufpr.inf.cbio.hhdea.problem.MaF.MaF09;
+import br.ufpr.inf.cbio.hhdea.problem.MaF.MaF10;
+import br.ufpr.inf.cbio.hhdea.problem.MaF.MaF11;
+import br.ufpr.inf.cbio.hhdea.problem.MaF.MaF12;
+import br.ufpr.inf.cbio.hhdea.problem.MaF.MaF13;
+import br.ufpr.inf.cbio.hhdea.problem.MaF.MaF14;
+import br.ufpr.inf.cbio.hhdea.problem.MaF.MaF15;
 import org.uma.jmetal.problem.DoubleProblem;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.problem.multiobjective.dtlz.DTLZ1;
@@ -48,7 +63,7 @@ public class ProblemFactory {
             return new InvertedProblem((DoubleProblem) getProblem(problem.substring(5), m), problem);
         }
 
-        int k;
+        int k, l, d;
         switch (problem) {
             case "DTLZ1":
                 k = 5;
@@ -98,6 +113,64 @@ public class ProblemFactory {
             case "WFG9":
                 k = 2 * (m - 1);
                 return new WFG9(k, 20, m);
+            case "MaF01":
+                k = 10;
+                d = m + k - 1;
+                return new MaF01(d, m);
+            case "MaF02":
+                k = 10;
+                d = m + k - 1;
+                return new MaF02(d, m);
+            case "MaF03":
+                k = 10;
+                d = m + k - 1;
+                return new MaF03(d, m);
+            case "MaF04":
+                k = 10;
+                d = m + k - 1;
+                return new MaF04(d, m);
+            case "MaF05":
+                k = 10;
+                d = m + k - 1;
+                return new MaF05(d, m);
+            case "MaF06":
+                k = 10;
+                d = m + k - 1;
+                return new MaF06(d, m);
+            case "MaF07":
+                k = 20;
+                d = m + k - 1;
+                return new MaF07(d, m);
+            case "MaF08":
+                d = 2;
+                return new MaF08(d, m);
+            case "MaF09":
+                d = 2;
+                return new MaF09(d, m);
+            case "MaF10":
+                k = m - 1;
+                l = 10;
+                d = k + l;
+                return new MaF10(d, m);
+            case "MaF11":
+                k = m - 1;
+                l = 10;
+                d = k + l;
+                return new MaF11(d, m);
+            case "MaF12":
+                k = m - 1;
+                l = 10;
+                d = k + l;
+                return new MaF12(d, m);
+            case "MaF13":
+                d = 5;
+                return new MaF13(d, m);
+            case "MaF14":
+                d = m * 20;
+                return new MaF14(d, m);
+            case "MaF15":
+                d = m * 20;
+                return new MaF15(d, m);
             default:
                 throw new JMetalException("There is no configurations for " + problem + " problem");
         }
