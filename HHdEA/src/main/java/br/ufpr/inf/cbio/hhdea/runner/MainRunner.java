@@ -10,11 +10,13 @@ import br.ufpr.inf.cbio.hhdea.util.OutputUtils;
 import java.util.List;
 import java.util.logging.Level;
 import org.uma.jmetal.algorithm.Algorithm;
+import org.uma.jmetal.algorithm.multiobjective.moead.util.MOEADUtils;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.DoubleSolution;
 import org.uma.jmetal.util.AlgorithmRunner;
 import org.uma.jmetal.util.JMetalException;
 import org.uma.jmetal.util.JMetalLogger;
+import org.uma.jmetal.util.SolutionListUtils;
 import org.uma.jmetal.util.fileoutput.SolutionListOutput;
 import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
@@ -90,6 +92,16 @@ public class MainRunner {
         outputUtils.prepareOutputDirectory();
 
         List population = algorithm.getResult();
+
+        // prune output population size
+        if (problem.getName().startsWith("MaF")) {
+            population = MOEADUtils.getSubsetOfEvenlyDistributedSolutions(
+                    SolutionListUtils.getNondominatedSolutions(population), 240);
+        } else {
+            population = MOEADUtils.getSubsetOfEvenlyDistributedSolutions(
+                    SolutionListUtils.getNondominatedSolutions(population), popSize);
+        }
+
         new SolutionListOutput(population).setSeparator("\t")
                 .setVarFileOutputContext(new DefaultFileOutputContext(experimentBaseDirectory + "VAR" + id + ".tsv"))
                 .setFunFileOutputContext(new DefaultFileOutputContext(experimentBaseDirectory + "FUN" + id + ".tsv"))
