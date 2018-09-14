@@ -53,7 +53,7 @@ public class ThetaDEAConfiguration implements AlgorithmConfiguration<ThetaDEA<?>
     }
 
     @Override
-    public ThetaDEA configure(Problem problem, int popSize, int generations) {
+    public ThetaDEA<?> configure(int popSize, int maxFitnessEvaluations, Problem problem) {
 
         this.problem = problem;
 
@@ -63,7 +63,7 @@ public class ThetaDEAConfiguration implements AlgorithmConfiguration<ThetaDEA<?>
                 .setMutation(mutation)
                 .setNormalize(normalize)
                 .setTheta(theta)
-                .setMaxEvaluations(generations * popSize)
+                .setMaxEvaluations(maxFitnessEvaluations)
                 .setPopulationSize(popSize).build();
     }
 

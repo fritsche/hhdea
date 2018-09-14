@@ -25,13 +25,17 @@ import org.uma.jmetal.problem.Problem;
 public class COSPEA2SDEConfiguration extends SPEA2SDEConfiguration {
 
     @Override
-    public COSPEA2SDE configure(Problem problem, int popSize, int generations) {
+    public COSPEA2SDE configure(int popSize, int maxFitnessEvaluations, Problem problem) {
 
         this.problem = problem;
 
         setup();
 
-        return (new COSPEA2SDEBuilder<>(problem, crossoverOperator, mutationOperator)).setSelectionOperator(selectionOperator).setMaxIterations(generations).setPopulationSize(popSize).build();
+        return (new COSPEA2SDEBuilder<>(problem, crossoverOperator, mutationOperator))
+                .setSelectionOperator(selectionOperator)
+                .setMaxIterations(maxFitnessEvaluations / popSize)
+                .setPopulationSize(popSize)
+                .build();
 
     }
 

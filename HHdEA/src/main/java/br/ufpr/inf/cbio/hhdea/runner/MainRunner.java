@@ -2,12 +2,15 @@ package br.ufpr.inf.cbio.hhdea.runner;
 
 import br.ufpr.inf.cbio.hhdea.config.AlgorithmConfigurationFactory;
 import br.ufpr.inf.cbio.hhdea.problem.ProblemFactory;
+import br.ufpr.inf.cbio.hhdea.runner.methodology.ArionMethodology;
+import br.ufpr.inf.cbio.hhdea.runner.methodology.MaFMethodology;
 import br.ufpr.inf.cbio.hhdea.runner.methodology.Methodology;
 import br.ufpr.inf.cbio.hhdea.runner.methodology.NSGAIIIMethodology;
 import br.ufpr.inf.cbio.hhdea.util.OutputUtils;
 import java.util.List;
 import java.util.logging.Level;
 import org.uma.jmetal.algorithm.Algorithm;
+import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.DoubleSolution;
 import org.uma.jmetal.util.AlgorithmRunner;
 import org.uma.jmetal.util.JMetalException;
@@ -42,9 +45,9 @@ public class MainRunner {
 
         JMetalLogger.logger.setLevel(Level.ALL);
 
-        if (args.length != 6) {
+        if (args.length != 7) {
             throw new JMetalException("Needed arguments: "
-                    + "outputDirectory algorithm problem m id seed");
+                    + "methodologyName outputDirectory algorithm problem m id seed");
         }
 
         // parse arguments
@@ -57,20 +60,29 @@ public class MainRunner {
         int id = Integer.parseInt(args[i++]);
         int seed = Integer.parseInt(args[i++]);
 
+        Problem problem = ProblemFactory.getProblem(problemName, m);
+
         Methodology methodology = null;
         if (methodologyName.equals(NSGAIIIMethodology.class.getSimpleName())) {
             methodology = new NSGAIIIMethodology(problemName, m);
+        } else if (methodologyName.equals(MaFMethodology.class.getSimpleName())) {
+            methodology = new MaFMethodology(m, problem.getNumberOfVariables());
+        } else if (methodologyName.equals(ArionMethodology.class.getSimpleName())) {
+            methodology = new ArionMethodology(problemName);
+        } else {
+            throw new JMetalException("There is no configuration for " + methodologyName + " methodology.");
         }
 
-        int generations = getGenerationsNumber(problemName, m);
-        int popSize = getPopSize(problemName);
+        int maxFitnessevaluations = methodology.getMaxFitnessEvaluations();
+        int popSize = methodology.getPopulationSize();
 
         // set seed
         JMetalRandom.getInstance().setSeed(seed);
 
         Algorithm<List<DoubleSolution>> algorithm = AlgorithmConfigurationFactory
                 .getAlgorithmConfiguration(algorithmName)
-                .configure(ProblemFactory.getProblem(problemName, m), popSize, generations);
+                .configure(popSize, maxFitnessevaluations, problem);
+
         AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
                 .execute();
 

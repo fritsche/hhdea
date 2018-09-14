@@ -25,8 +25,7 @@ import org.uma.jmetal.problem.Problem;
 public class CONSGAIIIConfiguration extends NSGAIIIConfiguration {
 
     @Override
-    public CONSGAIII configure(Problem problem, int popSize, int generations) {
-
+    public CONSGAIII<?> configure(int popSize, int maxFitnessEvaluations, Problem problem) {
         this.problem = problem;
 
         setup();
@@ -35,7 +34,7 @@ public class CONSGAIIIConfiguration extends NSGAIIIConfiguration {
                 .setMutation(mutation)
                 .setSelection(selection)
                 .setNormalize(normalize)
-                .setMaxEvaluations(generations * popSize)
+                .setMaxEvaluations(maxFitnessEvaluations)
                 .setPopulationSize(popSize)).build();
     }
 

@@ -52,10 +52,10 @@ public class SPEA2SDEConfiguration<S extends Solution> implements AlgorithmConfi
     }
 
     @Override
-    public SPEA2SDE configure(Problem problem, int popSize, int generations) {
+    public SPEA2SDE<?> configure(int popSize, int maxFitnessEvaluations, Problem problem) {
         this.problem = problem;
         setup();
-        return new SPEA2SDE(problem, generations, popSize, crossoverOperator,
+        return new SPEA2SDE(problem, maxFitnessEvaluations / popSize, popSize, crossoverOperator,
                 mutationOperator, selectionOperator, new SequentialSolutionListEvaluator<>());
     }
 

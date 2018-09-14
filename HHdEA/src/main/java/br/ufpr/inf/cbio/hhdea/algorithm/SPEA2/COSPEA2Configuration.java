@@ -25,7 +25,7 @@ import org.uma.jmetal.problem.Problem;
 public class COSPEA2Configuration extends SPEA2Configuration {
 
     @Override
-    public COSPEA2 configure(Problem problem, int popSize, int generations) {
+    public COSPEA2<?> configure(int popSize, int maxFitnessEvaluations, Problem problem) {
 
         this.problem = problem;
 
@@ -33,7 +33,7 @@ public class COSPEA2Configuration extends SPEA2Configuration {
 
         return ((COSPEA2Builder) new COSPEA2Builder(problem, crossover, mutation)
                 .setSelectionOperator(selection)
-                .setMaxIterations(generations)
+                .setMaxIterations(maxFitnessEvaluations / popSize)
                 .setPopulationSize(popSize))
                 .build();
     }

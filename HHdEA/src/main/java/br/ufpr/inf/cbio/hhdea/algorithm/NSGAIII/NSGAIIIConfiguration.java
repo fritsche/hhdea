@@ -56,7 +56,7 @@ public class NSGAIIIConfiguration implements AlgorithmConfiguration<NSGAIII<?>> 
     }
 
     @Override
-    public NSGAIII configure(Problem problem, int popSize, int generations) {
+    public NSGAIII<?> configure(int popSize, int maxFitnessEvaluations, Problem problem) {
 
         this.problem = problem;
 
@@ -66,7 +66,7 @@ public class NSGAIIIConfiguration implements AlgorithmConfiguration<NSGAIII<?>> 
                 .setMutation(mutation)
                 .setSelection(selection)
                 .setNormalize(normalize)
-                .setMaxEvaluations(generations * popSize)
+                .setMaxEvaluations(maxFitnessEvaluations)
                 .setPopulationSize(popSize).build();
     }
 

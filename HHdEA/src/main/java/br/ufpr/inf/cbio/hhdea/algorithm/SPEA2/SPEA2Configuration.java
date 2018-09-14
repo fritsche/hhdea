@@ -59,7 +59,7 @@ public class SPEA2Configuration implements AlgorithmConfiguration<SPEA2<?>> {
     }
 
     @Override
-    public SPEA2 configure(Problem problem, int popSize, int generations) {
+    public SPEA2<?> configure(int popSize, int maxFitnessEvaluations, Problem problem) {
 
         this.problem = problem;
 
@@ -67,7 +67,7 @@ public class SPEA2Configuration implements AlgorithmConfiguration<SPEA2<?>> {
 
         return new SPEA2Builder<>(problem, crossover, mutation)
                 .setSelectionOperator(selection)
-                .setMaxIterations(generations)
+                .setMaxIterations(maxFitnessEvaluations / popSize)
                 .setPopulationSize(popSize)
                 .build();
     }
