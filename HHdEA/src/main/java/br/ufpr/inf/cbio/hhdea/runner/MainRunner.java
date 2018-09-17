@@ -49,13 +49,13 @@ public class MainRunner {
 
         if (args.length != 7) {
             throw new JMetalException("Needed arguments: "
-                    + "methodologyName outputDirectory algorithm problem m id seed");
+                    + "outputDirectory methodologyName algorithm problem m id seed");
         }
 
         // parse arguments
         int i = 0;
-        String methodologyName = args[i++];
         String experimentBaseDirectory = args[i++];
+        String methodologyName = args[i++];
         String algorithmName = args[i++];
         String problemName = args[i++];
         int m = Integer.parseInt(args[i++]);
@@ -88,24 +88,33 @@ public class MainRunner {
         AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
                 .execute();
 
-        OutputUtils outputUtils = new OutputUtils(experimentBaseDirectory);
-        outputUtils.prepareOutputDirectory();
+        List population = SolutionListUtils.getNondominatedSolutions(algorithm.getResult());
 
-        List population = algorithm.getResult();
-
-        // prune output population size
+        // final population size of MaF
         if (problem.getName().startsWith("MaF")) {
-            population = MOEADUtils.getSubsetOfEvenlyDistributedSolutions(
-                    SolutionListUtils.getNondominatedSolutions(population), 240);
-        } else {
-            population = MOEADUtils.getSubsetOfEvenlyDistributedSolutions(
-                    SolutionListUtils.getNondominatedSolutions(population), popSize);
+            popSize = 240;
         }
 
+        // prune output population size
+        if (population.size() > popSize) {
+            population = MOEADUtils.getSubsetOfEvenlyDistributedSolutions(population, popSize);
+        }
+
+        String folder = experimentBaseDirectory + "/"
+                + methodologyName + "/"
+                + m
+                + "/data/"
+                + algorithmName + "/"
+                + problemName + "/";
+
+        OutputUtils outputUtils = new OutputUtils(folder);
+        outputUtils.prepareOutputDirectory();
+
         new SolutionListOutput(population).setSeparator("\t")
-                .setVarFileOutputContext(new DefaultFileOutputContext(experimentBaseDirectory + "VAR" + id + ".tsv"))
-                .setFunFileOutputContext(new DefaultFileOutputContext(experimentBaseDirectory + "FUN" + id + ".tsv"))
+                .setVarFileOutputContext(new DefaultFileOutputContext(folder + "VAR" + id + ".tsv"))
+                .setFunFileOutputContext(new DefaultFileOutputContext(folder + "FUN" + id + ".tsv"))
                 .print();
+        
         long computingTime = algorithmRunner.getComputingTime();
         JMetalLogger.logger.log(Level.INFO, "Total execution time: {0}ms", computingTime);
 

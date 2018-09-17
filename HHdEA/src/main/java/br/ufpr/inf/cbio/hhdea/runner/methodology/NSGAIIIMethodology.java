@@ -33,7 +33,7 @@ public class NSGAIIIMethodology implements Methodology {
 
     public NSGAIIIMethodology(String problemName, int numberOfObjectives) {
         this.populationSize = initPopulationSize(numberOfObjectives);
-        this.maxFitnessEvaluations = getGenerationsNumber(problemName, numberOfObjectives);
+        this.maxFitnessEvaluations = this.populationSize * getGenerationsNumber(problemName, numberOfObjectives);
     }
 
     @Override
