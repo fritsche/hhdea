@@ -19,7 +19,6 @@ package br.ufpr.inf.cbio.hhdea.hyperheuristic.traditional;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.CooperativeAlgorithm;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.HyperHeuristic;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.SelectionFunction;
-import br.ufpr.inf.cbio.hhdea.metrics.fir.FitnessImprovementRate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -29,6 +28,7 @@ import org.uma.jmetal.util.JMetalLogger;
 import org.uma.jmetal.util.SolutionListUtils;
 import org.uma.jmetal.util.evaluator.SolutionListEvaluator;
 import org.uma.jmetal.util.evaluator.impl.SequentialSolutionListEvaluator;
+import br.ufpr.inf.cbio.hhdea.metrics.fir.FitnessImprovementRateCalculator;
 
 /**
  * An online learning hyper-heuristic selection based on low-level heursitics.
@@ -50,24 +50,23 @@ public class Traditional<S extends Solution<?>> extends HyperHeuristic<S> {
     private final int maxEvaluations;
     private final Problem problem;
     private final SelectionFunction<CooperativeAlgorithm> selection;
-    private final int[] count;
-    private final FitnessImprovementRate fir;
+    private final FitnessImprovementRateCalculator calculator;
     private List<S> population;
     protected final SolutionListEvaluator<S> evaluator = new SequentialSolutionListEvaluator<>();
+    private int evaluations;
 
     public Traditional(List<CooperativeAlgorithm<S>> algorithms, int populationSize,
             int maxEvaluations, Problem problem,
             SelectionFunction<CooperativeAlgorithm> selection,
-            FitnessImprovementRate fir) {
+            FitnessImprovementRateCalculator fir) {
         this.algorithms = algorithms;
         this.populationSize = populationSize;
         this.maxEvaluations = maxEvaluations;
         this.problem = problem;
         this.selection = selection;
         JMetalLogger.logger.log(Level.CONFIG, "Selection Function: {0}", selection.getClass().getSimpleName());
-        this.fir = fir;
+        this.calculator = fir;
         JMetalLogger.logger.log(Level.CONFIG, "Fitness Improvement Rate: {0}", fir.getClass().getSimpleName());
-        this.count = new int[algorithms.size()];
     }
 
     @Override
@@ -83,11 +82,10 @@ public class Traditional<S extends Solution<?>> extends HyperHeuristic<S> {
 
         population = createInitialPopulation();
         population = evaluator.evaluate(population, getProblem());
-        int evaluations = population.size();
-        while (evaluations < maxEvaluations) {
+        evaluations = population.size();
+        while (!isStoppingConditionReached()) {
             // heuristic selection
             CooperativeAlgorithm<S> alg = selection.getNext();
-            count[algorithms.indexOf(alg)]++;
             // copy current population
             List<S> populationCopy = new ArrayList<>();
             population.forEach((s) -> {
@@ -102,20 +100,13 @@ public class Traditional<S extends Solution<?>> extends HyperHeuristic<S> {
             // count FE from alg
             evaluations += newPopulation.size();
             // extract metrics
-            double value = fir.getFitnessImprovementRate(population, newPopulation);
+            setFir(calculator.computeFitnessImprovementRate(population, newPopulation));
             // reward algorithm
-            System.out.println("FIR: " + value);
-            selection.creditAssignment(value);
+            selection.creditAssignment(getFir());
             // move acceptance
             // ALL MOVES
             population = newPopulation;
         }
-
-        System.out.print("Count:\t");
-        for (int a = 0; a < count.length; a++) {
-            System.out.print(count[a] + "\t");
-        }
-        System.out.println();
     }
 
     /**
@@ -167,12 +158,9 @@ public class Traditional<S extends Solution<?>> extends HyperHeuristic<S> {
         return selection;
     }
 
-    public int[] getCount() {
-        return count;
-    }
-
-    public FitnessImprovementRate getFir() {
-        return fir;
+    @Override
+    public boolean isStoppingConditionReached() {
+        return evaluations >= maxEvaluations;
     }
 
 }

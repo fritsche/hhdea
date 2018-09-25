@@ -18,12 +18,12 @@ package br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA;
 
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.CooperativeAlgorithm;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.SelectionFunction;
-import br.ufpr.inf.cbio.hhdea.metrics.fir.FitnessImprovementRate;
 import java.util.ArrayList;
 import java.util.List;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.AlgorithmBuilder;
+import br.ufpr.inf.cbio.hhdea.metrics.fir.FitnessImprovementRateCalculator;
 
 /**
  *
@@ -38,7 +38,7 @@ public class HHdEABuilder<S extends Solution<?>> implements AlgorithmBuilder<HHd
     private final Problem problem;
     private String name;
     private SelectionFunction<CooperativeAlgorithm> selection;
-    private FitnessImprovementRate fir;
+    private FitnessImprovementRateCalculator fir;
 
     public HHdEABuilder(Problem problem) {
         this.problem = problem;
@@ -98,11 +98,11 @@ public class HHdEABuilder<S extends Solution<?>> implements AlgorithmBuilder<HHd
         return this;
     }
 
-    public FitnessImprovementRate getFir() {
+    public FitnessImprovementRateCalculator getFir() {
         return fir;
     }
 
-    public HHdEABuilder setFir(FitnessImprovementRate fir) {
+    public HHdEABuilder setFir(FitnessImprovementRateCalculator fir) {
         this.fir = fir;
         return this;
     }

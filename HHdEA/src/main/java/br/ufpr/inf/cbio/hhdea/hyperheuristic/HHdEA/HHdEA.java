@@ -19,7 +19,6 @@ package br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.CooperativeAlgorithm;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.HyperHeuristic;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.SelectionFunction;
-import br.ufpr.inf.cbio.hhdea.metrics.fir.FitnessImprovementRate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -27,6 +26,7 @@ import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.JMetalLogger;
 import org.uma.jmetal.util.SolutionListUtils;
+import br.ufpr.inf.cbio.hhdea.metrics.fir.FitnessImprovementRateCalculator;
 
 /**
  *
@@ -41,12 +41,12 @@ public class HHdEA<S extends Solution<?>> extends HyperHeuristic<S> {
     private final int populationSize;
     private final String name;
     private final SelectionFunction<CooperativeAlgorithm> selection;
-    private final int[] count;
-    private final FitnessImprovementRate fir;
+    private final FitnessImprovementRateCalculator calculator;
+    private int evaluations;
 
     public HHdEA(List<CooperativeAlgorithm<S>> algorithms, int populationSize, int maxEvaluations,
             Problem problem, String name, SelectionFunction<CooperativeAlgorithm> selection,
-            FitnessImprovementRate fir) {
+            FitnessImprovementRateCalculator fir) {
         this.algorithms = algorithms;
         this.populationSize = populationSize;
         this.maxEvaluations = maxEvaluations;
@@ -54,15 +54,14 @@ public class HHdEA<S extends Solution<?>> extends HyperHeuristic<S> {
         this.name = name;
         this.selection = selection;
         JMetalLogger.logger.log(Level.CONFIG, "Selection Function: {0}", selection.getClass().getSimpleName());
-        this.fir = fir;
+        this.calculator = fir;
         JMetalLogger.logger.log(Level.CONFIG, "Fitness Improvement Rate: {0}", fir.getClass().getSimpleName());
-        this.count = new int[algorithms.size()];
     }
 
     @Override
     public void run() {
 
-        int evaluations = 0;
+        evaluations = 0;
         for (CooperativeAlgorithm alg : algorithms) {
             alg.init(populationSize);
             evaluations += alg.getPopulation().size();
@@ -70,11 +69,10 @@ public class HHdEA<S extends Solution<?>> extends HyperHeuristic<S> {
         }
         selection.init();
 
-        while (evaluations < maxEvaluations) {
+        while (!isStoppingConditionReached()) {
 
             // heuristic selection
             CooperativeAlgorithm<S> alg = selection.getNext();
-            count[algorithms.indexOf(alg)]++;
 
             // apply selected heuristic
             List<S> parents = new ArrayList<>();
@@ -92,11 +90,12 @@ public class HHdEA<S extends Solution<?>> extends HyperHeuristic<S> {
             }
 
             // extract metrics
-            double value = fir.getFitnessImprovementRate(parents, offspring);
+            setFir(calculator.computeFitnessImprovementRate(parents, offspring));
+            setChanged();
+            notifyObservers();
 
             // compute reward
-            System.out.println("FIR: " + value);
-            selection.creditAssignment(value);
+            selection.creditAssignment(getFir());
 
             // move acceptance
             // ALL MOVES
@@ -111,12 +110,6 @@ public class HHdEA<S extends Solution<?>> extends HyperHeuristic<S> {
                 }
             }
         }
-
-        System.out.print("Count:\t");
-        for (int a = 0; a < count.length; a++) {
-            System.out.print(count[a] + "\t");
-        }
-        System.out.println();
 
     }
 
@@ -137,6 +130,11 @@ public class HHdEA<S extends Solution<?>> extends HyperHeuristic<S> {
     @Override
     public String getDescription() {
         return "Hyper-heuristics for distributed Evolutionary Algorithms";
+    }
+
+    @Override
+    public boolean isStoppingConditionReached() {
+        return evaluations >= maxEvaluations;
     }
 
 }

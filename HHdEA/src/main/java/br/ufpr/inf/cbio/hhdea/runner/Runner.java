@@ -83,6 +83,7 @@ public class Runner {
     public void run() {
 
         problem = ProblemFactory.getProblem(problemName, m);
+        JMetalLogger.logger.log(Level.CONFIG, "Problem: {0} with {1} objectives", new Object[]{problemName, m});
 
         Methodology methodology = null;
         if (methodologyName.equals(NSGAIIIMethodology.class.getSimpleName())) {
@@ -94,23 +95,28 @@ public class Runner {
         } else {
             throw new JMetalException("There is no configuration for " + methodologyName + " methodology.");
         }
+        JMetalLogger.logger.log(Level.CONFIG, "Methodology: {0}", methodologyName);
 
         int maxFitnessevaluations = methodology.getMaxFitnessEvaluations();
+        JMetalLogger.logger.log(Level.CONFIG, "Max Fitness Evaluations: {0}", maxFitnessevaluations);
         popSize = methodology.getPopulationSize();
 
         // set seed
         JMetalRandom.getInstance().setSeed(seed);
+        JMetalLogger.logger.log(Level.CONFIG, "Seed: {0}", seed);
 
         algorithm = AlgorithmConfigurationFactory
                 .getAlgorithmConfiguration(algorithmName)
                 .configure(popSize, maxFitnessevaluations, problem);
 
+        JMetalLogger.logger.log(Level.CONFIG, "Algorithm: {0}", algorithmName);
+
         if (output != null && algorithm instanceof HyperHeuristic) {
             HyperHeuristic hh = (HyperHeuristic) algorithm;
             List list = Arrays.asList(output);
             if (list.contains("fir")) {
-                hh.addObserver(new OutputFitnessImprovementRate(experimentBaseDirectory, 
-                        methodologyName, Integer.toString(m), algorithmName, problemName, 
+                hh.addObserver(new OutputFitnessImprovementRate(experimentBaseDirectory,
+                        methodologyName, Integer.toString(m), algorithmName, problemName,
                         Integer.toString(id)));
             }
         }

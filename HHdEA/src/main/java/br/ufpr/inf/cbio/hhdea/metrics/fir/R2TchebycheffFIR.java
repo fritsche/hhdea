@@ -29,7 +29,7 @@ import org.uma.jmetal.util.front.imp.ArrayFront;
  *
  * @author Gian Fritsche <gmfritsche at inf.ufpr.br>
  */
-public class R2TchebycheffFIR implements FitnessImprovementRate<Solution<?>> {
+public class R2TchebycheffFIR implements FitnessImprovementRateCalculator<Solution<?>> {
 
     private final double[][] lambda;
     private final int m;
@@ -40,7 +40,7 @@ public class R2TchebycheffFIR implements FitnessImprovementRate<Solution<?>> {
     }
 
     @Override
-    public double getFitnessImprovementRate(List<Solution<?>> parents, List<Solution<?>> offspring) {
+    public double computeFitnessImprovementRate(List<Solution<?>> parents, List<Solution<?>> offspring) {
         int points = parents.size() + offspring.size();
         Front reference = new ArrayFront(points, m);
         Front parentsFront = new ArrayFront(parents);
