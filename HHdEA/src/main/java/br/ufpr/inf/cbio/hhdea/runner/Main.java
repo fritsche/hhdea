@@ -1,5 +1,7 @@
 package br.ufpr.inf.cbio.hhdea.runner;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.cli.CommandLine;
@@ -34,42 +36,84 @@ import org.uma.jmetal.util.JMetalLogger;
  */
 public class Main {
 
-    public static CommandLine parse(String[] args) throws ParseException {
+    public static CommandLine parse(String[] args) {
+
         CommandLineParser parser = new DefaultParser();
+        CommandLine cmd;
         Options options = new Options();
 
-        options.addOption(Option.builder("h").longOpt("help").desc("print this message").build());
-
-        options.addOption(Option.builder("P").longOpt("output-path").hasArg().argName("path")
-                .desc("directory path for output (if no path is given experiment/ will be used.)").build());
-
-        options.addOption(Option.builder("M").longOpt("methodology").hasArg().argName("methodology")
-                .desc("set the methodology to be used: NSGAIII (default), MaF, Arion.").build());
-
-        options.addOption(Option.builder("a").longOpt("algorithm").hasArg().argName("algorithm").required()
-                .desc("set the algorithm to be executed: NSGAII, MOEAD, MOEADD, ThetaDEA, NSGAIII, SPEA2, SPEA2SDE, HypE, MOMBI2, Traditional, <other>."
-                        + "If <other> name is given, HHdEA will be executed and the algorithm output name will be <other>.").build());
-
-        options.addOption(Option.builder("p").longOpt("problem").hasArg().argName("problem").required()
-                .desc("set the problem instance: DTLZ[1-7], WFG[1-9], MinusDTLZ[1-7], MinusWFG[1-9], MaF[1-15]; "
-                        + "--methodology must be set accordingly.").build());
-
-        options.addOption(Option.builder("m").longOpt("objectives").hasArg().argName("objectives").required()
-                .desc("set the number of objectives to <objectives>, --problem and --methodology must be set acordingly.").build());
-
-        options.addOption(Option.builder("id").hasArg().argName("id")
-                .desc("independent run id, default 0.").build());
-
-        options.addOption(Option.builder("s").longOpt("seed").hasArg().argName("seed")
-                .desc("set the seed for JMetalRandom, default System.currentTimeMillis()").build());
-
-        CommandLine cmd = parser.parse(options, args);
-        if (cmd.hasOption("h")) {
-            // automatically generate the help statement
-            HelpFormatter formatter = new HelpFormatter();
-            formatter.printHelp("hhdea", options);
+        /**
+         * When args is empty or -h is used do not throw exception for required
+         * arguments. To achieve this we need to parse command line twice (with
+         * and without considering required arguments).
+         * https://stackoverflow.com/questions/36720946/apache-cli-required-options-contradicts-with-help-option
+         */
+        try {
+            // optional arguments
+            List<Option> optional = new ArrayList<>();
+            optional.add(Option.builder("h").longOpt("help").desc("print this message and exits.").build());
+            optional.add(Option.builder("P").longOpt("output-path").hasArg().argName("path")
+                    .desc("directory path for output (if no path is given experiment/ will be used.)").build());
+            optional.add(Option.builder("M").longOpt("methodology").hasArg().argName("methodology")
+                    .desc("set the methodology to be used: NSGAIII (default), MaF, Arion.").build());
+            optional.add(Option.builder("id").hasArg().argName("id")
+                    .desc("set the independent run id, default 0.").build());
+            optional.add(Option.builder("s").longOpt("seed").hasArg().argName("seed")
+                    .desc("set the seed for JMetalRandom, default System.currentTimeMillis()").build());
+            // add optional arguments
+            for (Option option : optional) {
+                options.addOption(option);
+            }
+            // required arguments
+            List<Option> required = new ArrayList<>();
+            required.add(Option.builder("a").longOpt("algorithm").hasArg().argName("algorithm")
+                    .desc("set the algorithm to be executed: NSGAII, MOEAD, MOEADD, ThetaDEA, NSGAIII, SPEA2, SPEA2SDE, HypE, MOMBI2, Traditional, <other>."
+                            + "If <other> name is given, HHdEA will be executed and the algorithm output name will be <other>.").build());
+            required.add(Option.builder("p").longOpt("problem").hasArg().argName("problem")
+                    .desc("set the problem instance: DTLZ[1-7], WFG[1-9], MinusDTLZ[1-7], MinusWFG[1-9], MaF[1-15]; "
+                            + "<methodology> must be set accordingly.").build());
+            required.add(Option.builder("m").longOpt("objectives").hasArg().argName("objectives")
+                    .desc("set the number of objectives to <objectives>. <problem> and <methodology> must be set acordingly.").build());
+            // add required argumengs (without required flag)
+            for (Option option : required) {
+                options.addOption(option);
+            }
+            // parse command line without considering required arguments
+            cmd = parser.parse(options, args);
+            // clear options
+            options = new Options();
+            // add optional arguments
+            for (Option option : optional) {
+                options.addOption(option);
+            }
+            // add required arguments (with the required flag)
+            for (Option option : required) {
+                option.setRequired(true);
+                options.addOption(option);
+            }
+            // print help and exit
+            if (cmd.hasOption("h") || args.length == 0) {
+                help(options);
+                System.exit(0);
+            }
+            // parse command line considering required arguments
+            cmd = parser.parse(options, args);
+            return cmd;
+        } catch (ParseException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
+                    "Failed to parse command line arguments. Execute with -h for usage help.", ex);
         }
-        return cmd;
+        return null;
+    }
+
+    public static void help(Options options) {
+        // automatically generate the help statement
+        HelpFormatter formatter = new HelpFormatter();
+        formatter.printHelp(
+                "java -cp <jar> br.ufpr.inf.cbio.hhdea.runner.Main",
+                "\nExecute a single independent run of the <algorithm> on a given <problem>.\n",
+                options,
+                "\nPlease report issues at https://github.com/fritsche/hhdea/issues", true);
     }
 
     public static Runner getRunner(CommandLine cmd) {
@@ -95,7 +139,7 @@ public class Main {
             runner.setId(Integer.parseInt(idStr));
         }
         if ((methodologyName = cmd.getOptionValue("M")) != null) {
-            runner.setMethodologyName(methodologyName);
+            runner.setMethodologyName(methodologyName + "Methodology");
         }
         if ((seedStr = cmd.getOptionValue("s")) != null) {
             runner.setSeed(Long.parseLong(seedStr));
@@ -105,12 +149,8 @@ public class Main {
 
     public static void main(String[] args) {
         JMetalLogger.logger.setLevel(Level.ALL);
-        try {
-            Runner runner = getRunner(parse(args));
-            runner.run();
-            runner.printResult();
-        } catch (ParseException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        Runner runner = getRunner(parse(args));
+        runner.run();
+        runner.printResult();
     }
 }
