@@ -111,18 +111,24 @@ public class Runner {
 
         JMetalLogger.logger.log(Level.CONFIG, "Algorithm: {0}", algorithmName);
 
+        OutputFitnessImprovementRate ofir = null;
         if (output != null && algorithm instanceof HyperHeuristic) {
             HyperHeuristic hh = (HyperHeuristic) algorithm;
             List list = Arrays.asList(output);
             if (list.contains("fir")) {
-                hh.addObserver(new OutputFitnessImprovementRate(experimentBaseDirectory,
+                ofir = new OutputFitnessImprovementRate(experimentBaseDirectory,
                         methodologyName, Integer.toString(m), algorithmName, problemName,
-                        Integer.toString(id)));
+                        Integer.toString(id));
+                hh.addObserver(ofir);
             }
         }
 
         AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
                 .execute();
+
+        if (ofir != null) {
+            ofir.close();
+        }
 
         long computingTime = algorithmRunner.getComputingTime();
         JMetalLogger.logger.log(Level.INFO, "Total execution time: {0}ms", computingTime);

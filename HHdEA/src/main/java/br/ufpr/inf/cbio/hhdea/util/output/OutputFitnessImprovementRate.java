@@ -51,8 +51,7 @@ public class OutputFitnessImprovementRate implements Observer {
     }
 
     /**
-     * Print current FIR to buffer. Obserbable must extends HyperHeuristic. The
-     * file buffer is closed when the stopping condition is reached.
+     * Print current FIR to buffer. Observable must extends HyperHeuristic.
      *
      * @param o
      * @param arg
@@ -65,13 +64,18 @@ public class OutputFitnessImprovementRate implements Observer {
                 double fir = hh.getFir();
                 writer.write(Double.toString(fir));
                 writer.newLine();
-                if (hh.isStoppingConditionReached()) {
-                    writer.close();
-                }
             } catch (IOException ex) {
                 Logger.getLogger(OutputFitnessImprovementRate.class.getName()).log(Level.SEVERE, null, ex);
             }
 
+        }
+    }
+
+    public void close() {
+        try {
+            writer.close();
+        } catch (IOException ex) {
+            Logger.getLogger(OutputFitnessImprovementRate.class.getName()).log(Level.SEVERE, "Could not close file.", ex);
         }
     }
 
