@@ -1,12 +1,15 @@
 package br.ufpr.inf.cbio.hhdea.runner;
 
 import br.ufpr.inf.cbio.hhdea.config.AlgorithmConfigurationFactory;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.HyperHeuristic;
 import br.ufpr.inf.cbio.hhdea.problem.ProblemFactory;
 import br.ufpr.inf.cbio.hhdea.runner.methodology.ArionMethodology;
 import br.ufpr.inf.cbio.hhdea.runner.methodology.MaFMethodology;
 import br.ufpr.inf.cbio.hhdea.runner.methodology.Methodology;
 import br.ufpr.inf.cbio.hhdea.runner.methodology.NSGAIIIMethodology;
-import br.ufpr.inf.cbio.hhdea.util.OutputUtils;
+import br.ufpr.inf.cbio.hhdea.util.output.OutputFitnessImprovementRate;
+import br.ufpr.inf.cbio.hhdea.util.output.Utils;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import org.uma.jmetal.algorithm.Algorithm;
@@ -54,6 +57,7 @@ public class Runner {
     private Algorithm<List<DoubleSolution>> algorithm;
     private Problem problem;
     private int popSize;
+    private String[] output;
 
     public Runner() {
         this.algorithmName = "HHdEA";
@@ -101,6 +105,16 @@ public class Runner {
                 .getAlgorithmConfiguration(algorithmName)
                 .configure(popSize, maxFitnessevaluations, problem);
 
+        if (output != null && algorithm instanceof HyperHeuristic) {
+            HyperHeuristic hh = (HyperHeuristic) algorithm;
+            List list = Arrays.asList(output);
+            if (list.contains("fir")) {
+                hh.addObserver(new OutputFitnessImprovementRate(experimentBaseDirectory, 
+                        methodologyName, Integer.toString(m), algorithmName, problemName, 
+                        Integer.toString(id)));
+            }
+        }
+
         AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
                 .execute();
 
@@ -130,7 +144,7 @@ public class Runner {
                 + algorithmName + "/"
                 + problemName + "/";
 
-        OutputUtils outputUtils = new OutputUtils(folder);
+        Utils outputUtils = new Utils(folder);
         outputUtils.prepareOutputDirectory();
 
         new SolutionListOutput(population).setSeparator("\t")
@@ -171,6 +185,11 @@ public class Runner {
 
     public Runner setObjectives(int m) {
         this.m = m;
+        return this;
+    }
+
+    public Runner setOutput(String[] output) {
+        this.output = output;
         return this;
     }
 

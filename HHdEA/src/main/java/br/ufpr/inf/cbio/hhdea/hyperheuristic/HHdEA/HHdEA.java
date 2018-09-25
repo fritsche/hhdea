@@ -17,12 +17,12 @@
 package br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA;
 
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.CooperativeAlgorithm;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.HyperHeuristic;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.SelectionFunction;
 import br.ufpr.inf.cbio.hhdea.metrics.fir.FitnessImprovementRate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.JMetalLogger;
@@ -33,7 +33,7 @@ import org.uma.jmetal.util.SolutionListUtils;
  * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
  * @param <S>
  */
-public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
+public class HHdEA<S extends Solution<?>> extends HyperHeuristic<S> {
 
     protected int maxEvaluations;
     protected Problem<S> problem;
