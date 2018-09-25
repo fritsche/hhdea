@@ -1,7 +1,5 @@
 package br.ufpr.inf.cbio.hhdea.runner;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.cli.CommandLine;
@@ -11,7 +9,6 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.uma.jmetal.util.JMetalException;
 import org.uma.jmetal.util.JMetalLogger;
 
 /*
@@ -42,62 +39,32 @@ public class Main {
         CommandLine cmd;
         Options options = new Options();
 
-        /**
-         * When args is empty or -h is used do not throw exception for required
-         * arguments. To achieve this we need to parse command line twice (with
-         * and without considering required arguments).
-         * https://stackoverflow.com/questions/36720946/apache-cli-required-options-contradicts-with-help-option
-         */
         try {
-            // optional arguments
-            List<Option> optional = new ArrayList<>();
-            optional.add(Option.builder("h").longOpt("help").desc("print this message and exits.").build());
-            optional.add(Option.builder("P").longOpt("output-path").hasArg().argName("path")
+            options.addOption(Option.builder("h").longOpt("help").desc("print this message and exits.").build());
+            options.addOption(Option.builder("P").longOpt("output-path").hasArg().argName("path")
                     .desc("directory path for output (if no path is given experiment/ will be used.)").build());
-            optional.add(Option.builder("M").longOpt("methodology").hasArg().argName("methodology")
+            options.addOption(Option.builder("M").longOpt("methodology").hasArg().argName("methodology")
                     .desc("set the methodology to be used: NSGAIII (default), MaF, Arion.").build());
-            optional.add(Option.builder("id").hasArg().argName("id")
+            options.addOption(Option.builder("id").hasArg().argName("id")
                     .desc("set the independent run id, default 0.").build());
-            optional.add(Option.builder("s").longOpt("seed").hasArg().argName("seed")
+            options.addOption(Option.builder("s").longOpt("seed").hasArg().argName("seed")
                     .desc("set the seed for JMetalRandom, default System.currentTimeMillis()").build());
-            // add optional arguments
-            for (Option option : optional) {
-                options.addOption(option);
-            }
-            // required arguments
-            List<Option> required = new ArrayList<>();
-            required.add(Option.builder("a").longOpt("algorithm").hasArg().argName("algorithm")
-                    .desc("set the algorithm to be executed: NSGAII, MOEAD, MOEADD, ThetaDEA, NSGAIII, SPEA2, SPEA2SDE, HypE, MOMBI2, Traditional, <other>."
+            options.addOption(Option.builder("a").longOpt("algorithm").hasArg().argName("algorithm")
+                    .desc("set the algorithm to be executed: NSGAII, MOEAD, MOEADD, ThetaDEA, NSGAIII, SPEA2, SPEA2SDE, HypE, MOMBI2, Traditional, HHdEA (default), <other>."
                             + "If <other> name is given, HHdEA will be executed and the algorithm output name will be <other>.").build());
-            required.add(Option.builder("p").longOpt("problem").hasArg().argName("problem")
-                    .desc("set the problem instance: DTLZ[1-7], WFG[1-9], MinusDTLZ[1-7], MinusWFG[1-9], MaF[1-15]; "
+            options.addOption(Option.builder("p").longOpt("problem").hasArg().argName("problem")
+                    .desc("set the problem instance: DTLZ[1-7], WFG[1-9], MinusDTLZ[1-7], MinusWFG[1-9], MaF[1-15]; default is WFG1."
                             + "<methodology> must be set accordingly.").build());
-            required.add(Option.builder("m").longOpt("objectives").hasArg().argName("objectives")
-                    .desc("set the number of objectives to <objectives>. <problem> and <methodology> must be set acordingly.").build());
-            // add required argumengs (without required flag)
-            for (Option option : required) {
-                options.addOption(option);
-            }
-            // parse command line without considering required arguments
+            options.addOption(Option.builder("m").longOpt("objectives").hasArg().argName("objectives")
+                    .desc("set the number of objectives to <objectives> (default value is 3). <problem> and <methodology> must be set acordingly.").build());
+
+            // parse command line
             cmd = parser.parse(options, args);
-            // clear options
-            options = new Options();
-            // add optional arguments
-            for (Option option : optional) {
-                options.addOption(option);
-            }
-            // add required arguments (with the required flag)
-            for (Option option : required) {
-                option.setRequired(true);
-                options.addOption(option);
-            }
             // print help and exit
             if (cmd.hasOption("h") || args.length == 0) {
                 help(options);
                 System.exit(0);
             }
-            // parse command line considering required arguments
-            cmd = parser.parse(options, args);
             return cmd;
         } catch (ParseException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE,
@@ -119,19 +86,17 @@ public class Main {
     public static Runner getRunner(CommandLine cmd) {
         String algorithmName, problemName, objectives, idStr, seedStr, experimentBaseDirectory, methodologyName;
 
-        // required arguments
-        if ((algorithmName = cmd.getOptionValue("a")) == null) {
-            throw new JMetalException("Parameter -a is required");
-        }
-        if ((problemName = cmd.getOptionValue("p")) == null) {
-            throw new JMetalException("Parameter -p is required");
-        }
-        if ((objectives = cmd.getOptionValue("m")) == null) {
-            throw new JMetalException("Parameter -m is required");
-        }
-        Runner runner = new Runner(algorithmName, problemName, Integer.parseInt(objectives));
+        Runner runner = new Runner();
 
-        // optional arguments
+        if ((algorithmName = cmd.getOptionValue("a")) != null) {
+            runner.setAlgorithmName(algorithmName);
+        }
+        if ((problemName = cmd.getOptionValue("p")) != null) {
+            runner.setProblemName(problemName);
+        }
+        if ((objectives = cmd.getOptionValue("m")) != null) {
+            runner.setObjectives(Integer.parseInt(objectives));
+        }
         if ((experimentBaseDirectory = cmd.getOptionValue("P")) != null) {
             runner.setExperimentBaseDirectory(experimentBaseDirectory);
         }

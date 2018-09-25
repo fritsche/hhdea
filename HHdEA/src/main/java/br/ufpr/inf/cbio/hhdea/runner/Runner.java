@@ -45,9 +45,9 @@ public class Runner {
 
     private String experimentBaseDirectory;
     private String methodologyName;
-    private final String algorithmName;
-    private final String problemName;
-    private final int m;
+    private String algorithmName;
+    private String problemName;
+    private int m;
     private int id;
     private long seed;
 
@@ -55,13 +55,10 @@ public class Runner {
     private Problem problem;
     private int popSize;
 
-    public Runner(String algorithmName, String problemName, int m) {
-        // required parameters
-        this.algorithmName = algorithmName;
-        this.problemName = problemName;
-        this.m = m;
-
-        // required parameters with default values
+    public Runner() {
+        this.algorithmName = "HHdEA";
+        this.problemName = "WFG1";
+        this.m = 3;
         this.experimentBaseDirectory = "experiment/";
         this.methodologyName = NSGAIIIMethodology.class.getSimpleName();
         this.id = 0;
@@ -159,6 +156,21 @@ public class Runner {
 
     public Runner setMethodologyName(String methodologyName) {
         this.methodologyName = methodologyName;
+        return this;
+    }
+
+    public Runner setAlgorithmName(String algorithmName) {
+        this.algorithmName = algorithmName;
+        return this;
+    }
+
+    public Runner setProblemName(String problemName) {
+        this.problemName = problemName;
+        return this;
+    }
+
+    public Runner setObjectives(int m) {
+        this.m = m;
         return this;
     }
 
