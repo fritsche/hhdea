@@ -48,7 +48,7 @@ public class TraditionalConfiguration<S extends Solution> implements AlgorithmCo
     private int popSize;
 
     @Override
-    public Algorithm<S> configure(Problem problem, int popSize, int generations) {
+    public Algorithm<S> configure(int popSize, int maxFitnessEvaluations, Problem problem) {
         this.problem = problem;
         this.popSize = popSize;
 
@@ -56,18 +56,18 @@ public class TraditionalConfiguration<S extends Solution> implements AlgorithmCo
 
         TraditionalBuilder builder = new TraditionalBuilder(problem);
 
-        builder.addAlgorithm(new COSPEA2Configuration().configure(problem, popSize, generations))
-                .addAlgorithm(new COMOEADConfiguration().configure(problem, popSize, generations))
-                .addAlgorithm(new CONSGAIIConfiguration().configure(problem, popSize, generations))
-                .addAlgorithm(new COMOEADDConfiguration().configure(problem, popSize, generations))
-                .addAlgorithm(new COMOMBI2Configuration().configure(problem, popSize, generations))
-                .addAlgorithm(new CONSGAIIIConfiguration().configure(problem, popSize, generations))
-                .addAlgorithm(new COThetaDEAConfiguration().configure(problem, popSize, generations))
-                .addAlgorithm(new COSPEA2SDEConfiguration().configure(problem, popSize, generations))
-                .addAlgorithm(new COHypEConfiguration().configure(problem, popSize, generations));
+        builder.addAlgorithm(new COSPEA2Configuration().configure(popSize, maxFitnessEvaluations, problem))
+                .addAlgorithm(new COMOEADConfiguration().configure(popSize, maxFitnessEvaluations, problem))
+                .addAlgorithm(new CONSGAIIConfiguration().configure(popSize, maxFitnessEvaluations, problem))
+                .addAlgorithm(new COMOEADDConfiguration().configure(popSize, maxFitnessEvaluations, problem))
+                .addAlgorithm(new COMOMBI2Configuration().configure(popSize, maxFitnessEvaluations, problem))
+                .addAlgorithm(new CONSGAIIIConfiguration().configure(popSize, maxFitnessEvaluations, problem))
+                .addAlgorithm(new COThetaDEAConfiguration().configure(popSize, maxFitnessEvaluations, problem))
+                .addAlgorithm(new COSPEA2SDEConfiguration().configure(popSize, maxFitnessEvaluations, problem))
+                .addAlgorithm(new COHypEConfiguration().configure(popSize, maxFitnessEvaluations, problem));
 
         return builder.setSelection(selection).setFir(fir).
-                setMaxEvaluations(generations * popSize).setPopulationSize(popSize).build();
+                setMaxEvaluations(maxFitnessEvaluations).setPopulationSize(popSize).build();
     }
 
     @Override

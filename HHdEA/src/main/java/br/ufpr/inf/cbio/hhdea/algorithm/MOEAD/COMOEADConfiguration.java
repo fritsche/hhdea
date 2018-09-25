@@ -17,7 +17,6 @@
 package br.ufpr.inf.cbio.hhdea.algorithm.MOEAD;
 
 import org.uma.jmetal.algorithm.multiobjective.moead.AbstractMOEAD;
-import org.uma.jmetal.algorithm.multiobjective.moead.MOEAD;
 import org.uma.jmetal.algorithm.multiobjective.moead.MOEADBuilder;
 import org.uma.jmetal.problem.DoubleProblem;
 import org.uma.jmetal.problem.Problem;
@@ -29,7 +28,7 @@ import org.uma.jmetal.problem.Problem;
 public class COMOEADConfiguration extends MOEADConfiguration {
 
     @Override
-    public COMOEAD configure(Problem problem, int popSize, int generations) {
+    public COMOEAD configure(int popSize, int maxFitnessEvaluations, Problem problem) {
         this.problem = (DoubleProblem) problem;
 
         setup();
@@ -37,7 +36,7 @@ public class COMOEADConfiguration extends MOEADConfiguration {
         return (COMOEAD) new COMOEADBuilder(problem, MOEADBuilder.Variant.MOEAD)
                 .setCrossover(crossover)
                 .setMutation(mutation)
-                .setMaxEvaluations(generations * popSize)
+                .setMaxEvaluations(maxFitnessEvaluations)
                 .setPopulationSize(popSize)
                 .setResultPopulationSize(popSize)
                 .setNeighborhoodSelectionProbability(0.9)

@@ -38,7 +38,7 @@ public class MOEADConfiguration implements AlgorithmConfiguration<MOEAD> {
     DoubleProblem problem;
 
     @Override
-    public MOEAD configure(Problem problem, int popSize, int generations) {
+    public MOEAD configure(int popSize, int maxFitnessEvaluations, Problem problem) {
         this.problem = (DoubleProblem) problem;
 
         setup();
@@ -46,7 +46,7 @@ public class MOEADConfiguration implements AlgorithmConfiguration<MOEAD> {
         return (MOEAD) new MOEADBuilder(problem, MOEADBuilder.Variant.MOEAD)
                 .setCrossover(crossover)
                 .setMutation(mutation)
-                .setMaxEvaluations(generations * popSize)
+                .setMaxEvaluations(maxFitnessEvaluations)
                 .setPopulationSize(popSize)
                 .setResultPopulationSize(popSize)
                 .setNeighborhoodSelectionProbability(0.9)

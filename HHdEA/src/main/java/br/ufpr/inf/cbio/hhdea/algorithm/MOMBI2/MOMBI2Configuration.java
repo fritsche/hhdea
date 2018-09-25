@@ -41,11 +41,10 @@ public class MOMBI2Configuration implements AlgorithmConfiguration<MOMBI2<?>> {
     Problem<DoubleSolution> problem;
 
     @Override
-    public MOMBI2<?> configure(Problem problem, int popSize, int generations) {
+    public MOMBI2<?> configure(int popSize, int maxFitnessEvaluations, Problem problem) {
         this.problem = problem;
         setup();
-
-        return new MOMBI2<>(problem, generations, crossover, mutation, selection, new SequentialSolutionListEvaluator<>(), "WeightVectorsMOMBI2/W" + problem.getNumberOfObjectives() + "D_" + popSize + ".dat");
+        return new MOMBI2<>(problem, maxFitnessEvaluations / popSize, crossover, mutation, selection, new SequentialSolutionListEvaluator<>(), "WeightVectorsMOMBI2/W" + problem.getNumberOfObjectives() + "D_" + popSize + ".dat");
     }
 
     @Override
@@ -60,4 +59,5 @@ public class MOMBI2Configuration implements AlgorithmConfiguration<MOMBI2<?>> {
 
         selection = new BinaryTournamentSelection<>(new RankingAndCrowdingDistanceComparator<>());
     }
+
 }

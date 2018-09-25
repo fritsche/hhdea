@@ -34,11 +34,7 @@ public class MOEADDConfiguration implements AlgorithmConfiguration<MOEADD<?>> {
     protected double crossoverDistributionIndex;
     protected double mutationProbability;
     protected double mutationDistributionIndex;
-    protected Problem problem;
-    private int generations;
-    private int popSize;
-    protected int maxEvaluations;
-    protected CrossoverOperator<DoubleSolution> crossover;
+    protected Problem problem;    protected CrossoverOperator<DoubleSolution> crossover;
     protected MutationOperator<DoubleSolution> mutation;
 
     @Override
@@ -47,23 +43,19 @@ public class MOEADDConfiguration implements AlgorithmConfiguration<MOEADD<?>> {
         crossoverDistributionIndex = 30.0;
         mutationProbability = 1.0 / problem.getNumberOfVariables();
         mutationDistributionIndex = 20.0;
-        maxEvaluations = generations * popSize;
         crossover = new SBXCrossover(crossoverProbability, crossoverDistributionIndex);
         mutation = new PolynomialMutation(mutationProbability, mutationDistributionIndex);
     }
 
     @Override
-    public MOEADD configure(Problem problem, int popSize, int generations) {
-
+    public MOEADD<?> configure(int popSize, int maxFitnessEvaluations, Problem problem) {
         this.problem = problem;
-        this.generations = generations;
-        this.popSize = popSize;
 
         setup();
 
         return new MOEADDBuilder(problem).setCrossover(crossover)
                 .setMutation(mutation)
-                .setMaxEvaluations(maxEvaluations)
+                .setMaxEvaluations(maxFitnessEvaluations)
                 .setPopulationSize(popSize).build();
     }
 

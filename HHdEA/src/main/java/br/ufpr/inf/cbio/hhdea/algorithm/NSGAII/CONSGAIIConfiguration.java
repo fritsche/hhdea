@@ -25,17 +25,15 @@ import org.uma.jmetal.problem.Problem;
 public class CONSGAIIConfiguration extends NSGAIIConfiguration {
 
     @Override
-    public CONSGAII configure(Problem problem, int popSize, int generations) {
+    public CONSGAII<?> configure(int popSize, int maxFitnessEvaluations, Problem problem) {
 
         this.problem = problem;
-        this.generations = generations;
-        this.popSize = popSize;
 
         setup();
 
         return ((CONSGAIIBuilder) new CONSGAIIBuilder(problem, crossover, mutation)
                 .setSelectionOperator(selection)
-                .setMaxEvaluations(maxEvaluations)
+                .setMaxEvaluations(maxFitnessEvaluations)
                 .setPopulationSize(popSize))
                 .build();
     }

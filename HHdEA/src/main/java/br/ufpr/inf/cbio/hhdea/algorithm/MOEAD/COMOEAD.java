@@ -66,7 +66,7 @@ public class COMOEAD<S extends Solution<?>> extends MOEAD implements Cooperative
             population.remove(index);
         }
         initializeNeighborhood();
-        initializeIdealPoint();
+        idealPoint.update(population);
     }
 
     @Override
@@ -92,7 +92,7 @@ public class COMOEAD<S extends Solution<?>> extends MOEAD implements Cooperative
             problem.evaluate(child);
             offspring.add((S) child);
 
-            updateIdealPoint(child);
+            idealPoint.update(child.getObjectives());
             updateNeighborhood(child, subProblemId, neighborType);
         }
     }
@@ -104,12 +104,12 @@ public class COMOEAD<S extends Solution<?>> extends MOEAD implements Cooperative
 
     @Override
     public void receive(List<S> solutions) {
-        for (S s : solutions) {
+        solutions.forEach((s) -> {
             int subProblemId = JMetalRandom.getInstance().nextInt(0, populationSize - 1);
             NeighborType neighborType = chooseNeighborType();
-            updateIdealPoint((DoubleSolution) s);
+            idealPoint.update(s.getObjectives());
             updateNeighborhood((DoubleSolution) s, subProblemId, neighborType);
-        }
+        });
 
     }
 

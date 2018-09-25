@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import org.uma.jmetal.algorithm.Algorithm;
-import org.uma.jmetal.algorithm.multiobjective.moead.util.MOEADUtils;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.JMetalLogger;
@@ -127,13 +126,7 @@ public class HHdEA<S extends Solution<?>> implements Algorithm<List<S>> {
         for (CooperativeAlgorithm alg : algorithms) {
             union.addAll(alg.getPopulation());
         }
-
-        if (problem.getName().startsWith("MaF")) {
-            return MOEADUtils.getSubsetOfEvenlyDistributedSolutions(
-                    SolutionListUtils.getNondominatedSolutions(union), 240);
-        } else {
-            return SolutionListUtils.getNondominatedSolutions(union);
-        }
+        return SolutionListUtils.getNondominatedSolutions(union);
     }
 
     @Override

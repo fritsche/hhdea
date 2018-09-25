@@ -26,10 +26,10 @@ import org.uma.jmetal.util.evaluator.impl.SequentialSolutionListEvaluator;
 public class COMOMBI2Configuration extends MOMBI2Configuration {
 
     @Override
-    public COMOMBI2<?> configure(Problem problem, int popSize, int generations) {
+    public COMOMBI2<?> configure(int popSize, int maxFitnessEvaluations, Problem problem) {
         this.problem = problem;
         super.setup();
-        return new COMOMBI2<>(problem, generations, crossover, mutation, selection, new SequentialSolutionListEvaluator<>(), "WeightVectorsMOMBI2/W" + problem.getNumberOfObjectives() + "D_" + popSize + ".dat");
+        return new COMOMBI2<>(problem, popSize * maxFitnessEvaluations, crossover, mutation, selection, new SequentialSolutionListEvaluator<>(), "WeightVectorsMOMBI2/W" + problem.getNumberOfObjectives() + "D_" + popSize + ".dat");
     }
 
 }

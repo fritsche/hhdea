@@ -53,7 +53,7 @@ public class HHdEAConfiguration<S extends Solution> implements AlgorithmConfigur
     }
 
     @Override
-    public Algorithm<S> configure(Problem problem, int popSize, int generations) {
+    public Algorithm<S> configure(int popSize, int maxFitnessEvaluations, Problem problem) {
 
         this.problem = problem;
         this.popSize = popSize;
@@ -64,47 +64,47 @@ public class HHdEAConfiguration<S extends Solution> implements AlgorithmConfigur
 
         switch (name) {
             case "CONSGAII":
-                builder.addAlgorithm(new CONSGAIIConfiguration().configure(problem, popSize, generations));
+                builder.addAlgorithm(new CONSGAIIConfiguration().configure(popSize, maxFitnessEvaluations, problem));
                 break;
             case "CONSGAIII":
-                builder.addAlgorithm(new CONSGAIIIConfiguration().configure(problem, popSize, generations));
+                builder.addAlgorithm(new CONSGAIIIConfiguration().configure(popSize, maxFitnessEvaluations, problem));
                 break;
             case "COSPEA2":
-                builder.addAlgorithm(new COSPEA2Configuration().configure(problem, popSize, generations));
+                builder.addAlgorithm(new COSPEA2Configuration().configure(popSize, maxFitnessEvaluations, problem));
                 break;
             case "COSPEA2SDE":
-                builder.addAlgorithm(new COSPEA2SDEConfiguration().configure(problem, popSize, generations));
+                builder.addAlgorithm(new COSPEA2SDEConfiguration().configure(popSize, maxFitnessEvaluations, problem));
                 break;
             case "COHypE":
-                builder.addAlgorithm(new COHypEConfiguration().configure(problem, popSize, generations));
+                builder.addAlgorithm(new COHypEConfiguration().configure(popSize, maxFitnessEvaluations, problem));
                 break;
             case "COMOMBI2":
-                builder.addAlgorithm(new COMOMBI2Configuration().configure(problem, popSize, generations));
+                builder.addAlgorithm(new COMOMBI2Configuration().configure(popSize, maxFitnessEvaluations, problem));
                 break;
             case "COThetaDEA":
-                builder.addAlgorithm(new COThetaDEAConfiguration().configure(problem, popSize, generations));
+                builder.addAlgorithm(new COThetaDEAConfiguration().configure(popSize, maxFitnessEvaluations, problem));
                 break;
             case "COMOEAD":
-                builder.addAlgorithm(new COMOEADConfiguration().configure(problem, popSize, generations));
+                builder.addAlgorithm(new COMOEADConfiguration().configure(popSize, maxFitnessEvaluations, problem));
                 break;
             case "COMOEADD":
-                builder.addAlgorithm(new COMOEADDConfiguration().configure(problem, popSize, generations));
+                builder.addAlgorithm(new COMOEADDConfiguration().configure(popSize, maxFitnessEvaluations, problem));
                 break;
             default: // ALL
                 builder
-                        .addAlgorithm(new COSPEA2Configuration().configure(problem, popSize, generations))
-                        .addAlgorithm(new COMOEADConfiguration().configure(problem, popSize, generations))
-                        .addAlgorithm(new CONSGAIIConfiguration().configure(problem, popSize, generations))
-                        .addAlgorithm(new COMOEADDConfiguration().configure(problem, popSize, generations))
-                        .addAlgorithm(new COMOMBI2Configuration().configure(problem, popSize, generations))
-                        .addAlgorithm(new CONSGAIIIConfiguration().configure(problem, popSize, generations))
-                        .addAlgorithm(new COThetaDEAConfiguration().configure(problem, popSize, generations))
-                        .addAlgorithm(new COSPEA2SDEConfiguration().configure(problem, popSize, generations))
-                        .addAlgorithm(new COHypEConfiguration().configure(problem, popSize, generations));
+                        .addAlgorithm(new COSPEA2Configuration().configure(popSize, maxFitnessEvaluations, problem))
+                        .addAlgorithm(new COMOEADConfiguration().configure(popSize, maxFitnessEvaluations, problem))
+                        .addAlgorithm(new CONSGAIIConfiguration().configure(popSize, maxFitnessEvaluations, problem))
+                        .addAlgorithm(new COMOEADDConfiguration().configure(popSize, maxFitnessEvaluations, problem))
+                        .addAlgorithm(new COMOMBI2Configuration().configure(popSize, maxFitnessEvaluations, problem))
+                        .addAlgorithm(new CONSGAIIIConfiguration().configure(popSize, maxFitnessEvaluations, problem))
+                        .addAlgorithm(new COThetaDEAConfiguration().configure(popSize, maxFitnessEvaluations, problem))
+                        .addAlgorithm(new COSPEA2SDEConfiguration().configure(popSize, maxFitnessEvaluations, problem))
+                        .addAlgorithm(new COHypEConfiguration().configure(popSize, maxFitnessEvaluations, problem));
         }
 
         return builder.setName(name).setSelection(selection).setFir(fir).
-                setMaxEvaluations(generations * popSize).setPopulationSize(popSize).build();
+                setMaxEvaluations(maxFitnessEvaluations).setPopulationSize(popSize).build();
     }
 
     @Override

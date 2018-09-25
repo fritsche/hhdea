@@ -41,9 +41,6 @@ public class NSGAIIConfiguration implements AlgorithmConfiguration<NSGAII<?>> {
     protected double mutationProbability;
     protected double mutationDistributionIndex;
     protected Problem problem;
-    protected int generations;
-    protected int popSize;
-    protected int maxEvaluations;
     protected CrossoverOperator<DoubleSolution> crossover;
     protected MutationOperator<DoubleSolution> mutation;
     protected SelectionOperator<List<DoubleSolution>, DoubleSolution> selection;
@@ -61,23 +58,18 @@ public class NSGAIIConfiguration implements AlgorithmConfiguration<NSGAII<?>> {
 
         selection = new BinaryTournamentSelection<>(
                 new RankingAndCrowdingDistanceComparator<>());
-
-        maxEvaluations = popSize * generations;
     }
 
     @Override
-    public NSGAII configure(Problem problem, int popSize, int generations) {
-
+    public NSGAII<?> configure(int popSize, int maxFitnessEvaluations, Problem problem) {
         this.problem = problem;
-        this.generations = generations;
-        this.popSize = popSize;
 
         setup();
 
         return new NSGAIIBuilder<>(problem, crossover, mutation)
                 .setSelectionOperator(selection)
-                .setMaxEvaluations(maxEvaluations)
-                .setPopulationSize(this.popSize + (this.popSize % 2))
+                .setMaxEvaluations(maxFitnessEvaluations)
+                .setPopulationSize(popSize + (popSize % 2))
                 .build();
     }
 

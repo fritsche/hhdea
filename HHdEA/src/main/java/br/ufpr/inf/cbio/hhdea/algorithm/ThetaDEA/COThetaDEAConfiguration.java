@@ -25,7 +25,7 @@ import org.uma.jmetal.problem.Problem;
 public class COThetaDEAConfiguration extends ThetaDEAConfiguration {
 
     @Override
-    public COThetaDEA configure(Problem problem, int popSize, int generations) {
+    public COThetaDEA<?> configure(int popSize, int maxFitnessEvaluations, Problem problem) {
 
         this.problem = problem;
 
@@ -35,7 +35,7 @@ public class COThetaDEAConfiguration extends ThetaDEAConfiguration {
                 .setMutation(mutation)
                 .setNormalize(normalize)
                 .setTheta(theta)
-                .setMaxEvaluations(generations * popSize)
+                .setMaxEvaluations(maxFitnessEvaluations)
                 .setPopulationSize(popSize)).build();
     }
 

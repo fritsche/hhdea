@@ -14,28 +14,36 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package br.ufpr.inf.cbio.hhdea.algorithm.SPEA2;
-
-import org.uma.jmetal.problem.Problem;
+package br.ufpr.inf.cbio.hhdea.runner.methodology;
 
 /**
  *
  * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
  */
-public class COSPEA2Configuration extends SPEA2Configuration {
+public class ArionMethodology implements Methodology {
 
-    @Override
-    public COSPEA2<?> configure(int popSize, int maxFitnessEvaluations, Problem problem) {
+    private final int populationSize;
+    private final int maxFitnessEvaluations;
 
-        this.problem = problem;
-
-        setup();
-
-        return ((COSPEA2Builder) new COSPEA2Builder(problem, crossover, mutation)
-                .setSelectionOperator(selection)
-                .setMaxIterations(maxFitnessEvaluations / popSize)
-                .setPopulationSize(popSize))
-                .build();
+    public ArionMethodology(String problemName) {
+        populationSize = initPopulationSize(problemName);
+        maxFitnessEvaluations = 100 * populationSize;
     }
 
+    private int initPopulationSize(String problem) {
+        if (problem.equals("DTLZ1") || problem.equals("DTLZ3")) {
+            return 256;
+        }
+        return 128;
+    }
+
+    @Override
+    public int getPopulationSize() {
+        return populationSize;
+    }
+
+    @Override
+    public int getMaxFitnessEvaluations() {
+        return maxFitnessEvaluations;
+    }
 }

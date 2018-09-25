@@ -16,54 +16,24 @@
  */
 package br.ufpr.inf.cbio.hhdea.algorithm.MOEADD;
 
-import br.ufpr.inf.cbio.hhdea.config.AlgorithmConfiguration;
-import org.uma.jmetal.operator.CrossoverOperator;
-import org.uma.jmetal.operator.MutationOperator;
-import org.uma.jmetal.operator.impl.crossover.SBXCrossover;
-import org.uma.jmetal.operator.impl.mutation.PolynomialMutation;
 import org.uma.jmetal.problem.Problem;
-import org.uma.jmetal.solution.DoubleSolution;
 
 /**
  *
  * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
  */
-public class COMOEADDConfiguration implements AlgorithmConfiguration<MOEADD<?>> {
-
-    protected double crossoverProbability;
-    protected double crossoverDistributionIndex;
-    protected double mutationProbability;
-    protected double mutationDistributionIndex;
-    protected Problem problem;
-    private int generations;
-    private int popSize;
-    protected int maxEvaluations;
-    protected CrossoverOperator<DoubleSolution> crossover;
-    protected MutationOperator<DoubleSolution> mutation;
+public class COMOEADDConfiguration extends MOEADDConfiguration {
 
     @Override
-    public void setup() {
-        crossoverProbability = 1.0;
-        crossoverDistributionIndex = 30.0;
-        mutationProbability = 1.0 / problem.getNumberOfVariables();
-        mutationDistributionIndex = 20.0;
-        maxEvaluations = generations * popSize;
-        crossover = new SBXCrossover(crossoverProbability, crossoverDistributionIndex);
-        mutation = new PolynomialMutation(mutationProbability, mutationDistributionIndex);
-    }
-
-    @Override
-    public COMOEADD configure(Problem problem, int popSize, int generations) {
+    public COMOEADD<?> configure(int popSize, int maxFitnessEvaluations, Problem problem) {
 
         this.problem = problem;
-        this.generations = generations;
-        this.popSize = popSize;
 
         setup();
 
         return (COMOEADD) new COMOEADDBuilder(problem).setCrossover(crossover)
                 .setMutation(mutation)
-                .setMaxEvaluations(maxEvaluations)
+                .setMaxEvaluations(maxFitnessEvaluations)
                 .setPopulationSize(popSize).build();
     }
 

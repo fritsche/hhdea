@@ -5,19 +5,19 @@ import org.uma.jmetal.qualityindicator.QualityIndicator;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.front.Front;
 import org.uma.jmetal.util.front.imp.ArrayFront;
-import org.uma.jmetal.util.front.util.FrontNormalizer;
 import org.uma.jmetal.util.front.util.FrontUtils;
 import org.uma.jmetal.util.naming.impl.SimpleDescribedEntity;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
-import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
 
 /**
  * TODO: Add comments here
+ *
+ * @param <Evaluate>
  */
 @SuppressWarnings("serial")
 public class R2<Evaluate extends List<? extends Solution<?>>>
@@ -32,6 +32,8 @@ public class R2<Evaluate extends List<? extends Solution<?>>>
     /**
      * Creates a new instance of the R2 indicator for a problem with two
      * objectives and 100 lambda vectors
+     *
+     * @param referenceParetoFront
      */
     public R2(Front referenceParetoFront) {
         // by default it creates an R2 indicator for a two dimensions problem and
@@ -52,6 +54,8 @@ public class R2<Evaluate extends List<? extends Solution<?>>>
     /**
      * Creates a new instance of the R2 indicator for a problem with two
      * objectives and N lambda vectors
+     *
+     * @param nVectors
      */
     public R2(int nVectors) {
         this(nVectors, null);
@@ -60,6 +64,10 @@ public class R2<Evaluate extends List<? extends Solution<?>>>
     /**
      * Constructor Creates a new instance of the R2 indicator for nDimensiosn It
      * loads the weight vectors from the file fileName
+     *
+     * @param file
+     * @param referenceParetoFront
+     * @throws java.io.IOException
      */
     public R2(String file, Front referenceParetoFront) throws java.io.IOException {
         this(readWeightsFrom(file), referenceParetoFront);
@@ -68,6 +76,9 @@ public class R2<Evaluate extends List<? extends Solution<?>>>
     /**
      * Creates a new instance of the R2 indicator for a problem with two
      * objectives and N lambda vectors
+     *
+     * @param nVectors
+     * @param referenceParetoFront
      */
     public R2(int nVectors, Front referenceParetoFront) {
         // by default it creates an R2 indicator for a two dimensions problem and
@@ -131,6 +142,9 @@ public class R2<Evaluate extends List<? extends Solution<?>>>
     /**
      * Constructor Creates a new instance of the R2 indicator for nDimensiosn It
      * loads the weight vectors from the file fileName
+     *
+     * @param file
+     * @throws java.io.IOException
      */
     public R2(String file) throws java.io.IOException {
         this(file, null);
@@ -147,8 +161,8 @@ public class R2<Evaluate extends List<? extends Solution<?>>>
     }
 
     public double r2(Front front) {
-        double[] minimumValues = {};
-        double[] maximumValues = {};
+        double[] minimumValues;
+        double[] maximumValues;
 
         if (this.referenceParetoFront != null) {
             // STEP 1. Obtain the maximum and minimum values of the Pareto front
@@ -158,7 +172,7 @@ public class R2<Evaluate extends List<? extends Solution<?>>>
             front = getNormalizedFront(front, maximumValues, minimumValues);
         }
 
-        int numberOfObjectives = front.getPoint(0).getNumberOfDimensions();
+        int numberOfObjectives = front.getPoint(0).getDimension();
 
         // STEP 3. compute all the matrix of Tschebyscheff values if it is null
         double[][] matrix = new double[front.getNumberOfPoints()][lambda.length];
@@ -182,15 +196,15 @@ public class R2<Evaluate extends List<? extends Solution<?>>>
     private Front getNormalizedFront(Front front, double[] maximumValues, double[] minimumValues) {
 
         Front normalizedFront = new ArrayFront(front);
-        int numberOfPointDimensions = front.getPoint(0).getNumberOfDimensions();
+        int numberOfPointDimensions = front.getPoint(0).getDimension();
 
         for (int i = 0; i < front.getNumberOfPoints(); i++) {
             for (int j = 0; j < numberOfPointDimensions; j++) {
                 if ((maximumValues[j] - minimumValues[j]) == 0) {
-                    normalizedFront.getPoint(i).setDimensionValue(j, 0.0);
+                    normalizedFront.getPoint(i).setValue(j, 0.0);
                 } else {
 
-                    normalizedFront.getPoint(i).setDimensionValue(j, (front.getPoint(i).getDimensionValue(j)
+                    normalizedFront.getPoint(i).setValue(j, (front.getPoint(i).getValue(j)
                             - minimumValues[j]) / (maximumValues[j] - minimumValues[j]));
                 }
             }
