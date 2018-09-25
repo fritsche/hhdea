@@ -41,28 +41,47 @@ import org.uma.jmetal.util.pseudorandom.JMetalRandom;
  *
  * @author Gian Fritsche <gmfritsche at inf.ufpr.br>
  */
-public class MainRunner {
+public class Runner {
 
-    public static void main(String[] args) {
+    private String experimentBaseDirectory;
+    private String methodologyName;
+    private final String algorithmName;
+    private final String problemName;
+    private final int m;
+    private int id;
+    private long seed;
 
-        JMetalLogger.logger.setLevel(Level.ALL);
+    private Algorithm<List<DoubleSolution>> algorithm;
+    private Problem problem;
+    private int popSize;
 
-        if (args.length != 7) {
-            throw new JMetalException("Needed arguments: "
-                    + "outputDirectory methodologyName algorithm problem m id seed");
-        }
+    public Runner(String algorithmName, String problemName, int m) {
+        // required parameters
+        this.algorithmName = algorithmName;
+        this.problemName = problemName;
+        this.m = m;
 
-        // parse arguments
-        int i = 0;
-        String experimentBaseDirectory = args[i++];
-        String methodologyName = args[i++];
-        String algorithmName = args[i++];
-        String problemName = args[i++];
-        int m = Integer.parseInt(args[i++]);
-        int id = Integer.parseInt(args[i++]);
-        int seed = Integer.parseInt(args[i++]);
+        // required parameters with default values
+        this.experimentBaseDirectory = "experiment/";
+        this.methodologyName = NSGAIIIMethodology.class.getSimpleName();
+        this.id = 0;
+        this.seed = System.currentTimeMillis();
+    }
 
-        Problem problem = ProblemFactory.getProblem(problemName, m);
+    public Runner(String experimentBaseDirectory, String methodologyName,
+            String algorithmName, String problemName, int m, int id, long seed) {
+        this.experimentBaseDirectory = experimentBaseDirectory;
+        this.methodologyName = methodologyName;
+        this.algorithmName = algorithmName;
+        this.problemName = problemName;
+        this.m = m;
+        this.id = id;
+        this.seed = seed;
+    }
+
+    public void run() {
+
+        problem = ProblemFactory.getProblem(problemName, m);
 
         Methodology methodology = null;
         if (methodologyName.equals(NSGAIIIMethodology.class.getSimpleName())) {
@@ -76,17 +95,24 @@ public class MainRunner {
         }
 
         int maxFitnessevaluations = methodology.getMaxFitnessEvaluations();
-        int popSize = methodology.getPopulationSize();
+        popSize = methodology.getPopulationSize();
 
         // set seed
         JMetalRandom.getInstance().setSeed(seed);
 
-        Algorithm<List<DoubleSolution>> algorithm = AlgorithmConfigurationFactory
+        algorithm = AlgorithmConfigurationFactory
                 .getAlgorithmConfiguration(algorithmName)
                 .configure(popSize, maxFitnessevaluations, problem);
 
         AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
                 .execute();
+
+        long computingTime = algorithmRunner.getComputingTime();
+        JMetalLogger.logger.log(Level.INFO, "Total execution time: {0}ms", computingTime);
+
+    }
+
+    public void printResult() {
 
         List population = SolutionListUtils.getNondominatedSolutions(algorithm.getResult());
 
@@ -114,9 +140,26 @@ public class MainRunner {
                 .setVarFileOutputContext(new DefaultFileOutputContext(folder + "VAR" + id + ".tsv"))
                 .setFunFileOutputContext(new DefaultFileOutputContext(folder + "FUN" + id + ".tsv"))
                 .print();
-        
-        long computingTime = algorithmRunner.getComputingTime();
-        JMetalLogger.logger.log(Level.INFO, "Total execution time: {0}ms", computingTime);
-
     }
+
+    public Runner setId(int id) {
+        this.id = id;
+        return this;
+    }
+
+    public Runner setSeed(long seed) {
+        this.seed = seed;
+        return this;
+    }
+
+    public Runner setExperimentBaseDirectory(String experimentBaseDirectory) {
+        this.experimentBaseDirectory = experimentBaseDirectory;
+        return this;
+    }
+
+    public Runner setMethodologyName(String methodologyName) {
+        this.methodologyName = methodologyName;
+        return this;
+    }
+
 }
