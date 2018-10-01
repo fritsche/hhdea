@@ -59,7 +59,7 @@ public class Main {
                     .desc("set the number of objectives to <objectives> (default value is 3). <problem> and <methodology> must be set acordingly.").build());
 
             options.addOption(Option.builder("o").longOpt("output").hasArgs().argName("fir")
-                    .desc("enable some info output").build());
+                    .desc("enable some info output for hyper-heuristics, space separated, options include: fir firbin count.").build());
 
             // parse command line
             cmd = parser.parse(options, args);
