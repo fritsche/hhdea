@@ -19,6 +19,8 @@ package br.ufpr.inf.cbio.hhdea.util.output;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.HyperHeuristic;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.logging.Level;
+import org.uma.jmetal.util.JMetalLogger;
 
 /**
  *
@@ -29,6 +31,7 @@ public class OutputFitnessImprovementRate implements Observer {
     private final OutputWriter ow;
 
     public OutputFitnessImprovementRate(String folder, String file) {
+        JMetalLogger.logger.log(Level.CONFIG, "Output Fitness Improvement Rate: ENABLED");
         ow = new OutputWriter(folder, file);
     }
 

@@ -26,12 +26,12 @@ import org.uma.jmetal.util.JMetalLogger;
  *
  * @author Gian Fritsche <gmfritsche at inf.ufpr.br>
  */
-public class OutputBinaryFitnessImprovementRate implements Observer {
+public class OutputCountOfApplication implements Observer {
 
     private final OutputWriter ow;
 
-    public OutputBinaryFitnessImprovementRate(String folder, String file) {
-        JMetalLogger.logger.log(Level.CONFIG, "Output Binary Fitness Improvement Rate: ENABLED");
+    public OutputCountOfApplication(String folder, String file) {
+        JMetalLogger.logger.log(Level.CONFIG, "Output Fitness Improvement Rate: ENABLED");
         ow = new OutputWriter(folder, file);
     }
 
@@ -45,8 +45,12 @@ public class OutputBinaryFitnessImprovementRate implements Observer {
     public void update(Observable o, Object arg) {
         if (o instanceof HyperHeuristic) {
             HyperHeuristic hh = (HyperHeuristic) o;
-            double fir = hh.getFir();
-            ow.writeLine(Integer.toString(fir >= .0 ? 1 : 0));
+            int[] count = hh.getCount();
+            String line = "";
+            for (Integer i : count) {
+                line += i + "\t";
+            }
+            ow.writeLine(line);
         }
     }
 

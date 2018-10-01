@@ -8,6 +8,7 @@ import br.ufpr.inf.cbio.hhdea.runner.methodology.MaFMethodology;
 import br.ufpr.inf.cbio.hhdea.runner.methodology.Methodology;
 import br.ufpr.inf.cbio.hhdea.runner.methodology.NSGAIIIMethodology;
 import br.ufpr.inf.cbio.hhdea.util.output.OutputBinaryFitnessImprovementRate;
+import br.ufpr.inf.cbio.hhdea.util.output.OutputCountOfApplication;
 import br.ufpr.inf.cbio.hhdea.util.output.OutputFitnessImprovementRate;
 import br.ufpr.inf.cbio.hhdea.util.output.Utils;
 import java.util.Arrays;
@@ -114,6 +115,7 @@ public class Runner {
 
         OutputFitnessImprovementRate ofir = null;
         OutputBinaryFitnessImprovementRate ofirbin = null;
+        OutputCountOfApplication ocoa = null;
         if (output != null && algorithm instanceof HyperHeuristic) {
             HyperHeuristic hh = (HyperHeuristic) algorithm;
             List list = Arrays.asList(output);
@@ -126,9 +128,14 @@ public class Runner {
             if (list.contains("fir")) {
                 ofir = new OutputFitnessImprovementRate(folder, "fir." + id);
                 hh.addObserver(ofir);
-            } else if (list.contains("firbin")) {
-                ofirbin = new OutputBinaryFitnessImprovementRate(folder, "fir." + id);
+            }
+            if (list.contains("firbin")) {
+                ofirbin = new OutputBinaryFitnessImprovementRate(folder, "firbin." + id);
                 hh.addObserver(ofir);
+            }
+            if (list.contains("count")) {
+                ocoa = new OutputCountOfApplication(folder, "count." + id);
+                hh.addObserver(ocoa);
             }
         }
 

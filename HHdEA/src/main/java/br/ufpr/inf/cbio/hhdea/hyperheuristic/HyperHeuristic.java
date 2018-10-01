@@ -22,6 +22,8 @@ import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.solution.Solution;
 
 /**
+ * Set of hyper-heuristic information that can be logged. Those information can
+ * be accessed by observers.
  *
  * @author Gian Fritsche <gmfritsche at inf.ufpr.br>
  * @param <S>
@@ -29,6 +31,13 @@ import org.uma.jmetal.solution.Solution;
 public abstract class HyperHeuristic<S extends Solution<?>> extends Observable implements Algorithm<List<S>> {
 
     private double fir;
+    private CooperativeAlgorithm<S> selectedHeuristic;
+    protected List<CooperativeAlgorithm<S>> algorithms;
+    private int[] count;
+
+    public HyperHeuristic() {
+        this.count = new int[algorithms.size()];
+    }
 
     public double getFir() {
         return fir;
@@ -36,10 +45,33 @@ public abstract class HyperHeuristic<S extends Solution<?>> extends Observable i
 
     public void setFir(double fir) {
         this.fir = fir;
-        setChanged();
-        notifyObservers();
     }
 
     public abstract boolean isStoppingConditionReached();
+
+    public CooperativeAlgorithm<S> getSelectedHeuristic() {
+        return selectedHeuristic;
+    }
+
+    public void setSelectedHeuristic(CooperativeAlgorithm<S> selectedHeuristic) {
+        this.selectedHeuristic = selectedHeuristic;
+        count[algorithms.indexOf(selectedHeuristic)]++;
+    }
+
+    public List<CooperativeAlgorithm<S>> getAlgorithms() {
+        return algorithms;
+    }
+
+    public void setAlgorithms(List<CooperativeAlgorithm<S>> algorithms) {
+        this.algorithms = algorithms;
+    }
+
+    public int[] getCount() {
+        return count;
+    }
+
+    public void setCount(int[] count) {
+        this.count = count;
+    }
 
 }

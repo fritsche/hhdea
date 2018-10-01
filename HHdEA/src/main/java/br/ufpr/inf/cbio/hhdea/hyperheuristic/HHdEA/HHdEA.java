@@ -34,16 +34,15 @@ import br.ufpr.inf.cbio.hhdea.metrics.fir.FitnessImprovementRateCalculator;
  * @param <S>
  */
 public class HHdEA<S extends Solution<?>> extends HyperHeuristic<S> {
-
+    
     protected int maxEvaluations;
     protected Problem<S> problem;
-    protected List<CooperativeAlgorithm<S>> algorithms;
     private final int populationSize;
     private final String name;
     private final SelectionFunction<CooperativeAlgorithm> selection;
     private final FitnessImprovementRateCalculator calculator;
     private int evaluations;
-
+    
     public HHdEA(List<CooperativeAlgorithm<S>> algorithms, int populationSize, int maxEvaluations,
             Problem problem, String name, SelectionFunction<CooperativeAlgorithm> selection,
             FitnessImprovementRateCalculator fir) {
@@ -57,10 +56,10 @@ public class HHdEA<S extends Solution<?>> extends HyperHeuristic<S> {
         this.calculator = fir;
         JMetalLogger.logger.log(Level.CONFIG, "Fitness Improvement Rate: {0}", fir.getClass().getSimpleName());
     }
-
+    
     @Override
     public void run() {
-
+        
         evaluations = 0;
         for (CooperativeAlgorithm alg : algorithms) {
             alg.init(populationSize);
@@ -68,11 +67,12 @@ public class HHdEA<S extends Solution<?>> extends HyperHeuristic<S> {
             selection.add(alg);
         }
         selection.init();
-
+        
         while (!isStoppingConditionReached()) {
 
             // heuristic selection
             CooperativeAlgorithm<S> alg = selection.getNext();
+            setSelectedHeuristic(alg); // save to notify observers
 
             // apply selected heuristic
             List<S> parents = new ArrayList<>();
@@ -91,8 +91,6 @@ public class HHdEA<S extends Solution<?>> extends HyperHeuristic<S> {
 
             // extract metrics
             setFir(calculator.computeFitnessImprovementRate(parents, offspring));
-            setChanged();
-            notifyObservers();
 
             // compute reward
             selection.creditAssignment(getFir());
@@ -109,10 +107,13 @@ public class HHdEA<S extends Solution<?>> extends HyperHeuristic<S> {
                     neighbor.receive(migrants);
                 }
             }
+            
+            setChanged();
+            notifyObservers();
         }
-
+        
     }
-
+    
     @Override
     public List<S> getResult() {
         List<S> union = new ArrayList<>();
@@ -121,20 +122,20 @@ public class HHdEA<S extends Solution<?>> extends HyperHeuristic<S> {
         }
         return SolutionListUtils.getNondominatedSolutions(union);
     }
-
+    
     @Override
     public String getName() {
         return name;
     }
-
+    
     @Override
     public String getDescription() {
         return "Hyper-heuristics for distributed Evolutionary Algorithms";
     }
-
+    
     @Override
     public boolean isStoppingConditionReached() {
         return evaluations >= maxEvaluations;
     }
-
+    
 }

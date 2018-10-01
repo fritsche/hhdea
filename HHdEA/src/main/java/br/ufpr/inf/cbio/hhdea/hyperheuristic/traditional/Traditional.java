@@ -45,7 +45,6 @@ import br.ufpr.inf.cbio.hhdea.metrics.fir.FitnessImprovementRateCalculator;
  */
 public class Traditional<S extends Solution<?>> extends HyperHeuristic<S> {
 
-    protected List<CooperativeAlgorithm<S>> algorithms;
     private final int populationSize;
     private final int maxEvaluations;
     private final Problem problem;
@@ -86,6 +85,7 @@ public class Traditional<S extends Solution<?>> extends HyperHeuristic<S> {
         while (!isStoppingConditionReached()) {
             // heuristic selection
             CooperativeAlgorithm<S> alg = selection.getNext();
+            setSelectedHeuristic(alg);
             // copy current population
             List<S> populationCopy = new ArrayList<>();
             population.forEach((s) -> {
@@ -106,6 +106,9 @@ public class Traditional<S extends Solution<?>> extends HyperHeuristic<S> {
             // move acceptance
             // ALL MOVES
             population = newPopulation;
+            // notify observers
+            setChanged();
+            notifyObservers();
         }
     }
 
@@ -137,11 +140,7 @@ public class Traditional<S extends Solution<?>> extends HyperHeuristic<S> {
         }
         return population_;
     }
-
-    public List<CooperativeAlgorithm<S>> getAlgorithms() {
-        return algorithms;
-    }
-
+    
     public int getPopulationSize() {
         return populationSize;
     }
