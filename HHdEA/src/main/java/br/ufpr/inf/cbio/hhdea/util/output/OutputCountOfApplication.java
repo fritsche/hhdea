@@ -31,7 +31,7 @@ public class OutputCountOfApplication implements Observer {
     private final OutputWriter ow;
 
     public OutputCountOfApplication(String folder, String file) {
-        JMetalLogger.logger.log(Level.CONFIG, "Output Fitness Improvement Rate: ENABLED");
+        JMetalLogger.logger.log(Level.CONFIG, "Output Count of Application: ENABLED");
         ow = new OutputWriter(folder, file);
     }
 
