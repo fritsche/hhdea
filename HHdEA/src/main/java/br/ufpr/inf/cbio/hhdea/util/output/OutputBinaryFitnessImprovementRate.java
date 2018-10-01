@@ -24,11 +24,11 @@ import java.util.Observer;
  *
  * @author Gian Fritsche <gmfritsche at inf.ufpr.br>
  */
-public class OutputFitnessImprovementRate implements Observer {
+public class OutputBinaryFitnessImprovementRate implements Observer {
 
     private final OutputWriter ow;
 
-    public OutputFitnessImprovementRate(String folder, String file) {
+    public OutputBinaryFitnessImprovementRate(String folder, String file) {
         ow = new OutputWriter(folder, file);
     }
 
@@ -43,7 +43,7 @@ public class OutputFitnessImprovementRate implements Observer {
         if (o instanceof HyperHeuristic) {
             HyperHeuristic hh = (HyperHeuristic) o;
             double fir = hh.getFir();
-            ow.writeLine(Double.toString(fir));
+            ow.writeLine(Integer.toString(fir >= .0 ? 1 : 0));
         }
     }
 

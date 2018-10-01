@@ -7,6 +7,7 @@ import br.ufpr.inf.cbio.hhdea.runner.methodology.ArionMethodology;
 import br.ufpr.inf.cbio.hhdea.runner.methodology.MaFMethodology;
 import br.ufpr.inf.cbio.hhdea.runner.methodology.Methodology;
 import br.ufpr.inf.cbio.hhdea.runner.methodology.NSGAIIIMethodology;
+import br.ufpr.inf.cbio.hhdea.util.output.OutputBinaryFitnessImprovementRate;
 import br.ufpr.inf.cbio.hhdea.util.output.OutputFitnessImprovementRate;
 import br.ufpr.inf.cbio.hhdea.util.output.Utils;
 import java.util.Arrays;
@@ -112,13 +113,21 @@ public class Runner {
         JMetalLogger.logger.log(Level.CONFIG, "Algorithm: {0}", algorithmName);
 
         OutputFitnessImprovementRate ofir = null;
+        OutputBinaryFitnessImprovementRate ofirbin = null;
         if (output != null && algorithm instanceof HyperHeuristic) {
             HyperHeuristic hh = (HyperHeuristic) algorithm;
             List list = Arrays.asList(output);
+            String folder = experimentBaseDirectory + "/"
+                    + methodologyName + "/"
+                    + m
+                    + "/output/"
+                    + algorithmName + "/"
+                    + problemName + "/";
             if (list.contains("fir")) {
-                ofir = new OutputFitnessImprovementRate(experimentBaseDirectory,
-                        methodologyName, Integer.toString(m), algorithmName, problemName,
-                        Integer.toString(id));
+                ofir = new OutputFitnessImprovementRate(folder, "fir." + id);
+                hh.addObserver(ofir);
+            } else if (list.contains("firbin")) {
+                ofirbin = new OutputBinaryFitnessImprovementRate(folder, "fir." + id);
                 hh.addObserver(ofir);
             }
         }
@@ -128,6 +137,9 @@ public class Runner {
 
         if (ofir != null) {
             ofir.close();
+        }
+        if (ofirbin != null) {
+            ofirbin.close();
         }
 
         long computingTime = algorithmRunner.getComputingTime();
