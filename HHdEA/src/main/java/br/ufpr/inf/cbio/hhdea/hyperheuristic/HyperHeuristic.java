@@ -35,7 +35,8 @@ public abstract class HyperHeuristic<S extends Solution<?>> extends Observable i
     protected List<CooperativeAlgorithm<S>> algorithms;
     private int[] count;
 
-    public HyperHeuristic() {
+    public HyperHeuristic(List<CooperativeAlgorithm<S>> algorithms) {
+        this.algorithms = algorithms;
         this.count = new int[algorithms.size()];
     }
 
@@ -60,10 +61,6 @@ public abstract class HyperHeuristic<S extends Solution<?>> extends Observable i
 
     public List<CooperativeAlgorithm<S>> getAlgorithms() {
         return algorithms;
-    }
-
-    public void setAlgorithms(List<CooperativeAlgorithm<S>> algorithms) {
-        this.algorithms = algorithms;
     }
 
     public int[] getCount() {

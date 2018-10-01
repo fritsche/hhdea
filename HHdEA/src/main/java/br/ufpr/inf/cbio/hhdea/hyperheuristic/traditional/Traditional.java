@@ -58,7 +58,7 @@ public class Traditional<S extends Solution<?>> extends HyperHeuristic<S> {
             int maxEvaluations, Problem problem,
             SelectionFunction<CooperativeAlgorithm> selection,
             FitnessImprovementRateCalculator fir) {
-        this.algorithms = algorithms;
+        super(algorithms);
         this.populationSize = populationSize;
         this.maxEvaluations = maxEvaluations;
         this.problem = problem;
@@ -140,7 +140,7 @@ public class Traditional<S extends Solution<?>> extends HyperHeuristic<S> {
         }
         return population_;
     }
-    
+
     public int getPopulationSize() {
         return populationSize;
     }
