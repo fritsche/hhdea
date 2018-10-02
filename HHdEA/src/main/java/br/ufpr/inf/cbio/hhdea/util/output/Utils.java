@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package br.ufpr.inf.cbio.hhdea.util;
+package br.ufpr.inf.cbio.hhdea.util.output;
 
 import org.uma.jmetal.util.JMetalException;
 
@@ -24,11 +24,11 @@ import java.io.File;
  *
  * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
  */
-public class OutputUtils {
+public class Utils {
 
-    private String experimentBaseDirectory;
+    private final String experimentBaseDirectory;
 
-    public OutputUtils(String experimentBaseDirectory) {
+    public Utils(String experimentBaseDirectory) {
         this.experimentBaseDirectory = experimentBaseDirectory;
     }
 
@@ -43,11 +43,7 @@ public class OutputUtils {
         File experimentDirectory;
 
         experimentDirectory = new File(experimentBaseDirectory);
-        if (experimentDirectory.exists() && experimentDirectory.isDirectory()) {
-            result = false;
-        } else {
-            result = true;
-        }
+        result = !(experimentDirectory.exists() && experimentDirectory.isDirectory());
 
         return result;
     }

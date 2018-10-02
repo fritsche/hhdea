@@ -24,8 +24,8 @@ import org.uma.jmetal.solution.Solution;
  * @author Gian Fritsche <gmfritsche at inf.ufpr.br>
  * @param <S>
  */
-public interface FitnessImprovementRate<S extends Solution<?>> {
+public interface FitnessImprovementRateCalculator<S extends Solution<?>> {
 
-    public double getFitnessImprovementRate(List<S> parents, List<S> offspring);
+    public double computeFitnessImprovementRate(List<S> parents, List<S> offspring);
 
 }

@@ -29,11 +29,11 @@ import br.ufpr.inf.cbio.hhdea.hyperheuristic.CooperativeAlgorithm;
 import br.ufpr.inf.cbio.hhdea.config.AlgorithmConfiguration;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.CastroRoulette;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.SelectionFunction;
-import br.ufpr.inf.cbio.hhdea.metrics.fir.FitnessImprovementRate;
 import br.ufpr.inf.cbio.hhdea.metrics.fir.R2TchebycheffFIR;
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
+import br.ufpr.inf.cbio.hhdea.metrics.fir.FitnessImprovementRateCalculator;
 
 /**
  *
@@ -43,7 +43,7 @@ import org.uma.jmetal.solution.Solution;
 public class TraditionalConfiguration<S extends Solution> implements AlgorithmConfiguration<Algorithm<S>> {
 
     private SelectionFunction<CooperativeAlgorithm> selection;
-    private FitnessImprovementRate fir;
+    private FitnessImprovementRateCalculator fir;
     private Problem problem;
     private int popSize;
 
