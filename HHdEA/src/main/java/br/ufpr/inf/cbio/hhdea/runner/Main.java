@@ -58,7 +58,7 @@ public class Main {
             options.addOption(Option.builder("m").longOpt("objectives").hasArg().argName("objectives")
                     .desc("set the number of objectives to <objectives> (default value is 3). <problem> and <methodology> must be set acordingly.").build());
 
-            options.addOption(Option.builder("o").longOpt("output").hasArgs().argName("fir")
+            options.addOption(Option.builder("o").longOpt("output").hasArgs().argName("options...")
                     .desc("enable some info output for hyper-heuristics, space separated, options include: fir firbin count.").build());
 
             // parse command line

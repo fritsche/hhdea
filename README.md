@@ -12,8 +12,8 @@ It will generate `HHdEA-1.0-SNAPSHOT-jar-with-dependencies.jar` inside `target` 
 Usage:
 ```
 usage: java -cp <jar> br.ufpr.inf.cbio.hhdea.runner.Main [-a <algorithm>]
-       [-h] [-id <id>] [-M <methodology>] [-m <objectives>] [-o <fir>] [-P
-       <path>] [-p <problem>] [-s <seed>]
+       [-h] [-id <id>] [-M <methodology>] [-m <objectives>] [-o
+       <options...>] [-P <path>] [-p <problem>] [-s <seed>]
 
 Execute a single independent run of the <algorithm> on a given <problem>.
  -a,--algorithm <algorithm>       set the algorithm to be executed:
@@ -31,7 +31,7 @@ Execute a single independent run of the <algorithm> on a given <problem>.
                                   <objectives> (default value is 3).
                                   <problem> and <methodology> must be set
                                   acordingly.
- -o,--output <fir>                enable some info output for
+ -o,--output <options...>         enable some info output for
                                   hyper-heuristics, space separated,
                                   options include: fir firbin count.
  -P,--output-path <path>          directory path for output (if no path is
