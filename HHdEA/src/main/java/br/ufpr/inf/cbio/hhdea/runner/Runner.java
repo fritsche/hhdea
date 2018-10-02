@@ -131,7 +131,7 @@ public class Runner {
             }
             if (list.contains("firbin")) {
                 ofirbin = new OutputBinaryFitnessImprovementRate(folder, "firbin." + id);
-                hh.addObserver(ofir);
+                hh.addObserver(ofirbin);
             }
             if (list.contains("count")) {
                 ocoa = new OutputCountOfApplication(folder, "count." + id);
@@ -147,6 +147,9 @@ public class Runner {
         }
         if (ofirbin != null) {
             ofirbin.close();
+        }
+        if (ocoa != null) {
+            ocoa.close();
         }
 
         long computingTime = algorithmRunner.getComputingTime();
