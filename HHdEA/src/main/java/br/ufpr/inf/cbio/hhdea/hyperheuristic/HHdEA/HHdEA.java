@@ -37,11 +37,11 @@ public class HHdEA<S extends Solution<?>> extends HyperHeuristic<S> {
 
     protected int maxEvaluations;
     protected Problem<S> problem;
-    private final int populationSize;
-    private final String name;
-    private final SelectionFunction<CooperativeAlgorithm> selection;
-    private final FitnessImprovementRateCalculator calculator;
-    private int evaluations;
+    protected final int populationSize;
+    protected final String name;
+    protected final SelectionFunction<CooperativeAlgorithm> selection;
+    protected final FitnessImprovementRateCalculator calculator;
+    protected int evaluations;
 
     public HHdEA(List<CooperativeAlgorithm<S>> algorithms, int populationSize, int maxEvaluations,
             Problem problem, String name, SelectionFunction<CooperativeAlgorithm> selection,
