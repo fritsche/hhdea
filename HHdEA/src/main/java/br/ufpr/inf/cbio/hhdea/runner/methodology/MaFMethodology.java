@@ -31,10 +31,11 @@ public class MaFMethodology implements Methodology {
 
     public MaFMethodology(int numberOfObjectives, int numberOfVariables) {
         /**
-         * Using same population size of NSGAIIIMethodology since MaFMethodology
-         * does not define a population size. It only defines a final population
-         * size of 240. When using this methodology the final population should
-         * be pruned to this limit of 240.
+         * Using same population size than NSGAIIIMethodology since
+         * MaFMethodology does not define a population size. The MaFMethodology
+         * only defines a final population size of 240. Therefore, when using
+         * this methodology the final population should be pruned to this limit
+         * of 240.
          */
         this.populationSize = NSGAIIIMethodology.initPopulationSize(numberOfObjectives);
         this.maxFitnessEvaluations = Math.max(100000, 10000 * numberOfVariables);

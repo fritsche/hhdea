@@ -16,18 +16,31 @@
  */
 package br.ufpr.inf.cbio.hhdea.runner;
 
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA.HHdEA2Configuration;
 import br.ufpr.inf.cbio.hhdea.problem.ProblemFactory;
-import static br.ufpr.inf.cbio.hhdea.runner.Main.help;
+import br.ufpr.inf.cbio.hhdea.runner.methodology.MaFMethodology;
+import br.ufpr.inf.cbio.hhdea.runner.methodology.Methodology;
+import br.ufpr.inf.cbio.hhdea.util.output.Utils;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.uma.jmetal.algorithm.Algorithm;
+import org.uma.jmetal.algorithm.multiobjective.moead.util.MOEADUtils;
 import org.uma.jmetal.problem.Problem;
+import org.uma.jmetal.solution.DoubleSolution;
+import org.uma.jmetal.util.AlgorithmRunner;
 import org.uma.jmetal.util.JMetalLogger;
+import org.uma.jmetal.util.SolutionListUtils;
+import org.uma.jmetal.util.fileoutput.SolutionListOutput;
+import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;
+import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
 /**
  *
@@ -35,7 +48,15 @@ import org.uma.jmetal.util.JMetalLogger;
  */
 public class HHdEA2Runner {
 
-    private Problem problem;
+    public static void help(Options options) {
+        // automatically generate the help statement
+        HelpFormatter formatter = new HelpFormatter();
+        formatter.printHelp(
+                "java -cp <jar> br.ufpr.inf.cbio.hhdea.runner.HHdEA2Runner",
+                "\nExecute a single independent run of the HHdEA algorithm on a given <problem>.\n",
+                options,
+                "\nPlease report issues at https://github.com/fritsche/hhdea/issues", true);
+    }
 
     public static void main(String[] args) {
         try {
@@ -51,9 +72,9 @@ public class HHdEA2Runner {
             options.addOption(Option.builder("s").longOpt("seed").hasArg().argName("seed")
                     .desc("set the seed for JMetalRandom, default System.currentTimeMillis()").build());
             options.addOption(Option.builder("p").longOpt("problem").hasArg().argName("problem")
-                    .desc("set the problem instance: MaF[1-15]").build());
+                    .desc("set the problem instance: MaF[1-15], default MaF01").build());
             options.addOption(Option.builder("m").longOpt("objectives").hasArg().argName("objectives")
-                    .desc("set the number of objectives to <objectives> (default value is 3). <problem> and <methodology> must be set acordingly.").build());
+                    .desc("set the number of objectives (default value is 5).").build());
 
             // parse command line
             cmd = parser.parse(options, args);
@@ -62,11 +83,73 @@ public class HHdEA2Runner {
                 help(options);
                 System.exit(0);
             }
-            String aux;
+
+            String problemName = "MaF01", aux;
+            int m = 5;
+            long seed = System.currentTimeMillis();
+            String experimentBaseDirectory = "experiment/";
+            String methodologyName = MaFMethodology.class.getSimpleName();
+            int id = 0;
+            String algorithmName = "HHdEA2";
+
             if ((aux = cmd.getOptionValue("p")) != null) {
-                problem = ProblemFactory.getProblem(problemName, m);
+                problemName = aux;
             }
+            if ((aux = cmd.getOptionValue("m")) != null) {
+                m = Integer.parseInt(aux);
+            }
+            if ((aux = cmd.getOptionValue("id")) != null) {
+                id = Integer.parseInt(aux);
+            }
+            if ((aux = cmd.getOptionValue("s")) != null) {
+                seed = Integer.parseInt(aux);
+            }
+
+            Problem problem = ProblemFactory.getProblem(problemName, m);
             JMetalLogger.logger.log(Level.CONFIG, "Problem: {0} with {1} objectives", new Object[]{problemName, m});
+            Methodology methodology = new MaFMethodology(m, problem.getNumberOfVariables());
+            JMetalLogger.logger.log(Level.CONFIG, "Methodology: {0}", methodology.getClass().getSimpleName());
+            int maxFitnessevaluations = methodology.getMaxFitnessEvaluations();
+            JMetalLogger.logger.log(Level.CONFIG, "Max Fitness Evaluations: {0}", maxFitnessevaluations);
+            int popSize = methodology.getPopulationSize();
+
+            // set seed
+            JMetalRandom.getInstance().setSeed(seed);
+            JMetalLogger.logger.log(Level.CONFIG, "Seed: {0}", seed);
+
+            Algorithm<List<DoubleSolution>> algorithm = new HHdEA2Configuration(algorithmName).configure(popSize, maxFitnessevaluations, problem);
+            JMetalLogger.logger.log(Level.CONFIG, "Algorithm: {0}", algorithm.getName());
+
+            AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
+                    .execute();
+
+            long computingTime = algorithmRunner.getComputingTime();
+            JMetalLogger.logger.log(Level.INFO, "Total execution time: {0}ms", computingTime);
+
+            List population = SolutionListUtils.getNondominatedSolutions(algorithm.getResult());
+
+            int maxPopSize = 240; // MaFMethodology
+
+            // prune output population size
+            if (population.size() > maxPopSize) {
+                population = MOEADUtils.getSubsetOfEvenlyDistributedSolutions(population, maxPopSize);
+            }
+
+            String folder = experimentBaseDirectory + "/"
+                    + methodologyName + "/"
+                    + m
+                    + "/data/"
+                    + algorithmName + "/"
+                    + problemName + "/";
+
+            Utils outputUtils = new Utils(folder);
+            outputUtils.prepareOutputDirectory();
+
+            new SolutionListOutput(population).setSeparator("\t")
+                    .setVarFileOutputContext(new DefaultFileOutputContext(folder + "VAR" + id + ".tsv"))
+                    .setFunFileOutputContext(new DefaultFileOutputContext(folder + "FUN" + id + ".tsv"))
+                    .print();
+
         } catch (ParseException ex) {
             Logger.getLogger(HHdEA2Runner.class.getName()).log(Level.SEVERE, null, ex);
         }

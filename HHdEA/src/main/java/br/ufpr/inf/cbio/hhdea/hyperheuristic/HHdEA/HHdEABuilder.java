@@ -32,13 +32,13 @@ import br.ufpr.inf.cbio.hhdea.metrics.fir.FitnessImprovementRateCalculator;
  */
 public class HHdEABuilder<S extends Solution<?>> implements AlgorithmBuilder<HHdEA<S>> {
 
-    private List<CooperativeAlgorithm> algorithms;
-    private int populationSize;
-    private int maxEvaluations;
-    private final Problem problem;
-    private String name;
-    private SelectionFunction<CooperativeAlgorithm> selection;
-    private FitnessImprovementRateCalculator fir;
+    protected List<CooperativeAlgorithm> algorithms;
+    protected int populationSize;
+    protected int maxEvaluations;
+    protected final Problem problem;
+    protected String name;
+    protected SelectionFunction<CooperativeAlgorithm> selection;
+    protected FitnessImprovementRateCalculator fir;
 
     public HHdEABuilder(Problem problem) {
         this.problem = problem;

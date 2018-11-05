@@ -118,8 +118,6 @@ public class HHdEA2<S extends Solution<?>> extends HHdEA<S> {
 
             // move acceptance
             // ALL MOVES
-            setChanged();
-            notifyObservers();
         }
 
     }

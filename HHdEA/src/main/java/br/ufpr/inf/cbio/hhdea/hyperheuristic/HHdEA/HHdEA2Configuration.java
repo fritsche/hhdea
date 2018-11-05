@@ -40,7 +40,7 @@ import br.ufpr.inf.cbio.hhdea.metrics.fir.FitnessImprovementRateCalculator;
  * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
  * @param <S>
  */
-public class HHdEAConfiguration<S extends Solution> implements AlgorithmConfiguration<Algorithm<S>> {
+public class HHdEA2Configuration<S extends Solution> implements AlgorithmConfiguration<Algorithm<S>> {
 
     protected final String name;
     protected SelectionFunction<CooperativeAlgorithm> selection;
@@ -48,7 +48,7 @@ public class HHdEAConfiguration<S extends Solution> implements AlgorithmConfigur
     protected Problem problem;
     protected int popSize;
 
-    public HHdEAConfiguration(String name) {
+    public HHdEA2Configuration(String name) {
         this.name = name;
     }
 
@@ -60,7 +60,7 @@ public class HHdEAConfiguration<S extends Solution> implements AlgorithmConfigur
 
         setup();
 
-        HHdEABuilder builder = new HHdEABuilder(problem);
+        HHdEA2Builder builder = new HHdEA2Builder(problem);
 
         switch (name) {
             case "CONSGAII":
