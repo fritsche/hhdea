@@ -14,9 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA;
+package br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA2;
 
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.CooperativeAlgorithm;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA.HHdEA;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.SelectionFunction;
 import br.ufpr.inf.cbio.hhdea.metrics.fir.FitnessImprovementRateCalculator;
 import java.util.ArrayList;
@@ -52,7 +53,7 @@ public class HHdEA2<S extends Solution<?>> extends HHdEA<S> {
     }
 
     private Map<CooperativeAlgorithm<S>, Double> computeImprovementOfAllMOEAs(Map<CooperativeAlgorithm<S>, List<S>> populations) {
-        Map<CooperativeAlgorithm<S>, Double> moeasfir = new HashMap<>(algorithms.size());;
+        Map<CooperativeAlgorithm<S>, Double> moeasfir = new HashMap<>(algorithms.size());
         for (Map.Entry<CooperativeAlgorithm<S>, List<S>> entry : populations.entrySet()) {
             CooperativeAlgorithm<S> algorithm = entry.getKey();
             List<S> oldpop = entry.getValue();
@@ -74,14 +75,13 @@ public class HHdEA2<S extends Solution<?>> extends HHdEA<S> {
         }
         selection.init();
 
-        while (!isStoppingConditionReached()) {
+        while (evaluations < maxEvaluations) {
 
             // copy the population of every MOEA
             Map<CooperativeAlgorithm<S>, List<S>> populations = copyPopulations();
 
             // heuristic selection
             CooperativeAlgorithm<S> selected = selection.getNext();
-            setSelectedHeuristic(selected); // save to notify observers
             // apply selected heuristic
             List<S> parents = new ArrayList<>();
             for (S s : selected.getPopulation()) {
@@ -118,6 +118,9 @@ public class HHdEA2<S extends Solution<?>> extends HHdEA<S> {
 
             // move acceptance
             // ALL MOVES
+            // notify observers
+            setChanged();
+            notifyObservers();
         }
 
     }

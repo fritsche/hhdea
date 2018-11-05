@@ -14,8 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA;
+package br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA2;
 
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA.HHdEABuilder;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA2.HHdEA2;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
 

@@ -14,9 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package br.ufpr.inf.cbio.hhdea.util.output;
+package br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA2.observer;
 
-import br.ufpr.inf.cbio.hhdea.hyperheuristic.HyperHeuristic;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA2.HHdEA2;
+import br.ufpr.inf.cbio.hhdea.util.output.OutputWriter;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
@@ -26,12 +27,12 @@ import org.uma.jmetal.util.JMetalLogger;
  *
  * @author Gian Fritsche <gmfritsche at inf.ufpr.br>
  */
-public class OutputBinaryFitnessImprovementRate implements Observer {
+public class FIRLogger implements Observer {
 
     private final OutputWriter ow;
 
-    public OutputBinaryFitnessImprovementRate(String folder, String file) {
-        JMetalLogger.logger.log(Level.CONFIG, "Output Binary Fitness Improvement Rate: ENABLED");
+    public FIRLogger(String folder, String file) {
+        JMetalLogger.logger.log(Level.CONFIG, "Fitness Improvement Rate Logger: ENABLED");
         ow = new OutputWriter(folder, file);
     }
 
@@ -43,13 +44,14 @@ public class OutputBinaryFitnessImprovementRate implements Observer {
      */
     @Override
     public void update(Observable o, Object arg) {
-        if (o instanceof HyperHeuristic) {
-            HyperHeuristic hh = (HyperHeuristic) o;
-            double fir = hh.getFir();
-            ow.writeLine(Integer.toString(fir >= .0 ? 1 : 0));
-        }
+        HHdEA2 hhdea2 = (HHdEA2) o;
+        double fir = hhdea2.getFir();
+        ow.writeLine(Double.toString(fir));
     }
 
+    /**
+     * Close buffer and write to file
+     */
     public void close() {
         ow.close();
     }

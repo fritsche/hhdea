@@ -16,7 +16,7 @@
  */
 package br.ufpr.inf.cbio.hhdea.runner;
 
-import br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA.HHdEA2Configuration;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA2.HHdEA2Configuration;
 import br.ufpr.inf.cbio.hhdea.problem.ProblemFactory;
 import br.ufpr.inf.cbio.hhdea.runner.methodology.MaFMethodology;
 import br.ufpr.inf.cbio.hhdea.runner.methodology.Methodology;

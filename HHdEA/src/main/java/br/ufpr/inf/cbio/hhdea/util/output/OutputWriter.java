@@ -52,7 +52,7 @@ public class OutputWriter {
         try {
             writer.close();
         } catch (IOException ex) {
-            Logger.getLogger(OutputFitnessImprovementRate.class.getName()).log(Level.SEVERE, "Could not close file.", ex);
+            Logger.getLogger(OutputWriter.class.getName()).log(Level.SEVERE, "Could not close file.", ex);
         }
     }
 

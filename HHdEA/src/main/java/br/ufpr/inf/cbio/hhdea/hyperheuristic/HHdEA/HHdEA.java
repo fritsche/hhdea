@@ -17,7 +17,6 @@
 package br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA;
 
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.CooperativeAlgorithm;
-import br.ufpr.inf.cbio.hhdea.hyperheuristic.HyperHeuristic;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.SelectionFunction;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,13 +26,15 @@ import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.JMetalLogger;
 import org.uma.jmetal.util.SolutionListUtils;
 import br.ufpr.inf.cbio.hhdea.metrics.fir.FitnessImprovementRateCalculator;
+import java.util.Observable;
+import org.uma.jmetal.algorithm.Algorithm;
 
 /**
  *
  * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
  * @param <S>
  */
-public class HHdEA<S extends Solution<?>> extends HyperHeuristic<S> {
+public class HHdEA<S extends Solution<?>> extends Observable implements Algorithm<List<S>> {
 
     protected int maxEvaluations;
     protected Problem<S> problem;
@@ -42,12 +43,14 @@ public class HHdEA<S extends Solution<?>> extends HyperHeuristic<S> {
     protected final SelectionFunction<CooperativeAlgorithm> selection;
     protected final FitnessImprovementRateCalculator calculator;
     protected int evaluations;
+    protected List<CooperativeAlgorithm<S>> algorithms;
+    protected double fir;
 
     public HHdEA(List<CooperativeAlgorithm<S>> algorithms, int populationSize, int maxEvaluations,
             Problem problem, String name, SelectionFunction<CooperativeAlgorithm> selection,
             FitnessImprovementRateCalculator fir) {
 
-        super(algorithms);
+        this.algorithms = algorithms;
         this.populationSize = populationSize;
         this.maxEvaluations = maxEvaluations;
         this.problem = problem;
@@ -69,11 +72,10 @@ public class HHdEA<S extends Solution<?>> extends HyperHeuristic<S> {
         }
         selection.init();
 
-        while (!isStoppingConditionReached()) {
+        while (evaluations < maxEvaluations) {
 
             // heuristic selection
             CooperativeAlgorithm<S> alg = selection.getNext();
-            setSelectedHeuristic(alg); // save to notify observers
 
             // apply selected heuristic
             List<S> parents = new ArrayList<>();
@@ -108,9 +110,6 @@ public class HHdEA<S extends Solution<?>> extends HyperHeuristic<S> {
                     neighbor.receive(migrants);
                 }
             }
-
-            setChanged();
-            notifyObservers();
         }
 
     }
@@ -134,9 +133,11 @@ public class HHdEA<S extends Solution<?>> extends HyperHeuristic<S> {
         return "Hyper-heuristics for distributed Evolutionary Algorithms";
     }
 
-    @Override
-    public boolean isStoppingConditionReached() {
-        return evaluations >= maxEvaluations;
+    public double getFir() {
+        return fir;
     }
 
+    public void setFir(double fir) {
+        this.fir = fir;
+    }
 }
