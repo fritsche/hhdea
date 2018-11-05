@@ -28,7 +28,8 @@ import org.uma.jmetal.util.JMetalLogger;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- *
+ * @deprecated This general purpose Main will be replaced by task specific Main
+ * classes. e.g. HHdEA2Runner and MOEARunner.
  * @author Gian Fritsche <gmfritsche at inf.ufpr.br>
  */
 public class Main {
@@ -89,7 +90,7 @@ public class Main {
     public static Runner getRunner(CommandLine cmd) {
         String algorithmName, problemName, objectives, idStr, seedStr, experimentBaseDirectory, methodologyName;
         String output[];
-            
+
         Runner runner = new Runner();
 
         if ((algorithmName = cmd.getOptionValue("a")) != null) {
@@ -113,7 +114,7 @@ public class Main {
         if ((seedStr = cmd.getOptionValue("s")) != null) {
             runner.setSeed(Long.parseLong(seedStr));
         }
-        if ((output = cmd.getOptionValues("o")) != null){
+        if ((output = cmd.getOptionValues("o")) != null) {
             runner.setOutput(output);
         }
         return runner;

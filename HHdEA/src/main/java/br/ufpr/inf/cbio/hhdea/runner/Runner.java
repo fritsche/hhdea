@@ -43,7 +43,9 @@ import org.uma.jmetal.util.pseudorandom.JMetalRandom;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- *
+ * @deprecated This general purpose Runner will be replaced by task specific
+ * Runners classes. e.g. HHdEA2Runner and MOEARunner, each one has its own main
+ * method.
  * @author Gian Fritsche <gmfritsche at inf.ufpr.br>
  */
 public class Runner {
