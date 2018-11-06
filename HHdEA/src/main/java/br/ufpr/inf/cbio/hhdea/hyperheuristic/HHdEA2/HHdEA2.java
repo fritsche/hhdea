@@ -24,8 +24,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
+import org.uma.jmetal.util.JMetalLogger;
 
 /**
  *
@@ -77,6 +79,9 @@ public class HHdEA2<S extends Solution<?>> extends HHdEA<S> {
         selection.init();
 
         while (getEvaluations() < getMaxEvaluations()) {
+
+            JMetalLogger.logger.log(Level.FINE, "Progress: {0}", 
+                    String.format("%.2f%%", getEvaluations() / (double) getMaxEvaluations() * 100.0));
 
             // copy the population of every MOEA
             Map<CooperativeAlgorithm<S>, List<S>> populations = copyPopulations();
