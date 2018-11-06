@@ -19,27 +19,21 @@ package br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA2.observer;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.CooperativeAlgorithm;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA2.HHdEA2;
 import java.util.List;
-import java.util.Map;
 
 /**
  *
  * @author Gian Fritsche <gmfritsche at inf.ufpr.br>
  */
-public class MOEASFIRLogger extends HHdEA2Logger {
+public class SelectedMOEALogger extends HHdEA2Logger {
 
-    public MOEASFIRLogger(String folder, String file) {
+    public SelectedMOEALogger(String folder, String file) {
         super(folder, file);
     }
 
     @Override
     public void update(HHdEA2 hhdea2) {
+        CooperativeAlgorithm selected = hhdea2.getSelected();
         List<CooperativeAlgorithm> algorithms = hhdea2.getAlgorithms();
-        Map<CooperativeAlgorithm, Double> map = hhdea2.getMoeasfir();
-        StringBuilder buffer = new StringBuilder();
-        for (CooperativeAlgorithm algorithm : algorithms) {
-            buffer.append(map.get(algorithm));
-            buffer.append("\t");
-        }
-        ow.writeLine(buffer.toString());
+        ow.writeLine(Integer.toString(algorithms.indexOf(selected)));
     }
 }

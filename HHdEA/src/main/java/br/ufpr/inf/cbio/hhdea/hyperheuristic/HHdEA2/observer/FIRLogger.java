@@ -17,43 +17,20 @@
 package br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA2.observer;
 
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA2.HHdEA2;
-import br.ufpr.inf.cbio.hhdea.util.output.OutputWriter;
-import java.util.Observable;
-import java.util.logging.Level;
-import org.uma.jmetal.util.JMetalLogger;
 
 /**
  *
  * @author Gian Fritsche <gmfritsche at inf.ufpr.br>
  */
-public class FIRLogger implements HHdEA2Logger {
-
-    private final OutputWriter ow;
+public class FIRLogger extends HHdEA2Logger {
 
     public FIRLogger(String folder, String file) {
-        JMetalLogger.logger.log(Level.CONFIG, "Fitness Improvement Rate Logger: ENABLED");
-        ow = new OutputWriter(folder, file);
+        super(folder, file);
     }
 
-    /**
-     * Print current FIR to buffer. Observable must extends HyperHeuristic.
-     *
-     * @param o
-     * @param arg
-     */
     @Override
-    public void update(Observable o, Object arg) {
-        HHdEA2 hhdea2 = (HHdEA2) o;
-        double fir = hhdea2.getFir();
-        ow.writeLine(Double.toString(fir));
-    }
-
-    /**
-     * Close buffer and write to file
-     */
-    @Override
-    public void close() {
-        ow.close();
+    public void update(HHdEA2 hhdea2) {
+        ow.writeLine(Double.toString(hhdea2.getFir()));
     }
 
 }

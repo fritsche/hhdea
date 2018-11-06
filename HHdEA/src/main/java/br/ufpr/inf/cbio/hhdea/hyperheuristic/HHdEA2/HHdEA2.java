@@ -83,6 +83,8 @@ public class HHdEA2<S extends Solution<?>> extends HHdEA<S> {
 
             // heuristic selection
             CooperativeAlgorithm<S> selected = selection.getNext();
+            // set selected to be logged
+            setSelected(selected);
             // apply selected heuristic
             List<S> parents = new ArrayList<>();
             for (S s : selected.getPopulation()) {

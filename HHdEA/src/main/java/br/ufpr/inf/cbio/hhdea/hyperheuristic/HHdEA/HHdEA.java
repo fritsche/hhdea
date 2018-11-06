@@ -45,6 +45,7 @@ public class HHdEA<S extends Solution<?>> extends Observable implements Algorith
     private int evaluations;
     private List<CooperativeAlgorithm<S>> algorithms;
     protected double fir;
+    private CooperativeAlgorithm<S> selected;
 
     public HHdEA(List<CooperativeAlgorithm<S>> algorithms, int populationSize, int maxEvaluations,
             Problem problem, String name, SelectionFunction<CooperativeAlgorithm> selection,
@@ -75,20 +76,20 @@ public class HHdEA<S extends Solution<?>> extends Observable implements Algorith
         while (evaluations < maxEvaluations) {
 
             // heuristic selection
-            CooperativeAlgorithm<S> alg = selection.getNext();
+            selected = selection.getNext();
 
             // apply selected heuristic
             List<S> parents = new ArrayList<>();
-            for (S s : alg.getPopulation()) {
+            for (S s : selected.getPopulation()) {
                 parents.add((S) s.copy());
             }
-            alg.doIteration();
+            selected.doIteration();
 
-            // copy the solutions generatedy by alg
+            // copy the solutions generatedy by selected
             List<S> offspring = new ArrayList<>();
-            for (S s : alg.getOffspring()) {
+            for (S s : selected.getOffspring()) {
                 offspring.add((S) s.copy());
-                // count evaluations used by alg
+                // count evaluations used by selected
                 evaluations++;
             }
 
@@ -102,7 +103,7 @@ public class HHdEA<S extends Solution<?>> extends Observable implements Algorith
             // ALL MOVES
             // cooperation phase
             for (CooperativeAlgorithm<S> neighbor : algorithms) {
-                if (neighbor != alg) {
+                if (neighbor != selected) {
                     List<S> migrants = new ArrayList<>();
                     for (S s : offspring) {
                         migrants.add((S) s.copy());
@@ -171,5 +172,13 @@ public class HHdEA<S extends Solution<?>> extends Observable implements Algorith
 
     public void setAlgorithms(List<CooperativeAlgorithm<S>> algorithms) {
         this.algorithms = algorithms;
+    }
+
+    public CooperativeAlgorithm<S> getSelected() {
+        return selected;
+    }
+
+    public void setSelected(CooperativeAlgorithm<S> selected) {
+        this.selected = selected;
     }
 }

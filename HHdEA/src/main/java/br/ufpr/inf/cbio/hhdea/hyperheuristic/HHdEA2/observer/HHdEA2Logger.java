@@ -16,12 +16,37 @@
  */
 package br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA2.observer;
 
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA2.HHdEA2;
+import br.ufpr.inf.cbio.hhdea.util.output.OutputWriter;
+import java.util.Observable;
 import java.util.Observer;
+import java.util.logging.Level;
+import org.uma.jmetal.util.JMetalLogger;
 
 /**
  *
  * @author Gian Fritsche <gmfritsche at inf.ufpr.br>
  */
-public interface HHdEA2Logger extends Observer {
-    public void close();
+public abstract class HHdEA2Logger implements Observer {
+
+    protected final OutputWriter ow;
+
+    public HHdEA2Logger(String folder, String file) {
+        JMetalLogger.logger.log(Level.CONFIG, "{0}: ENABLED", this.getClass().getSimpleName());
+        ow = new OutputWriter(folder, file);
+    }
+
+    public void update(Observable o, Object arg) {
+        update((HHdEA2) o);
+    }
+
+    public abstract void update(HHdEA2 hhdea2);
+
+    /**
+     * Close buffer and write to file
+     */
+    public void close() {
+        ow.close();
+    }
+
 }
