@@ -3,6 +3,7 @@
 set -e
 
 source ./scripts/seeds.sh
+source ./scripts/wait_queue.sh
 
 cd HHdEA
 make
@@ -22,7 +23,7 @@ set_seeds
 
 execute="sbatch -J $name.run scripts/addjob.sh" # for running on process queue
 # execute=eval # for running locally
-  
+
 seed_index=0
 
 for m in "${ms[@]}"; do
@@ -47,3 +48,7 @@ for m in "${ms[@]}"; do
 		done
 	done
 done
+
+echo "executing algorithms"
+wait_queue
+
