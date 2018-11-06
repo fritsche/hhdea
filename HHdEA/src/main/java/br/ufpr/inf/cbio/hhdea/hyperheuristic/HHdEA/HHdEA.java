@@ -17,7 +17,6 @@
 package br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA;
 
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.CooperativeAlgorithm;
-import br.ufpr.inf.cbio.hhdea.hyperheuristic.HyperHeuristic;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.SelectionFunction;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,27 +26,32 @@ import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.JMetalLogger;
 import org.uma.jmetal.util.SolutionListUtils;
 import br.ufpr.inf.cbio.hhdea.metrics.fir.FitnessImprovementRateCalculator;
+import java.util.Observable;
+import org.uma.jmetal.algorithm.Algorithm;
 
 /**
  *
  * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
  * @param <S>
  */
-public class HHdEA<S extends Solution<?>> extends HyperHeuristic<S> {
+public class HHdEA<S extends Solution<?>> extends Observable implements Algorithm<List<S>> {
 
-    protected int maxEvaluations;
-    protected Problem<S> problem;
+    private int maxEvaluations;
+    private Problem<S> problem;
     protected final int populationSize;
     protected final String name;
     protected final SelectionFunction<CooperativeAlgorithm> selection;
     protected final FitnessImprovementRateCalculator calculator;
-    protected int evaluations;
+    private int evaluations;
+    private List<CooperativeAlgorithm<S>> algorithms;
+    protected double fir;
+    private CooperativeAlgorithm<S> selected;
 
     public HHdEA(List<CooperativeAlgorithm<S>> algorithms, int populationSize, int maxEvaluations,
             Problem problem, String name, SelectionFunction<CooperativeAlgorithm> selection,
             FitnessImprovementRateCalculator fir) {
 
-        super(algorithms);
+        this.algorithms = algorithms;
         this.populationSize = populationSize;
         this.maxEvaluations = maxEvaluations;
         this.problem = problem;
@@ -69,24 +73,23 @@ public class HHdEA<S extends Solution<?>> extends HyperHeuristic<S> {
         }
         selection.init();
 
-        while (!isStoppingConditionReached()) {
+        while (evaluations < maxEvaluations) {
 
             // heuristic selection
-            CooperativeAlgorithm<S> alg = selection.getNext();
-            setSelectedHeuristic(alg); // save to notify observers
+            selected = selection.getNext();
 
             // apply selected heuristic
             List<S> parents = new ArrayList<>();
-            for (S s : alg.getPopulation()) {
+            for (S s : selected.getPopulation()) {
                 parents.add((S) s.copy());
             }
-            alg.doIteration();
+            selected.doIteration();
 
-            // copy the solutions generatedy by alg
+            // copy the solutions generatedy by selected
             List<S> offspring = new ArrayList<>();
-            for (S s : alg.getOffspring()) {
+            for (S s : selected.getOffspring()) {
                 offspring.add((S) s.copy());
-                // count evaluations used by alg
+                // count evaluations used by selected
                 evaluations++;
             }
 
@@ -100,7 +103,7 @@ public class HHdEA<S extends Solution<?>> extends HyperHeuristic<S> {
             // ALL MOVES
             // cooperation phase
             for (CooperativeAlgorithm<S> neighbor : algorithms) {
-                if (neighbor != alg) {
+                if (neighbor != selected) {
                     List<S> migrants = new ArrayList<>();
                     for (S s : offspring) {
                         migrants.add((S) s.copy());
@@ -108,9 +111,6 @@ public class HHdEA<S extends Solution<?>> extends HyperHeuristic<S> {
                     neighbor.receive(migrants);
                 }
             }
-
-            setChanged();
-            notifyObservers();
         }
 
     }
@@ -134,9 +134,51 @@ public class HHdEA<S extends Solution<?>> extends HyperHeuristic<S> {
         return "Hyper-heuristics for distributed Evolutionary Algorithms";
     }
 
-    @Override
-    public boolean isStoppingConditionReached() {
-        return evaluations >= maxEvaluations;
+    public double getFir() {
+        return fir;
     }
 
+    public void setFir(double fir) {
+        this.fir = fir;
+    }
+
+    public int getMaxEvaluations() {
+        return maxEvaluations;
+    }
+
+    public void setMaxEvaluations(int maxEvaluations) {
+        this.maxEvaluations = maxEvaluations;
+    }
+
+    public Problem<S> getProblem() {
+        return problem;
+    }
+
+    public void setProblem(Problem<S> problem) {
+        this.problem = problem;
+    }
+
+    public int getEvaluations() {
+        return evaluations;
+    }
+
+    public void setEvaluations(int evaluations) {
+        this.evaluations = evaluations;
+    }
+
+    public List<CooperativeAlgorithm<S>> getAlgorithms() {
+        return algorithms;
+    }
+
+    public void setAlgorithms(List<CooperativeAlgorithm<S>> algorithms) {
+        this.algorithms = algorithms;
+    }
+
+    public CooperativeAlgorithm<S> getSelected() {
+        return selected;
+    }
+
+    public void setSelected(CooperativeAlgorithm<S> selected) {
+        this.selected = selected;
+    }
 }

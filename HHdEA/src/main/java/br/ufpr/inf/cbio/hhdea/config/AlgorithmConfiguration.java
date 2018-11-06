@@ -41,7 +41,7 @@ import org.uma.jmetal.problem.Problem;
  * @author Gian M. Fritsche <gmfritsche@inf.ufpr.br>
  * @param <A>
  */
-public interface AlgorithmConfiguration<A extends Algorithm<?>> {
+public interface AlgorithmConfiguration<A extends Algorithm> {
 
     public A configure(int popSize, int maxFitnessEvaluations, Problem problem);
 

@@ -16,11 +16,17 @@
  */
 package br.ufpr.inf.cbio.hhdea.runner;
 
-import br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA.HHdEA2Configuration;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA2.HHdEA2;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA2.HHdEA2Configuration;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA2.observer.FIRLogger;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA2.observer.HHdEA2Logger;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA2.observer.MOEASFIRLogger;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA2.observer.SelectedMOEALogger;
 import br.ufpr.inf.cbio.hhdea.problem.ProblemFactory;
 import br.ufpr.inf.cbio.hhdea.runner.methodology.MaFMethodology;
 import br.ufpr.inf.cbio.hhdea.runner.methodology.Methodology;
 import br.ufpr.inf.cbio.hhdea.util.output.Utils;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,10 +37,8 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.multiobjective.moead.util.MOEADUtils;
 import org.uma.jmetal.problem.Problem;
-import org.uma.jmetal.solution.DoubleSolution;
 import org.uma.jmetal.util.AlgorithmRunner;
 import org.uma.jmetal.util.JMetalLogger;
 import org.uma.jmetal.util.SolutionListUtils;
@@ -117,16 +121,39 @@ public class HHdEA2Runner {
             JMetalRandom.getInstance().setSeed(seed);
             JMetalLogger.logger.log(Level.CONFIG, "Seed: {0}", seed);
 
-            Algorithm<List<DoubleSolution>> algorithm = new HHdEA2Configuration(algorithmName).configure(popSize, maxFitnessevaluations, problem);
-            JMetalLogger.logger.log(Level.CONFIG, "Algorithm: {0}", algorithm.getName());
+            HHdEA2 hhdea2 = new HHdEA2Configuration(algorithmName).configure(popSize, maxFitnessevaluations, problem);
+            JMetalLogger.logger.log(Level.CONFIG, "Algorithm: {0}", hhdea2.getName());
 
-            AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
+            String outputfolder = experimentBaseDirectory + "/"
+                    + methodologyName + "/"
+                    + m
+                    + "/output/"
+                    + algorithmName + "/"
+                    + problemName + "/";
+
+            // create loggers
+            List<HHdEA2Logger> loggers = new ArrayList<>();
+            loggers.add(new FIRLogger(outputfolder, "fir." + id));
+            loggers.add(new MOEASFIRLogger(outputfolder, "moeasfir." + id));
+            loggers.add(new SelectedMOEALogger(outputfolder, "selected." + id));
+
+            // append loggers to algorithm
+            for (HHdEA2Logger logger : loggers) {
+                hhdea2.addObserver(logger);
+            }
+
+            AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(hhdea2)
                     .execute();
+
+            // close loggers (write to file)
+            for (HHdEA2Logger logger : loggers) {
+                logger.close();
+            }
 
             long computingTime = algorithmRunner.getComputingTime();
             JMetalLogger.logger.log(Level.INFO, "Total execution time: {0}ms", computingTime);
 
-            List population = SolutionListUtils.getNondominatedSolutions(algorithm.getResult());
+            List population = SolutionListUtils.getNondominatedSolutions(hhdea2.getResult());
 
             int maxPopSize = 240; // MaFMethodology
 
@@ -135,19 +162,19 @@ public class HHdEA2Runner {
                 population = MOEADUtils.getSubsetOfEvenlyDistributedSolutions(population, maxPopSize);
             }
 
-            String folder = experimentBaseDirectory + "/"
+            String datafolder = experimentBaseDirectory + "/"
                     + methodologyName + "/"
                     + m
                     + "/data/"
                     + algorithmName + "/"
                     + problemName + "/";
 
-            Utils outputUtils = new Utils(folder);
+            Utils outputUtils = new Utils(datafolder);
             outputUtils.prepareOutputDirectory();
 
             new SolutionListOutput(population).setSeparator("\t")
-                    .setVarFileOutputContext(new DefaultFileOutputContext(folder + "VAR" + id + ".tsv"))
-                    .setFunFileOutputContext(new DefaultFileOutputContext(folder + "FUN" + id + ".tsv"))
+                    .setVarFileOutputContext(new DefaultFileOutputContext(datafolder + "VAR" + id + ".tsv"))
+                    .setFunFileOutputContext(new DefaultFileOutputContext(datafolder + "FUN" + id + ".tsv"))
                     .print();
 
         } catch (ParseException ex) {

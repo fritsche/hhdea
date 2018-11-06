@@ -14,17 +14,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA;
+package br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA2;
 
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.CooperativeAlgorithm;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA.HHdEA;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.SelectionFunction;
 import br.ufpr.inf.cbio.hhdea.metrics.fir.FitnessImprovementRateCalculator;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
+import org.uma.jmetal.util.JMetalLogger;
 
 /**
  *
@@ -33,6 +36,8 @@ import org.uma.jmetal.solution.Solution;
  */
 public class HHdEA2<S extends Solution<?>> extends HHdEA<S> {
 
+    private Map<CooperativeAlgorithm<S>, Double> moeasfir;
+
     public HHdEA2(List<CooperativeAlgorithm<S>> algorithms, int populationSize, int maxEvaluations,
             Problem problem, String name, SelectionFunction<CooperativeAlgorithm> selection,
             FitnessImprovementRateCalculator fir) {
@@ -40,8 +45,8 @@ public class HHdEA2<S extends Solution<?>> extends HHdEA<S> {
     }
 
     private Map<CooperativeAlgorithm<S>, List<S>> copyPopulations() {
-        Map<CooperativeAlgorithm<S>, List<S>> populations = new HashMap(algorithms.size());
-        for (CooperativeAlgorithm<S> algorithm : algorithms) {
+        Map<CooperativeAlgorithm<S>, List<S>> populations = new HashMap(getAlgorithms().size());
+        for (CooperativeAlgorithm<S> algorithm : getAlgorithms()) {
             List<S> population = new ArrayList<>(algorithm.getPopulation().size());
             for (S s : algorithm.getPopulation()) {
                 population.add((S) s.copy());
@@ -51,8 +56,8 @@ public class HHdEA2<S extends Solution<?>> extends HHdEA<S> {
         return populations;
     }
 
-    private Map<CooperativeAlgorithm<S>, Double> computeImprovementOfAllMOEAs(Map<CooperativeAlgorithm<S>, List<S>> populations) {
-        Map<CooperativeAlgorithm<S>, Double> moeasfir = new HashMap<>(algorithms.size());;
+    private void computeImprovementOfAllMOEAs(Map<CooperativeAlgorithm<S>, List<S>> populations) {
+        moeasfir = new HashMap<>(getAlgorithms().size());
         for (Map.Entry<CooperativeAlgorithm<S>, List<S>> entry : populations.entrySet()) {
             CooperativeAlgorithm<S> algorithm = entry.getKey();
             List<S> oldpop = entry.getValue();
@@ -60,28 +65,31 @@ public class HHdEA2<S extends Solution<?>> extends HHdEA<S> {
             moeasfir.put(algorithm,
                     calculator.computeFitnessImprovementRate(oldpop, newpop));
         }
-        return moeasfir;
     }
 
     @Override
     public void run() {
 
-        evaluations = 0;
-        for (CooperativeAlgorithm<S> alg : algorithms) {
+        setEvaluations(0);
+        for (CooperativeAlgorithm<S> alg : getAlgorithms()) {
             alg.init(populationSize);
-            evaluations += alg.getPopulation().size();
+            setEvaluations(getEvaluations() + alg.getPopulation().size());
             selection.add(alg);
         }
         selection.init();
 
-        while (!isStoppingConditionReached()) {
+        while (getEvaluations() < getMaxEvaluations()) {
+
+            JMetalLogger.logger.log(Level.FINE, "Progress: {0}", 
+                    String.format("%.2f%%", getEvaluations() / (double) getMaxEvaluations() * 100.0));
 
             // copy the population of every MOEA
             Map<CooperativeAlgorithm<S>, List<S>> populations = copyPopulations();
 
             // heuristic selection
             CooperativeAlgorithm<S> selected = selection.getNext();
-            setSelectedHeuristic(selected); // save to notify observers
+            // set selected to be logged
+            setSelected(selected);
             // apply selected heuristic
             List<S> parents = new ArrayList<>();
             for (S s : selected.getPopulation()) {
@@ -93,11 +101,11 @@ public class HHdEA2<S extends Solution<?>> extends HHdEA<S> {
             for (S s : selected.getOffspring()) {
                 offspring.add((S) s.copy());
                 // count evaluations used by selected
-                evaluations++;
+                setEvaluations(getEvaluations() + 1);
             }
 
             // cooperation phase
-            for (CooperativeAlgorithm<S> neighbor : algorithms) {
+            for (CooperativeAlgorithm<S> neighbor : getAlgorithms()) {
                 if (neighbor != selected) {
                     List<S> migrants = new ArrayList<>();
                     for (S s : offspring) {
@@ -108,7 +116,7 @@ public class HHdEA2<S extends Solution<?>> extends HHdEA<S> {
             }
 
             // compute the improvement of all MOEAs (old vs new pop)
-            Map<CooperativeAlgorithm<S>, Double> moeasfir = computeImprovementOfAllMOEAs(populations);
+            computeImprovementOfAllMOEAs(populations);
 
             // extract metrics (parents vs offspring [solutions generated this iteration])
             setFir(calculator.computeFitnessImprovementRate(parents, offspring));
@@ -118,8 +126,19 @@ public class HHdEA2<S extends Solution<?>> extends HHdEA<S> {
 
             // move acceptance
             // ALL MOVES
+            // notify observers
+            setChanged();
+            notifyObservers();
         }
 
+    }
+
+    public Map<CooperativeAlgorithm<S>, Double> getMoeasfir() {
+        return moeasfir;
+    }
+
+    public void setMoeasfir(Map<CooperativeAlgorithm<S>, Double> moeasfir) {
+        this.moeasfir = moeasfir;
     }
 
 }

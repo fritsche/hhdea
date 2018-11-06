@@ -1,17 +1,12 @@
 package br.ufpr.inf.cbio.hhdea.runner;
 
 import br.ufpr.inf.cbio.hhdea.config.AlgorithmConfigurationFactory;
-import br.ufpr.inf.cbio.hhdea.hyperheuristic.HyperHeuristic;
 import br.ufpr.inf.cbio.hhdea.problem.ProblemFactory;
 import br.ufpr.inf.cbio.hhdea.runner.methodology.ArionMethodology;
 import br.ufpr.inf.cbio.hhdea.runner.methodology.MaFMethodology;
 import br.ufpr.inf.cbio.hhdea.runner.methodology.Methodology;
 import br.ufpr.inf.cbio.hhdea.runner.methodology.NSGAIIIMethodology;
-import br.ufpr.inf.cbio.hhdea.util.output.OutputBinaryFitnessImprovementRate;
-import br.ufpr.inf.cbio.hhdea.util.output.OutputCountOfApplication;
-import br.ufpr.inf.cbio.hhdea.util.output.OutputFitnessImprovementRate;
 import br.ufpr.inf.cbio.hhdea.util.output.Utils;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import org.uma.jmetal.algorithm.Algorithm;
@@ -43,9 +38,6 @@ import org.uma.jmetal.util.pseudorandom.JMetalRandom;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * @deprecated This general purpose Runner will be replaced by task specific
- * Runners classes. e.g. HHdEA2Runner and MOEARunner, each one has its own main
- * method.
  * @author Gian Fritsche <gmfritsche at inf.ufpr.br>
  */
 public class Runner {
@@ -61,7 +53,6 @@ public class Runner {
     private Algorithm<List<DoubleSolution>> algorithm;
     private Problem problem;
     private int popSize;
-    private String[] output;
 
     public Runner() {
         this.algorithmName = "HHdEA";
@@ -115,44 +106,8 @@ public class Runner {
 
         JMetalLogger.logger.log(Level.CONFIG, "Algorithm: {0}", algorithmName);
 
-        OutputFitnessImprovementRate ofir = null;
-        OutputBinaryFitnessImprovementRate ofirbin = null;
-        OutputCountOfApplication ocoa = null;
-        if (output != null && algorithm instanceof HyperHeuristic) {
-            HyperHeuristic hh = (HyperHeuristic) algorithm;
-            List list = Arrays.asList(output);
-            String folder = experimentBaseDirectory + "/"
-                    + methodologyName + "/"
-                    + m
-                    + "/output/"
-                    + algorithmName + "/"
-                    + problemName + "/";
-            if (list.contains("fir")) {
-                ofir = new OutputFitnessImprovementRate(folder, "fir." + id);
-                hh.addObserver(ofir);
-            }
-            if (list.contains("firbin")) {
-                ofirbin = new OutputBinaryFitnessImprovementRate(folder, "firbin." + id);
-                hh.addObserver(ofirbin);
-            }
-            if (list.contains("count")) {
-                ocoa = new OutputCountOfApplication(folder, "count." + id);
-                hh.addObserver(ocoa);
-            }
-        }
-
         AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
                 .execute();
-
-        if (ofir != null) {
-            ofir.close();
-        }
-        if (ofirbin != null) {
-            ofirbin.close();
-        }
-        if (ocoa != null) {
-            ocoa.close();
-        }
 
         long computingTime = algorithmRunner.getComputingTime();
         JMetalLogger.logger.log(Level.INFO, "Total execution time: {0}ms", computingTime);
@@ -221,11 +176,6 @@ public class Runner {
 
     public Runner setObjectives(int m) {
         this.m = m;
-        return this;
-    }
-
-    public Runner setOutput(String[] output) {
-        this.output = output;
         return this;
     }
 

@@ -14,25 +14,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA;
+package br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA2.observer;
 
-import org.uma.jmetal.problem.Problem;
-import org.uma.jmetal.solution.Solution;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.CooperativeAlgorithm;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA2.HHdEA2;
+import java.util.List;
 
 /**
  *
  * @author Gian Fritsche <gmfritsche at inf.ufpr.br>
  */
-public class HHdEA2Builder extends HHdEABuilder<Solution<?>> {
+public class SelectedMOEALogger extends HHdEA2Logger {
 
-    public HHdEA2Builder(Problem problem) {
-        super(problem);
+    public SelectedMOEALogger(String folder, String file) {
+        super(folder, file);
     }
 
     @Override
-    public HHdEA2 build() {
-        return new HHdEA2(algorithms, populationSize, maxEvaluations, problem, name,
-                selection, fir);
+    public void update(HHdEA2 hhdea2) {
+        CooperativeAlgorithm selected = hhdea2.getSelected();
+        List<CooperativeAlgorithm> algorithms = hhdea2.getAlgorithms();
+        ow.writeLine(Integer.toString(algorithms.indexOf(selected)));
     }
-
 }
