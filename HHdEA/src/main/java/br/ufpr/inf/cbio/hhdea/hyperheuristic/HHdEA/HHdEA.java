@@ -36,14 +36,14 @@ import org.uma.jmetal.algorithm.Algorithm;
  */
 public class HHdEA<S extends Solution<?>> extends Observable implements Algorithm<List<S>> {
 
-    protected int maxEvaluations;
-    protected Problem<S> problem;
+    private int maxEvaluations;
+    private Problem<S> problem;
     protected final int populationSize;
     protected final String name;
     protected final SelectionFunction<CooperativeAlgorithm> selection;
     protected final FitnessImprovementRateCalculator calculator;
-    protected int evaluations;
-    protected List<CooperativeAlgorithm<S>> algorithms;
+    private int evaluations;
+    private List<CooperativeAlgorithm<S>> algorithms;
     protected double fir;
 
     public HHdEA(List<CooperativeAlgorithm<S>> algorithms, int populationSize, int maxEvaluations,
@@ -139,5 +139,37 @@ public class HHdEA<S extends Solution<?>> extends Observable implements Algorith
 
     public void setFir(double fir) {
         this.fir = fir;
+    }
+
+    public int getMaxEvaluations() {
+        return maxEvaluations;
+    }
+
+    public void setMaxEvaluations(int maxEvaluations) {
+        this.maxEvaluations = maxEvaluations;
+    }
+
+    public Problem<S> getProblem() {
+        return problem;
+    }
+
+    public void setProblem(Problem<S> problem) {
+        this.problem = problem;
+    }
+
+    public int getEvaluations() {
+        return evaluations;
+    }
+
+    public void setEvaluations(int evaluations) {
+        this.evaluations = evaluations;
+    }
+
+    public List<CooperativeAlgorithm<S>> getAlgorithms() {
+        return algorithms;
+    }
+
+    public void setAlgorithms(List<CooperativeAlgorithm<S>> algorithms) {
+        this.algorithms = algorithms;
     }
 }

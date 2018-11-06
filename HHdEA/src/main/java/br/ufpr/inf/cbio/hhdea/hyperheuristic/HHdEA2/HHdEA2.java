@@ -34,6 +34,8 @@ import org.uma.jmetal.solution.Solution;
  */
 public class HHdEA2<S extends Solution<?>> extends HHdEA<S> {
 
+    private Map<CooperativeAlgorithm<S>, Double> moeasfir;
+
     public HHdEA2(List<CooperativeAlgorithm<S>> algorithms, int populationSize, int maxEvaluations,
             Problem problem, String name, SelectionFunction<CooperativeAlgorithm> selection,
             FitnessImprovementRateCalculator fir) {
@@ -41,8 +43,8 @@ public class HHdEA2<S extends Solution<?>> extends HHdEA<S> {
     }
 
     private Map<CooperativeAlgorithm<S>, List<S>> copyPopulations() {
-        Map<CooperativeAlgorithm<S>, List<S>> populations = new HashMap(algorithms.size());
-        for (CooperativeAlgorithm<S> algorithm : algorithms) {
+        Map<CooperativeAlgorithm<S>, List<S>> populations = new HashMap(getAlgorithms().size());
+        for (CooperativeAlgorithm<S> algorithm : getAlgorithms()) {
             List<S> population = new ArrayList<>(algorithm.getPopulation().size());
             for (S s : algorithm.getPopulation()) {
                 population.add((S) s.copy());
@@ -52,8 +54,8 @@ public class HHdEA2<S extends Solution<?>> extends HHdEA<S> {
         return populations;
     }
 
-    private Map<CooperativeAlgorithm<S>, Double> computeImprovementOfAllMOEAs(Map<CooperativeAlgorithm<S>, List<S>> populations) {
-        Map<CooperativeAlgorithm<S>, Double> moeasfir = new HashMap<>(algorithms.size());
+    private void computeImprovementOfAllMOEAs(Map<CooperativeAlgorithm<S>, List<S>> populations) {
+        moeasfir = new HashMap<>(getAlgorithms().size());
         for (Map.Entry<CooperativeAlgorithm<S>, List<S>> entry : populations.entrySet()) {
             CooperativeAlgorithm<S> algorithm = entry.getKey();
             List<S> oldpop = entry.getValue();
@@ -61,21 +63,20 @@ public class HHdEA2<S extends Solution<?>> extends HHdEA<S> {
             moeasfir.put(algorithm,
                     calculator.computeFitnessImprovementRate(oldpop, newpop));
         }
-        return moeasfir;
     }
 
     @Override
     public void run() {
 
-        evaluations = 0;
-        for (CooperativeAlgorithm<S> alg : algorithms) {
+        setEvaluations(0);
+        for (CooperativeAlgorithm<S> alg : getAlgorithms()) {
             alg.init(populationSize);
-            evaluations += alg.getPopulation().size();
+            setEvaluations(getEvaluations() + alg.getPopulation().size());
             selection.add(alg);
         }
         selection.init();
 
-        while (evaluations < maxEvaluations) {
+        while (getEvaluations() < getMaxEvaluations()) {
 
             // copy the population of every MOEA
             Map<CooperativeAlgorithm<S>, List<S>> populations = copyPopulations();
@@ -93,11 +94,11 @@ public class HHdEA2<S extends Solution<?>> extends HHdEA<S> {
             for (S s : selected.getOffspring()) {
                 offspring.add((S) s.copy());
                 // count evaluations used by selected
-                evaluations++;
+                setEvaluations(getEvaluations() + 1);
             }
 
             // cooperation phase
-            for (CooperativeAlgorithm<S> neighbor : algorithms) {
+            for (CooperativeAlgorithm<S> neighbor : getAlgorithms()) {
                 if (neighbor != selected) {
                     List<S> migrants = new ArrayList<>();
                     for (S s : offspring) {
@@ -108,7 +109,7 @@ public class HHdEA2<S extends Solution<?>> extends HHdEA<S> {
             }
 
             // compute the improvement of all MOEAs (old vs new pop)
-            Map<CooperativeAlgorithm<S>, Double> moeasfir = computeImprovementOfAllMOEAs(populations);
+            computeImprovementOfAllMOEAs(populations);
 
             // extract metrics (parents vs offspring [solutions generated this iteration])
             setFir(calculator.computeFitnessImprovementRate(parents, offspring));
@@ -123,6 +124,14 @@ public class HHdEA2<S extends Solution<?>> extends HHdEA<S> {
             notifyObservers();
         }
 
+    }
+
+    public Map<CooperativeAlgorithm<S>, Double> getMoeasfir() {
+        return moeasfir;
+    }
+
+    public void setMoeasfir(Map<CooperativeAlgorithm<S>, Double> moeasfir) {
+        this.moeasfir = moeasfir;
     }
 
 }

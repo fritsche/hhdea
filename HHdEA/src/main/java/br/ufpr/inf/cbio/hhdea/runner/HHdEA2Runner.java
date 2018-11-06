@@ -19,10 +19,13 @@ package br.ufpr.inf.cbio.hhdea.runner;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA2.HHdEA2;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA2.HHdEA2Configuration;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA2.observer.FIRLogger;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA2.observer.HHdEA2Logger;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA2.observer.MOEASFIRLogger;
 import br.ufpr.inf.cbio.hhdea.problem.ProblemFactory;
 import br.ufpr.inf.cbio.hhdea.runner.methodology.MaFMethodology;
 import br.ufpr.inf.cbio.hhdea.runner.methodology.Methodology;
 import br.ufpr.inf.cbio.hhdea.util.output.Utils;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -129,14 +132,24 @@ public class HHdEA2Runner {
                     + algorithmName + "/"
                     + problemName + "/";
 
-            FIRLogger firl = new FIRLogger(outputfolder, "fir." + id);
-            hhdea2.addObserver(firl);
+            // create loggers
+            List<HHdEA2Logger> loggers = new ArrayList<>();
+            loggers.add(new FIRLogger(outputfolder, "fir." + id));
+            loggers.add(new MOEASFIRLogger(outputfolder, "moeasfir." + id));
+
+            // append loggers to algorithm
+            for (HHdEA2Logger logger : loggers) {
+                hhdea2.addObserver(logger);
+            }
 
             AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(hhdea2)
                     .execute();
 
-            firl.close();
-
+            // close loggers (write to file)
+            for (HHdEA2Logger logger : loggers) {
+                logger.close();
+            }
+            
             long computingTime = algorithmRunner.getComputingTime();
             JMetalLogger.logger.log(Level.INFO, "Total execution time: {0}ms", computingTime);
 
