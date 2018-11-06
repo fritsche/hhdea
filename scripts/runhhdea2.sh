@@ -4,6 +4,10 @@ set -e
 
 source ./scripts/seeds.sh
 
+cd HHdEA
+make
+cd -
+
 jar=HHdEA-1.0-SNAPSHOT-jar-with-dependencies.jar
 main=br.ufpr.inf.cbio.hhdea.runner.HHdEA2Runner
 ms=(5 10 15)
