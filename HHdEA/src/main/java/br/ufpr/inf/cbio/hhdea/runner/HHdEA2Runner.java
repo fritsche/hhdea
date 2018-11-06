@@ -79,6 +79,8 @@ public class HHdEA2Runner {
                     .desc("set the problem instance: MaF[1-15], default MaF01").build());
             options.addOption(Option.builder("m").longOpt("objectives").hasArg().argName("objectives")
                     .desc("set the number of objectives (default value is 5).").build());
+            options.addOption(Option.builder("P").longOpt("output-path").hasArg().argName("path")
+                    .desc("directory path for output (if no path is given experiment/ will be used.)").build());
 
             // parse command line
             cmd = parser.parse(options, args);
@@ -98,6 +100,9 @@ public class HHdEA2Runner {
 
             if ((aux = cmd.getOptionValue("p")) != null) {
                 problemName = aux;
+            }
+            if ((aux = cmd.getOptionValue("P")) != null) {
+                experimentBaseDirectory = aux;
             }
             if ((aux = cmd.getOptionValue("m")) != null) {
                 m = Integer.parseInt(aux);
