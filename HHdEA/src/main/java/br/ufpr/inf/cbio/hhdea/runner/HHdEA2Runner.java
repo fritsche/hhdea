@@ -16,7 +16,9 @@
  */
 package br.ufpr.inf.cbio.hhdea.runner;
 
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA2.HHdEA2;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA2.HHdEA2Configuration;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA2.observer.FIRLogger;
 import br.ufpr.inf.cbio.hhdea.problem.ProblemFactory;
 import br.ufpr.inf.cbio.hhdea.runner.methodology.MaFMethodology;
 import br.ufpr.inf.cbio.hhdea.runner.methodology.Methodology;
@@ -117,16 +119,28 @@ public class HHdEA2Runner {
             JMetalRandom.getInstance().setSeed(seed);
             JMetalLogger.logger.log(Level.CONFIG, "Seed: {0}", seed);
 
-            Algorithm<List<DoubleSolution>> algorithm = new HHdEA2Configuration(algorithmName).configure(popSize, maxFitnessevaluations, problem);
-            JMetalLogger.logger.log(Level.CONFIG, "Algorithm: {0}", algorithm.getName());
+            HHdEA2 hhdea2 = new HHdEA2Configuration(algorithmName).configure(popSize, maxFitnessevaluations, problem);
+            JMetalLogger.logger.log(Level.CONFIG, "Algorithm: {0}", hhdea2.getName());
 
-            AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
+            String outputfolder = experimentBaseDirectory + "/"
+                    + methodologyName + "/"
+                    + m
+                    + "/output/"
+                    + algorithmName + "/"
+                    + problemName + "/";
+
+            FIRLogger firl = new FIRLogger(outputfolder, "fir." + id);
+            hhdea2.addObserver(firl);
+
+            AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(hhdea2)
                     .execute();
+
+            firl.close();
 
             long computingTime = algorithmRunner.getComputingTime();
             JMetalLogger.logger.log(Level.INFO, "Total execution time: {0}ms", computingTime);
 
-            List population = SolutionListUtils.getNondominatedSolutions(algorithm.getResult());
+            List population = SolutionListUtils.getNondominatedSolutions(hhdea2.getResult());
 
             int maxPopSize = 240; // MaFMethodology
 
@@ -135,19 +149,19 @@ public class HHdEA2Runner {
                 population = MOEADUtils.getSubsetOfEvenlyDistributedSolutions(population, maxPopSize);
             }
 
-            String folder = experimentBaseDirectory + "/"
+            String datafolder = experimentBaseDirectory + "/"
                     + methodologyName + "/"
                     + m
                     + "/data/"
                     + algorithmName + "/"
                     + problemName + "/";
 
-            Utils outputUtils = new Utils(folder);
+            Utils outputUtils = new Utils(datafolder);
             outputUtils.prepareOutputDirectory();
 
             new SolutionListOutput(population).setSeparator("\t")
-                    .setVarFileOutputContext(new DefaultFileOutputContext(folder + "VAR" + id + ".tsv"))
-                    .setFunFileOutputContext(new DefaultFileOutputContext(folder + "FUN" + id + ".tsv"))
+                    .setVarFileOutputContext(new DefaultFileOutputContext(datafolder + "VAR" + id + ".tsv"))
+                    .setFunFileOutputContext(new DefaultFileOutputContext(datafolder + "FUN" + id + ".tsv"))
                     .print();
 
         } catch (ParseException ex) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Gian Fritsche <gmfritsche at inf.ufpr.br>
+ * Copyright (C) 2018 Gian Fritsche <gmfritsche@inf.ufpr.br>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,19 +16,95 @@
  */
 package br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA2;
 
-import br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA.HHdEABuilder;
-import br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA2.HHdEA2;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.CooperativeAlgorithm;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.SelectionFunction;
+import java.util.ArrayList;
+import java.util.List;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
+import org.uma.jmetal.util.AlgorithmBuilder;
+import br.ufpr.inf.cbio.hhdea.metrics.fir.FitnessImprovementRateCalculator;
 
 /**
  *
  * @author Gian Fritsche <gmfritsche at inf.ufpr.br>
+ * @param <S>
  */
-public class HHdEA2Builder extends HHdEABuilder<Solution<?>> {
+public class HHdEA2Builder<S extends Solution<?>> implements AlgorithmBuilder<HHdEA2<S>> {
+
+    protected List<CooperativeAlgorithm> algorithms;
+    protected int populationSize;
+    protected int maxEvaluations;
+    protected final Problem problem;
+    protected String name;
+    protected SelectionFunction<CooperativeAlgorithm> selection;
+    protected FitnessImprovementRateCalculator fir;
 
     public HHdEA2Builder(Problem problem) {
-        super(problem);
+        this.problem = problem;
+        name = "HHdEA2"; // default name
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public HHdEA2Builder setName(String name) {
+        this.name = name;
+        return this;
+    }
+
+    public List<CooperativeAlgorithm> getAlgorithms() {
+        return algorithms;
+    }
+
+    public HHdEA2Builder setAlgorithms(List<CooperativeAlgorithm> algorithms) {
+        this.algorithms = algorithms;
+        return this;
+    }
+
+    public HHdEA2Builder addAlgorithm(CooperativeAlgorithm algorithm) {
+        if (algorithms == null) {
+            algorithms = new ArrayList<>();
+        }
+        algorithms.add(algorithm);
+        return this;
+    }
+
+    public int getPopulationSize() {
+        return populationSize;
+    }
+
+    public HHdEA2Builder setPopulationSize(int populationSize) {
+        this.populationSize = populationSize;
+        return this;
+    }
+
+    public int getMaxEvaluations() {
+        return maxEvaluations;
+    }
+
+    public HHdEA2Builder setMaxEvaluations(int maxEvaluations) {
+        this.maxEvaluations = maxEvaluations;
+        return this;
+    }
+
+    public SelectionFunction<CooperativeAlgorithm> getSelection() {
+        return selection;
+    }
+
+    public HHdEA2Builder setSelection(SelectionFunction<CooperativeAlgorithm> selection) {
+        this.selection = selection;
+        return this;
+    }
+
+    public FitnessImprovementRateCalculator getFir() {
+        return fir;
+    }
+
+    public HHdEA2Builder setFir(FitnessImprovementRateCalculator fir) {
+        this.fir = fir;
+        return this;
     }
 
     @Override
