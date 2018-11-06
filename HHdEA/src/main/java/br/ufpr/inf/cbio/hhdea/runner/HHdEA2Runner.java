@@ -21,6 +21,7 @@ import br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA2.HHdEA2Configuration;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA2.observer.FIRLogger;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA2.observer.HHdEA2Logger;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA2.observer.MOEASFIRLogger;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA2.observer.SelectedMOEALogger;
 import br.ufpr.inf.cbio.hhdea.problem.ProblemFactory;
 import br.ufpr.inf.cbio.hhdea.runner.methodology.MaFMethodology;
 import br.ufpr.inf.cbio.hhdea.runner.methodology.Methodology;
@@ -134,6 +135,7 @@ public class HHdEA2Runner {
             List<HHdEA2Logger> loggers = new ArrayList<>();
             loggers.add(new FIRLogger(outputfolder, "fir." + id));
             loggers.add(new MOEASFIRLogger(outputfolder, "moeasfir." + id));
+            loggers.add(new SelectedMOEALogger(outputfolder, "selected." + id));
 
             // append loggers to algorithm
             for (HHdEA2Logger logger : loggers) {
@@ -147,7 +149,7 @@ public class HHdEA2Runner {
             for (HHdEA2Logger logger : loggers) {
                 logger.close();
             }
-            
+
             long computingTime = algorithmRunner.getComputingTime();
             JMetalLogger.logger.log(Level.INFO, "Total execution time: {0}ms", computingTime);
 
