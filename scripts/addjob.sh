@@ -1,8 +1,10 @@
 #!/bin/bash
-## supress sbatch log
-#SBATCH --output=/dev/null
+#SBATCH --output=/mnt/NAS/gian/logs/slurm-%j.out 
 
-## excluide machine from process queue (values: [hydra,gemini,loki,libra])
-#SBATCH --exclude=gemini
+## Excluir máquina [hydra,gemini,loki,libra]
+##SBATCH --exclude=gemini,loki,libra
 
+echo "$1"
 eval $1
+rm -f *.log*
+

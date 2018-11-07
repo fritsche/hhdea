@@ -9,7 +9,8 @@ cd HHdEA
 make
 cd -
 
-jar=HHdEA-1.0-SNAPSHOT-jar-with-dependencies.jar
+dir=$(pwd)
+jar=$dir/HHdEA/target/HHdEA-1.0-SNAPSHOT-jar-with-dependencies.jar
 main=br.ufpr.inf.cbio.hhdea.runner.HHdEA2Runner
 ms=(5 10 15)
 problems=(MaF01 MaF02 MaF03 MaF04 MaF05 MaF06 MaF07 MaF08 MaF09 MaF10 MaF11 MaF12 MaF13 MaF14 MaF15)
@@ -17,11 +18,11 @@ runs=20
 replace=false
 methodology=MaFMethodology
 algorithms=(HHdEA2)
-dir=$(pwd)
+experiment=hhdea2
 
 set_seeds
 
-execute="sbatch -J $name.run scripts/addjob.sh" # for running on process queue
+execute="sbatch -J $experiment.run $dir/scripts/addjob.sh" # for running on process queue
 # execute=eval # for running locally
 
 seed_index=0
@@ -50,5 +51,5 @@ for m in "${ms[@]}"; do
 done
 
 echo "executing algorithms"
-wait_queue
+wait_queue $experiment
 
