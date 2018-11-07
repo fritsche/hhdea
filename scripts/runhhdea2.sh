@@ -39,7 +39,7 @@ for m in "${ms[@]}"; do
 				mkdir -p $output
 				if [ ! -s $file ] || [ "$replace" = true ]; then
 					javacommand="java -Duser.language=en -cp $jar -Xmx1g $main"
-					params="-P $dir/experiment/$methodology -m $m -p $problem -s $seed -id $id"
+					params="-P $dir/experiment/ -m $m -p $problem -s $seed -id $id"
 					cd /tmp
 					$execute "$javacommand $params > $output/$id.out" 1> /dev/null
 					cd - > /dev/null
