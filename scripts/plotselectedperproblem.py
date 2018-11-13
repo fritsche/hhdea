@@ -26,7 +26,7 @@ for m in [5, 10, 15]:
 		title=p+"("+str(m)+")"
 		plt.title(title)
 		# plt.show()
-		plt.savefig("img/selected_"+title+".eps")
+		plt.savefig("img/selectedperproblem_"+title+".eps")
 		plt.clf()
 		print(title)
 
