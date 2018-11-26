@@ -27,6 +27,7 @@ import java.util.List;
 public abstract class SelectionFunction<T> {
 
     protected List<T> lowlevelheuristics;
+    protected int s; // the last index sent low level heuristic
 
     public SelectionFunction() {
         lowlevelheuristics = new ArrayList<>();
@@ -48,4 +49,20 @@ public abstract class SelectionFunction<T> {
      * @param reward
      */
     public abstract void creditAssignment(double reward);
+
+    public void creditAssignment(List<Double> reward) {
+        for (int i = 0; i < reward.size(); i++) {
+            this.s = i;
+            creditAssignment(reward.get(i));
+        }
+    }
+
+    public int getS() {
+        return s;
+    }
+
+    public void setS(int s) {
+        this.s = s;
+    }
+    
 }

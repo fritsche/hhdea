@@ -36,7 +36,6 @@ public class FRRMAB<T> extends SelectionFunction<T> {
     protected int[] usage; // count of usage over sliding window of each llh
     protected int[] rank;
     protected int unplayed; // amount of unplayed heuristics
-    protected int s; // the last index sent low level heuristic
 
     public FRRMAB() {
         this.c = 1.0;
@@ -80,7 +79,7 @@ public class FRRMAB<T> extends SelectionFunction<T> {
     @Override
     public T getNext() {
         if (unplayed > 0) { // if has unplayed heuristics
-            s = getRandomHeuristic(count, unplayed - 1, 0); // get a random heuristic with count equals to zero (0)
+            setS(getRandomHeuristic(count, unplayed - 1, 0)); // get a random heuristic with count equals to zero (0)
             //System.out.println("s: "+s+" unplayed: "+unplayed);
             unplayed--;
         } else { // get best heuristic
@@ -92,7 +91,7 @@ public class FRRMAB<T> extends SelectionFunction<T> {
                 //System.out.println("UCB: "+UCB[i]+" max: "+max);
                 if (UCB[i] > max) { 	// if ith is better 
                     max = UCB[i]; 	// update max
-                    s = i; 			// select ith
+                    setS(i); 			// select ith
                     countties = 0;	// there is no ties
                     t++;			// update reference value
                     ties[i] = t;	// each value equals t is a tie
@@ -102,13 +101,13 @@ public class FRRMAB<T> extends SelectionFunction<T> {
                 }
             }
             if (countties > 0) { // it there is a tie
-                s = getRandomHeuristic(ties, countties, t); // get a random heuristic with tie value equals t
+                setS(getRandomHeuristic(ties, countties, t)); // get a random heuristic with tie value equals t
                 //System.out.println("s: "+s+" ties: "+Arrays.toString(ties)+" countties: "+countties+" t: "+t);
             }
         }
 
         count[s]++; // increment count of selected heuristic
-        return lowlevelheuristics.get(s); // return selected heuristic
+        return lowlevelheuristics.get(getS()); // return selected heuristic
     }
 
     // evaluate the last given low-level heuristic
@@ -117,7 +116,7 @@ public class FRRMAB<T> extends SelectionFunction<T> {
 
         refresment();
 
-        slidingWindow.add(s, Math.max(0, reward)); // Update the sliding window
+        slidingWindow.add(getS(), Math.max(0, reward)); // Update the sliding window
 
         updateRewards();
 
@@ -217,5 +216,4 @@ public class FRRMAB<T> extends SelectionFunction<T> {
             // //System.out.println("reward["+i+"]: "+reward[i]);
         }
     }
-
 }
