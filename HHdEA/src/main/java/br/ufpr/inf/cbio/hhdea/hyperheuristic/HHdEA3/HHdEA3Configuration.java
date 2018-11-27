@@ -27,6 +27,7 @@ import br.ufpr.inf.cbio.hhdea.algorithm.SPEA2SDE.COSPEA2SDEConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.ThetaDEA.COThetaDEAConfiguration;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.CooperativeAlgorithm;
 import br.ufpr.inf.cbio.hhdea.config.AlgorithmConfiguration;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.ArgMaxSelection;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.CastroRoulette;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.SelectionFunction;
 import br.ufpr.inf.cbio.hhdea.metrics.fir.R2TchebycheffFIR;
@@ -108,7 +109,7 @@ public class HHdEA3Configuration<S extends Solution> implements AlgorithmConfigu
 
     @Override
     public void setup() {
-        this.selection = new CastroRoulette<>();
+        this.selection = new ArgMaxSelection<>();
         this.fir = new R2TchebycheffFIR(problem, popSize);
     }
 

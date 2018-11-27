@@ -76,12 +76,9 @@ public class HHdEA3<S extends Solution<?>> extends HHdEA<S> {
         for (CooperativeAlgorithm<S> alg : getAlgorithms()) {
             alg.init(populationSize);
             setEvaluations(getEvaluations() + alg.getPopulation().size());
+            selection.add(alg);
         }
-
-        CooperativeAlgorithm<S> selected = getAlgorithms().get(
-                JMetalRandom.getInstance().nextInt(0, getAlgorithms().size() - 1));
-        // set selected to be logged
-        setSelected(selected);
+        selection.init();
 
         while (getEvaluations() < getMaxEvaluations()) {
 
@@ -91,6 +88,11 @@ public class HHdEA3<S extends Solution<?>> extends HHdEA<S> {
             // copy the population of every MOEA
             Map<CooperativeAlgorithm<S>, List<S>> populations = copyPopulations();
 
+            // heuristic selection
+            CooperativeAlgorithm<S> selected = selection.getNext();
+            // set selected to be logged
+            setSelected(selected);
+            
             // apply selected heuristic
             selected.doIteration();
             // copy the solutions generatedy by selected
@@ -112,29 +114,17 @@ public class HHdEA3<S extends Solution<?>> extends HHdEA<S> {
                 }
             }
 
-            // set reward
             // compute the improvement of all MOEAs (old vs new pop)
             computeImprovementOfAllMOEAs(populations);
-
+            
+            // set reward
+            selection.creditAssignment(moeasfir);
+            
             // move acceptance
             // ALL MOVES
             // notify observers
             setChanged();
             notifyObservers();
-            
-            // heuristic selection
-            double max = moeasfir.get(0);
-            double reward;
-            selected = getAlgorithms().get(0);
-            for (int i=1; i<getAlgorithms().size(); i++){
-                reward = moeasfir.get(i);
-                if (max < reward) {
-                    max = reward;
-                    selected = getAlgorithms().get(i);
-                }
-            }
-            // set selected to be logged
-            setSelected(selected);
 
         }
 

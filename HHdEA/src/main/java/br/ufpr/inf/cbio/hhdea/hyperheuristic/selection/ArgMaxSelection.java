@@ -28,26 +28,26 @@ public class ArgMaxSelection<T> extends SelectionFunction<T> {
 
     private final JMetalRandom random;
     boolean first;
-    private ArrayList<Double> credits;
+    private double[] credits;
 
-    public ArgMaxSelection(JMetalRandom random) {
-        this.random = random;
+    public ArgMaxSelection() {
+        this.random = JMetalRandom.getInstance();
     }
 
     @Override
     public void init() {
         first = true;
-        credits = new ArrayList<>(lowlevelheuristics.size());
+        credits = new double[lowlevelheuristics.size()];
     }
 
     @Override
     public T getNext() {
         if (!first) {
-            double max = credits.get(0);
+            double max = credits[0];
             s = 0;
-            for (int i = 1; i < credits.size(); i++) {
-                if (max < credits.get(i)) {
-                    max = credits.get(i);
+            for (int i = 1; i < credits.length; i++) {
+                if (max < credits[i]) {
+                    max = credits[i];
                     s = i;
                 }
             }
@@ -60,7 +60,7 @@ public class ArgMaxSelection<T> extends SelectionFunction<T> {
 
     @Override
     public void creditAssignment(double reward) {
-        credits.set(s, reward);
+        credits[s] = reward;
     }
 
 }
