@@ -2,7 +2,7 @@
 #SBATCH --output=/mnt/NAS/gian/logs/slurm-%j.out
 
 ## Excluir máquina [hydra,gemini,loki,libra]
-##SBATCH --exclude=loki
+#SBATCH --exclude=
 
 echo "$1"
 eval $1
