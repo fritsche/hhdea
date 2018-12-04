@@ -36,9 +36,10 @@ function execute() {
           output="$dir/experiment/$methodology/$m/output/$algorithm/$problem/"
       	  mkdir -p $output
       	  if [ ! -s $file ] || [ "$replace" = true ]; then
-              javacommand="java -Duser.language=en -cp $jar -Xmx1g $main $dir/experiment $methodology $algorithm $problem $m $id $seed"
+              javacommand="java -Duser.language=en -cp $jar -Xmx1g $main"
+              params="-P $dir/experiment -M $methodology -a $algorithm -p $problem -m $m -id $id -s $seed"
               cd /tmp
-	      $execute "$javacommand > $output/$id.out" 1> /dev/null
+	            $execute "$javacommand $params > $output/$id.out" 1> /dev/null
               cd - > /dev/null
     	  fi
         done

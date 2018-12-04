@@ -2,13 +2,11 @@
 
 set -e
 
-source ./experiment/scripts/seeds.sh
-source ./experiment/scripts/execute.sh
-source ./experiment/scripts/wait_queue.sh
-source ./experiment/scripts/indicators.sh
-source ./experiment/scripts/hypervolume.sh
-source ./experiment/scripts/analysis.sh
-source ./experiment/scripts/set_nadir.sh
+source ./scripts/seeds.sh
+source ./scripts/execute.sh
+source ./scripts/wait_queue.sh
+source ./scripts/indicators.sh
+source ./scripts/analysis.sh
 
 methodology=MaFMethodology
 experiment=moeas # WARNING: max 8 chars (to grep in wait_queue)
@@ -29,7 +27,7 @@ fi
 
 method=remote # remote or local
 jar=$(pwd)"/HHdEA/target/HHdEA-1.0-SNAPSHOT-jar-with-dependencies.jar"
-main=br.ufpr.inf.cbio.hhdea.runner.MainRunner
+main=br.ufpr.inf.cbio.hhdea.runner.Main
 
 ms=(5 10 15)
 problems=(MaF01 MaF02 MaF03 MaF04 MaF05 MaF06 MaF07 MaF08 MaF09 MaF10 MaF11 MaF12 MaF13 MaF14 MaF15)
