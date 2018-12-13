@@ -37,23 +37,23 @@ execute ms problems algorithms "$methodology" "$runs" $replace $method $jar $mai
 echo "executing algorithms"
 wait_queue $experiment
 
-# indicators=(HV)
-# run_indicators ms problems algorithms "$methodology" indicators $method $jar $runs TRUE $replace $experiment
+indicators=(HV)
+run_indicators ms problems algorithms "$methodology" indicators $method $jar $runs TRUE $replace $experiment
  
-# indicators=(IGD)
-# run_indicators ms problems algorithms "$methodology" indicators $method $jar $runs FALSE $replace $experiment
+indicators=(IGD)
+run_indicators ms problems algorithms "$methodology" indicators $method $jar $runs FALSE $replace $experiment
  
-# echo "executing indicators"
-# wait_queue $experiment
+echo "executing indicators"
+wait_queue $experiment
 
-# echo "join results"
+echo "join results"
 
-# indicators=(HV IGD)
-# join ms problems algorithms "$methodology" "$runs" indicators
+indicators=(HV IGD)
+join ms problems algorithms "$methodology" "$runs" indicators
 
-# confidences=(0.95 0.99)
-# for confidence in "${confidences[@]}"; do
-# 	experiment=$experiment$confidence
-# 	echo "executing analysis"
-# 	analysis ms problems algorithms "$experiment" "$methodology" indicators $confidence
-# done
+confidences=(0.95 0.99)
+for confidence in "${confidences[@]}"; do
+	experiment=$experiment$confidence
+	echo "executing analysis"
+	analysis ms problems algorithms "$experiment" "$methodology" indicators $confidence
+done
