@@ -43,7 +43,7 @@ public class Main {
             options.addOption(Option.builder("P").longOpt("output-path").hasArg().argName("path")
                     .desc("directory path for output (if no path is given experiment/ will be used.)").build());
             options.addOption(Option.builder("M").longOpt("methodology").hasArg().argName("methodology")
-                    .desc("set the methodology to be used: NSGAIII (default), MaF, Arion.").build());
+                    .desc("set the methodology to be used: NSGAIIIMethodology (default), MaFMethodology, ArionMethodology.").build());
             options.addOption(Option.builder("id").hasArg().argName("id")
                     .desc("set the independent run id, default 0.").build());
             options.addOption(Option.builder("s").longOpt("seed").hasArg().argName("seed")
@@ -104,7 +104,7 @@ public class Main {
             runner.setId(Integer.parseInt(idStr));
         }
         if ((methodologyName = cmd.getOptionValue("M")) != null) {
-            runner.setMethodologyName(methodologyName + "Methodology");
+            runner.setMethodologyName(methodologyName);
         }
         if ((seedStr = cmd.getOptionValue("s")) != null) {
             runner.setSeed(Long.parseLong(seedStr));
