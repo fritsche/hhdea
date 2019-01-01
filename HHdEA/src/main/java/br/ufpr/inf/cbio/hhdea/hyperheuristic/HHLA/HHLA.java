@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Gian Fritsche <gmfritsche at inf.ufpr.br>
+ * Copyright (C) 2019 Gian Fritsche <gmfritsche at inf.ufpr.br>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,27 +14,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA;
+package br.ufpr.inf.cbio.hhdea.hyperheuristic.HHLA;
 
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.CooperativeAlgorithm;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.SelectionFunction;
+import br.ufpr.inf.cbio.hhdea.metrics.fir.FitnessImprovementRateCalculator;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
 import java.util.logging.Level;
+import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.JMetalLogger;
 import org.uma.jmetal.util.SolutionListUtils;
-import br.ufpr.inf.cbio.hhdea.metrics.fir.FitnessImprovementRateCalculator;
-import java.util.Observable;
-import org.uma.jmetal.algorithm.Algorithm;
 
 /**
  *
- * @author Gian Fritsche <gmfritsche at inf.ufpr.br>
+ * Li, W., Ozcan, E., & John, R. (2017). A Learning Automata based
+ * Multiobjective Hyper-heuristic. IEEE Transactions on Evolutionary
+ * Computation, (c), 1–15. https://doi.org/10.1109/TEVC.2017.2785346
+ *
+ * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
  * @param <S>
  */
-public class HHdEA<S extends Solution<?>> extends Observable implements Algorithm<List<S>> {
+public class HHLA<S extends Solution<?>> extends Observable implements Algorithm<List<S>> {
 
     private int maxEvaluations;
     private Problem<S> problem;
@@ -44,12 +48,14 @@ public class HHdEA<S extends Solution<?>> extends Observable implements Algorith
     protected final FitnessImprovementRateCalculator calculator;
     private int evaluations;
     private List<CooperativeAlgorithm<S>> algorithms;
-    protected double fir;
+    private double improvement;
     private CooperativeAlgorithm<S> selected;
+    private int k; // maximum number of iterations K for applying a low level MOEA
+    private List<S> popcurr;
 
-    public HHdEA(List<CooperativeAlgorithm<S>> algorithms, int populationSize, int maxEvaluations,
+    public HHLA(List<CooperativeAlgorithm<S>> algorithms, int populationSize, int maxEvaluations,
             Problem problem, String name, SelectionFunction<CooperativeAlgorithm> selection,
-            FitnessImprovementRateCalculator fir) {
+            FitnessImprovementRateCalculator fir, int k) {
 
         this.algorithms = algorithms;
         this.populationSize = populationSize;
@@ -60,68 +66,64 @@ public class HHdEA<S extends Solution<?>> extends Observable implements Algorith
         JMetalLogger.logger.log(Level.CONFIG, "Selection Function: {0}", selection.getClass().getSimpleName());
         this.calculator = fir;
         JMetalLogger.logger.log(Level.CONFIG, "Fitness Improvement Rate: {0}", fir.getClass().getSimpleName());
+        this.k = k;
     }
 
     @Override
     public void run() {
 
-        evaluations = 0;
+        // 1. [A, P, hi, Popcurr] <- Initialise(H) ;
         for (CooperativeAlgorithm alg : algorithms) {
-            alg.init(populationSize);
-            evaluations += alg.getPopulation().size();
             selection.add(alg);
         }
         selection.init();
 
+        popcurr = new ArrayList<>(populationSize);
+        evaluations = 0;
+        for (int i = 0; i < populationSize; i++) {
+            S newSolution = (S) problem.createSolution();
+            problem.evaluate(newSolution);
+            evaluations++;
+            popcurr.add(newSolution);
+        }
+        List<S> popnext = null;
+        selected = selection.getNext();
+        selected.init(popcurr);
+
+        // 2. while (termination criteria not satisfied) do
         while (evaluations < maxEvaluations) {
 
-            // heuristic selection
-            selected = selection.getNext();
-
-            // apply selected heuristic
-            List<S> parents = new ArrayList<>();
-            for (S s : selected.getPopulation()) {
-                parents.add((S) s.copy());
+            // 3. Popnext <- ApplyMetaheuristic(hi, Popcurr, g);    
+            int g = Math.min((int) Math.ceil((maxEvaluations - evaluations) / (double) populationSize), k);
+            if (g == 0) {
+                break;
             }
-            selected.doIteration();
-
-            // copy the solutions generatedy by selected
-            List<S> offspring = new ArrayList<>();
-            for (S s : selected.getOffspring()) {
-                offspring.add((S) s.copy());
-                // count evaluations used by selected
-                evaluations++;
+            for (int i = 0; i < g; i++) {
+                selected.doIteration();
+                popnext = selected.getPopulation();
+                evaluations += popnext.size();
             }
 
-            // extract metrics
-            setFir(calculator.computeFitnessImprovementRate(parents, offspring));
+            // 5. if (switch()) then
+            if (hasimprovement(popcurr, popnext)) {
+                // 6. LearningAutomataUpdateScheme(P);
+                selection.creditAssignment(getImprovement());
+                // 7. hi <- SelectMetaheuristic(P, A);
+                selected = selection.getNext();
+                selected.init(popcurr);
+            }
 
-            // compute reward
-            selection.creditAssignment(getFir());
+            // 4. Popcurr <- Replace(Popcurr, Popnext);
+            for (S s : popnext) {
+                popcurr.add((S) s.copy());
 
-            // move acceptance
-            // ALL MOVES
-            // cooperation phase
-            for (CooperativeAlgorithm<S> neighbor : algorithms) {
-                if (neighbor != selected) {
-                    List<S> migrants = new ArrayList<>();
-                    for (S s : offspring) {
-                        migrants.add((S) s.copy());
-                    }
-                    neighbor.receive(migrants);
-                }
             }
         }
-
     }
 
     @Override
     public List<S> getResult() {
-        List<S> union = new ArrayList<>();
-        for (CooperativeAlgorithm alg : algorithms) {
-            union.addAll(alg.getPopulation());
-        }
-        return SolutionListUtils.getNondominatedSolutions(union);
+        return SolutionListUtils.getNondominatedSolutions(popcurr);
     }
 
     @Override
@@ -131,15 +133,19 @@ public class HHdEA<S extends Solution<?>> extends Observable implements Algorith
 
     @Override
     public String getDescription() {
-        return "Hyper-heuristics for distributed Evolutionary Algorithms";
+        return "Learning Automata based Hyper-heuristic";
     }
 
-    public double getFir() {
-        return fir;
+    private boolean hasimprovement(List<S> popcurr, List<S> popnext) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void setFir(double fir) {
-        this.fir = fir;
+    public double getImprovement() {
+        return improvement;
+    }
+
+    public void setImprovement(double improvement) {
+        this.improvement = improvement;
     }
 
     public int getMaxEvaluations() {
@@ -181,4 +187,21 @@ public class HHdEA<S extends Solution<?>> extends Observable implements Algorith
     public void setSelected(CooperativeAlgorithm<S> selected) {
         this.selected = selected;
     }
+
+    public int getK() {
+        return k;
+    }
+
+    public void setK(int k) {
+        this.k = k;
+    }
+
+    public List<S> getPopcurr() {
+        return popcurr;
+    }
+
+    public void setPopcurr(List<S> popcurr) {
+        this.popcurr = popcurr;
+    }
+
 }
