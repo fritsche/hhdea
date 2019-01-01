@@ -109,6 +109,13 @@ public class HHLA<S extends Solution<?>> extends Observable implements Algorithm
             // 5. if (switch()) then
             if (hasImprovement(popcurr, popnext)) {
                 // 6. LearningAutomataUpdateScheme(P);
+
+                /**
+                 * Li, W., Ozcan, E., & John, R. (2017) uses the difference of
+                 * hyper-volume. Here, it is used the improvement computed by a
+                 * measure calculator (usually the R2(tch) fitness improvement
+                 * rate).
+                 */
                 selection.creditAssignment(getImprovement());
                 // 7. hi <- SelectMetaheuristic(P, A);
                 selected = selection.getNext();
