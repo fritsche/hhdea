@@ -52,10 +52,11 @@ public class HHLA<S extends Solution<?>> extends Observable implements Algorithm
     private CooperativeAlgorithm<S> selected;
     private int k; // maximum number of iterations K for applying a low level MOEA
     private List<S> popcurr;
+    private double deltaV; // threshold value for improvement
 
     public HHLA(List<CooperativeAlgorithm<S>> algorithms, int populationSize, int maxEvaluations,
             Problem problem, String name, SelectionFunction<CooperativeAlgorithm> selection,
-            FitnessImprovementRateCalculator fir, int k) {
+            FitnessImprovementRateCalculator fir, int k, double deltaV) {
 
         this.algorithms = algorithms;
         this.populationSize = populationSize;
@@ -67,6 +68,7 @@ public class HHLA<S extends Solution<?>> extends Observable implements Algorithm
         this.calculator = fir;
         JMetalLogger.logger.log(Level.CONFIG, "Fitness Improvement Rate: {0}", fir.getClass().getSimpleName());
         this.k = k;
+        this.deltaV = deltaV;
     }
 
     @Override
@@ -105,7 +107,7 @@ public class HHLA<S extends Solution<?>> extends Observable implements Algorithm
             }
 
             // 5. if (switch()) then
-            if (hasimprovement(popcurr, popnext)) {
+            if (hasImprovement(popcurr, popnext)) {
                 // 6. LearningAutomataUpdateScheme(P);
                 selection.creditAssignment(getImprovement());
                 // 7. hi <- SelectMetaheuristic(P, A);
@@ -136,8 +138,16 @@ public class HHLA<S extends Solution<?>> extends Observable implements Algorithm
         return "Learning Automata based Hyper-heuristic";
     }
 
-    private boolean hasimprovement(List<S> popcurr, List<S> popnext) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    /**
+     * Section III.D. Switching to Another Meta-heuristic
+     *
+     * @param popcurr
+     * @param popnext
+     * @return
+     */
+    private boolean hasImprovement(List<S> popcurr, List<S> popnext) {
+        setImprovement(calculator.computeFitnessImprovementRate(popcurr, popnext));
+        return (getImprovement() > deltaV);
     }
 
     public double getImprovement() {
@@ -202,6 +212,14 @@ public class HHLA<S extends Solution<?>> extends Observable implements Algorithm
 
     public void setPopcurr(List<S> popcurr) {
         this.popcurr = popcurr;
+    }
+
+    public double getDeltaV() {
+        return deltaV;
+    }
+
+    public void setDeltaV(double deltaV) {
+        this.deltaV = deltaV;
     }
 
 }
