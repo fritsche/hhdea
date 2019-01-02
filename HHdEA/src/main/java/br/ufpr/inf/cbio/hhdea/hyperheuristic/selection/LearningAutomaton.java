@@ -68,18 +68,13 @@ public class LearningAutomaton<T> extends SelectionFunction<T> {
     private final int n;
 
     /**
-     * Current iteration number
-     */
-    private int it;
-
-    /**
      * Exploration phase parameter
      */
     private final double tau;
 
     private final JMetalRandom random;
 
-    public LearningAutomaton(double m, int n, int tau) {
+    public LearningAutomaton(double m, int n, double tau) {
         random = JMetalRandom.getInstance();
         this.m = m;
         this.n = n;
@@ -97,16 +92,16 @@ public class LearningAutomaton<T> extends SelectionFunction<T> {
         }
         q = new double[r][r]; // initialized with zeros
         j = random.nextInt(0, r - 1); // set a random heuristic as "previous"
-        it = 0;
     }
 
     /**
      * Section III.C Meta-heuristic Selection Method
      *
+     * @param it
      * @return
      */
     @Override
-    public T getNext() {
+    public T getNext(int it) {
         i = j;
         if (it < tau * n) {
             s = roulette();
@@ -119,6 +114,7 @@ public class LearningAutomaton<T> extends SelectionFunction<T> {
                 s = roulette();
             }
         }
+        it++;
         return lowlevelheuristics.get(s);
     }
 
@@ -140,7 +136,7 @@ public class LearningAutomaton<T> extends SelectionFunction<T> {
         for (l = 0; l < r && rand > sum; l++) {
             sum += p[i][l];
         }
-        j = l;
+        j = l-1;
         return j;
     }
 

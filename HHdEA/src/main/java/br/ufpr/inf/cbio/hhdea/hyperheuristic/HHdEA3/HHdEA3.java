@@ -89,7 +89,7 @@ public class HHdEA3<S extends Solution<?>> extends HHdEA<S> {
             Map<CooperativeAlgorithm<S>, List<S>> populations = copyPopulations();
 
             // heuristic selection
-            CooperativeAlgorithm<S> selected = selection.getNext();
+            CooperativeAlgorithm<S> selected = selection.getNext(getEvaluations() / populationSize);
             // set selected to be logged
             setSelected(selected);
             

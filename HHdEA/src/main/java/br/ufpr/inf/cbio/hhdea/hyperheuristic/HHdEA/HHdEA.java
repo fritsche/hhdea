@@ -76,7 +76,7 @@ public class HHdEA<S extends Solution<?>> extends Observable implements Algorith
         while (evaluations < maxEvaluations) {
 
             // heuristic selection
-            selected = selection.getNext();
+            selected = selection.getNext(evaluations / populationSize);
 
             // apply selected heuristic
             List<S> parents = new ArrayList<>();

@@ -1,5 +1,6 @@
 package br.ufpr.inf.cbio.hhdea.runner;
 
+import br.ufpr.inf.cbio.hhdea.runner.methodology.MaFMethodology;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.cli.CommandLine;
@@ -49,7 +50,7 @@ public class Main {
             options.addOption(Option.builder("s").longOpt("seed").hasArg().argName("seed")
                     .desc("set the seed for JMetalRandom, default System.currentTimeMillis()").build());
             options.addOption(Option.builder("a").longOpt("algorithm").hasArg().argName("algorithm")
-                    .desc("set the algorithm to be executed: NSGAII, MOEAD, MOEADD, ThetaDEA, NSGAIII, SPEA2, SPEA2SDE, HypE, MOMBI2, Traditional, HHdEA (default), <other>."
+                    .desc("set the algorithm to be executed: NSGAII, MOEAD, MOEADD, ThetaDEA, NSGAIII, SPEA2, SPEA2SDE, HypE, MOMBI2, HHLA, HHdEA, HHdEA2, HHdEA3 (default), <other>."
                             + "If <other> name is given, HHdEA will be executed and the algorithm output name will be <other>.").build());
             options.addOption(Option.builder("p").longOpt("problem").hasArg().argName("problem")
                     .desc("set the problem instance: DTLZ[1-7], WFG[1-9], MinusDTLZ[1-7], MinusWFG[1-9], MaF[1-15]; default is WFG1."
@@ -83,33 +84,47 @@ public class Main {
     }
 
     public static Runner getRunner(CommandLine cmd) {
-        String algorithmName, problemName, objectives, idStr, seedStr, experimentBaseDirectory, methodologyName;
-        String output[];
+        String problemName = "MaF02", aux;
+        int m = 5;
+        long seed = System.currentTimeMillis();
+        String experimentBaseDirectory = "experiment/";
+        String methodologyName = MaFMethodology.class.getSimpleName();
+        int id = 0;
+        String algorithmName = "HHdEA3";
 
         Runner runner = new Runner();
 
-        if ((algorithmName = cmd.getOptionValue("a")) != null) {
-            runner.setAlgorithmName(algorithmName);
+        if ((aux = cmd.getOptionValue("a")) != null) {
+            algorithmName = aux;
         }
-        if ((problemName = cmd.getOptionValue("p")) != null) {
-            runner.setProblemName(problemName);
+        if ((aux = cmd.getOptionValue("p")) != null) {
+            problemName = aux;
         }
-        if ((objectives = cmd.getOptionValue("m")) != null) {
-            runner.setObjectives(Integer.parseInt(objectives));
+        if ((aux = cmd.getOptionValue("P")) != null) {
+            experimentBaseDirectory = aux;
         }
-        if ((experimentBaseDirectory = cmd.getOptionValue("P")) != null) {
-            runner.setExperimentBaseDirectory(experimentBaseDirectory);
+        if ((aux = cmd.getOptionValue("M")) != null) {
+            methodologyName = aux;
         }
-        if ((idStr = cmd.getOptionValue("id")) != null) {
-            runner.setId(Integer.parseInt(idStr));
+        if ((aux = cmd.getOptionValue("m")) != null) {
+            m = Integer.parseInt(aux);
         }
-        if ((methodologyName = cmd.getOptionValue("M")) != null) {
-            runner.setMethodologyName(methodologyName);
+        if ((aux = cmd.getOptionValue("id")) != null) {
+            id = Integer.parseInt(aux);
         }
-        if ((seedStr = cmd.getOptionValue("s")) != null) {
-            runner.setSeed(Long.parseLong(seedStr));
+        if ((aux = cmd.getOptionValue("s")) != null) {
+            seed = Long.parseLong(aux);
         }
+
+        runner.setAlgorithmName(algorithmName);
+        runner.setProblemName(problemName);
+        runner.setObjectives(m);
+        runner.setExperimentBaseDirectory(experimentBaseDirectory);
+        runner.setId(id);
+        runner.setMethodologyName(methodologyName);
+        runner.setSeed(seed);
         return runner;
+
     }
 
     public static void main(String[] args) {

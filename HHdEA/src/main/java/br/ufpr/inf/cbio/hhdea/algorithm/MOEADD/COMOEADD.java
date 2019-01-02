@@ -20,6 +20,7 @@ import br.ufpr.inf.cbio.hhdea.hyperheuristic.CooperativeAlgorithm;
 import java.util.ArrayList;
 import java.util.List;
 import org.uma.jmetal.solution.Solution;
+import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 import org.uma.jmetal.util.solutionattribute.Ranking;
 import org.uma.jmetal.util.solutionattribute.impl.DominanceRanking;
 
@@ -40,8 +41,6 @@ public class COMOEADD<S extends Solution<?>> extends MOEADD<S> implements Cooper
     @Override
     public void init(int populationSize) {
         this.populationSize_ = populationSize;
-        lambda_ = new double[populationSize_][problem_.getNumberOfObjectives()];
-        initUniformWeight();
         List<S> initial = new ArrayList<>(populationSize);
         for (int i = 0; i < populationSize_; i++) {
             S newSolution = problem_.createSolution();
@@ -49,11 +48,15 @@ public class COMOEADD<S extends Solution<?>> extends MOEADD<S> implements Cooper
             evaluations_++;
             initial.add(newSolution);
         }
-        init(initial);
+        init(initial, populationSize);
     }
 
     @Override
-    public void init(List<S> initialPopulation) {
+    public void init(List<S> initialPopulation, int popSize) {
+        populationSize_ = popSize;
+        lambda_ = new double[populationSize_][problem_.getNumberOfObjectives()];
+        initUniformWeight();
+
         T_ = 20;
         delta_ = 0.9;
 
@@ -72,6 +75,12 @@ public class COMOEADD<S extends Solution<?>> extends MOEADD<S> implements Cooper
         initNeighborhood();
 
         population_.addAll(initialPopulation);
+        // fit populationSize if initialPopulation is larger
+        while (population_.size() > populationSize_) {
+            int index = JMetalRandom.getInstance().nextInt(0, population_.size() - 1);
+            population_.remove(index);
+        }
+
         for (int i = 0; i < populationSize_; i++) {
             subregionIdx_[i][i] = 1;
         }

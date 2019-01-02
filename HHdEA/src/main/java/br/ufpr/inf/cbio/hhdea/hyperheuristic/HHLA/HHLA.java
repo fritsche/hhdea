@@ -68,7 +68,9 @@ public class HHLA<S extends Solution<?>> extends Observable implements Algorithm
         this.calculator = fir;
         JMetalLogger.logger.log(Level.CONFIG, "Fitness Improvement Rate: {0}", fir.getClass().getSimpleName());
         this.k = k;
+        JMetalLogger.logger.log(Level.CONFIG, "k: {0}", k);
         this.deltaV = deltaV;
+        JMetalLogger.logger.log(Level.CONFIG, "deltaV: {0}", deltaV);
     }
 
     @Override
@@ -89,25 +91,28 @@ public class HHLA<S extends Solution<?>> extends Observable implements Algorithm
             popcurr.add(newSolution);
         }
         List<S> popnext = null;
-        selected = selection.getNext();
-        selected.init(popcurr);
+        selected = selection.getNext(evaluations / populationSize);
+        selected.init(popcurr, populationSize);
+        int g = 0;
 
         // 2. while (termination criteria not satisfied) do
         while (evaluations < maxEvaluations) {
 
             // 3. Popnext <- ApplyMetaheuristic(hi, Popcurr, g);    
-            int g = Math.min((int) Math.ceil((maxEvaluations - evaluations) / (double) populationSize), k);
-            if (g == 0) {
-                break;
-            }
-            for (int i = 0; i < g; i++) {
-                selected.doIteration();
-                popnext = selected.getPopulation();
-                evaluations += popnext.size();
-            }
+            selected.doIteration();
+            popnext = selected.getPopulation();
+            evaluations += popnext.size();
+            g++;
+
+            setImprovement(calculator.computeFitnessImprovementRate(popcurr, popnext));
+            JMetalLogger.logger.info(selected + "(" + getImprovement() + "):" + (getImprovement() > deltaV));
+
+            // 4. Popcurr <- Replace(Popcurr, Popnext);
+            popcurr = new ArrayList<>(populationSize);
+            popcurr.addAll(popnext);
 
             // 5. if (switch()) then
-            if (hasImprovement(popcurr, popnext)) {
+            if (getImprovement() < deltaV || g == k) {
                 // 6. LearningAutomataUpdateScheme(P);
 
                 /**
@@ -118,15 +123,11 @@ public class HHLA<S extends Solution<?>> extends Observable implements Algorithm
                  */
                 selection.creditAssignment(getImprovement());
                 // 7. hi <- SelectMetaheuristic(P, A);
-                selected = selection.getNext();
-                selected.init(popcurr);
+                selected = selection.getNext(evaluations / populationSize);
+                selected.init(popcurr, populationSize);
+                g = 0;
             }
 
-            // 4. Popcurr <- Replace(Popcurr, Popnext);
-            for (S s : popnext) {
-                popcurr.add((S) s.copy());
-
-            }
         }
     }
 
@@ -152,9 +153,8 @@ public class HHLA<S extends Solution<?>> extends Observable implements Algorithm
      * @param popnext
      * @return
      */
-    private boolean hasImprovement(List<S> popcurr, List<S> popnext) {
-        setImprovement(calculator.computeFitnessImprovementRate(popcurr, popnext));
-        return (getImprovement() > deltaV);
+    private computeImprovement(List<S> popcurr, List<S> popnext) {
+        return ();
     }
 
     public double getImprovement() {

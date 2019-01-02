@@ -42,7 +42,7 @@ public abstract class SelectionFunction<T> {
         lowlevelheuristics.add(t);
     }
 
-    public abstract T getNext();
+    public abstract T getNext(int it);
 
     /**
      * Assign credit to the last given low-level heuristic positive fitness

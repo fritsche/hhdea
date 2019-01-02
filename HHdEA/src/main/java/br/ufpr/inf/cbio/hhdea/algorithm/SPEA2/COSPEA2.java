@@ -57,12 +57,12 @@ public class COSPEA2<S extends Solution<?>> extends SPEA2<S> implements Cooperat
         setMaxPopulationSize(populationSize);
         List<S> initial = createInitialPopulation();
         initial = evaluatePopulation(initial);
-        init(initial);
+        init(initial, populationSize);
     }
 
     @Override
-    public void init(List<S> initialPopulation) {
-        setMaxPopulationSize(initialPopulation.size());
+    public void init(List<S> initialPopulation, int popSize) {
+        setMaxPopulationSize(popSize);
         population = initialPopulation;
         environmentalSelectionOverride = new EnvironmentalSelection<>(getMaxPopulationSize());
     }

@@ -32,9 +32,13 @@ import br.ufpr.inf.cbio.hhdea.algorithm.SPEA2SDE.SPEA2SDE;
 import br.ufpr.inf.cbio.hhdea.algorithm.SPEA2SDE.SPEA2SDEConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.ThetaDEA.ThetaDEA;
 import br.ufpr.inf.cbio.hhdea.algorithm.ThetaDEA.ThetaDEAConfiguration;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.HHLA.HHLA;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.HHLA.HHLAConfiguration;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA.HHdEA;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA2.HHdEA2;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA2.HHdEA2Configuration;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA3.HHdEA3;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA3.HHdEA3Configuration;
 import org.uma.jmetal.algorithm.multiobjective.moead.MOEAD;
 import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAII;
 import org.uma.jmetal.algorithm.multiobjective.spea2.SPEA2;
@@ -69,6 +73,10 @@ public class AlgorithmConfigurationFactory {
             return new HHdEAConfiguration(algorithm);
         } else if (algorithm.equals(HHdEA2.class.getSimpleName())) {
             return new HHdEA2Configuration(algorithm);
+        } else if (algorithm.equals(HHdEA3.class.getSimpleName())) {
+            return new HHdEA3Configuration(algorithm);
+        } else if (algorithm.equals(HHLA.class.getSimpleName())) {
+            return new HHLAConfiguration(algorithm);
         } else {
             throw new JMetalException("There is no configuration for [" + algorithm + "] algorithm!");
         }

@@ -57,7 +57,7 @@ public class CastroRoulette<T> extends SelectionFunction<T> {
     }
 
     @Override
-    public T getNext() {
+    public T getNext(int it) {
         double rand = random.nextDouble();
         double sum = probabilities[0];
         s = 0;

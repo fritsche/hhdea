@@ -77,7 +77,6 @@ public class CONSGAIII<S extends Solution<?>> extends NSGAIII<S> implements Coop
     @Override
     public void init(int populationSize) {
         this.populationSize_ = populationSize;
-        initializeUniformWeight();
         populationSize += (populationSize % 2);
         List<S> initial = new ArrayList<>(populationSize);
         for (int i = 0; i < populationSize; i++) {
@@ -85,11 +84,13 @@ public class CONSGAIII<S extends Solution<?>> extends NSGAIII<S> implements Coop
             problem_.evaluate(newSolution);
             initial.add(newSolution);
         }
-        init(initial);
+        init(initial, populationSize);
     }
 
     @Override
-    public void init(List<S> initialPopulation) {
+    public void init(List<S> initialPopulation, int populationSize) {
+        initializeUniformWeight();
+        this.populationSize_ = populationSize;
         populationSize_ += (populationSize_ % 2);
         population_ = new ArrayList<>(populationSize_);
         population_.addAll(initialPopulation);

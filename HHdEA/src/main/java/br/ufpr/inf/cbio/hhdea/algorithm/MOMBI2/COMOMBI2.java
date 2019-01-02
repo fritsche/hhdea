@@ -41,12 +41,13 @@ public class COMOMBI2<S extends Solution<?>> extends MOMBI2<S> implements Cooper
     @Override
     public void init(int populationSize) {
         setMaxPopulationSize(populationSize);
-        init(createInitialPopulation());
+        init(createInitialPopulation(), populationSize);
     }
 
     @Override
-    public void init(List<S> initialPopulation) {
+    public void init(List<S> initialPopulation, int popSize) {
         this.setPopulation(initialPopulation);
+        setMaxPopulationSize(popSize);
         this.evaluatePopulation(this.getPopulation());
         this.initProgress();
         this.specificMOEAComputations();
