@@ -28,7 +28,6 @@ import br.ufpr.inf.cbio.hhdea.algorithm.ThetaDEA.COThetaDEAConfiguration;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.CooperativeAlgorithm;
 import br.ufpr.inf.cbio.hhdea.config.AlgorithmConfiguration;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.ArgMaxSelection;
-import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.CastroRoulette;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.SelectionFunction;
 import br.ufpr.inf.cbio.hhdea.metrics.fir.R2TchebycheffFIR;
 import org.uma.jmetal.problem.Problem;
@@ -100,7 +99,8 @@ public class HHdEA3Configuration<S extends Solution> implements AlgorithmConfigu
                         .addAlgorithm(new CONSGAIIIConfiguration().configure(popSize, maxFitnessEvaluations, problem))
                         .addAlgorithm(new COThetaDEAConfiguration().configure(popSize, maxFitnessEvaluations, problem))
                         .addAlgorithm(new COSPEA2SDEConfiguration().configure(popSize, maxFitnessEvaluations, problem))
-                        .addAlgorithm(new COHypEConfiguration().configure(popSize, maxFitnessEvaluations, problem));
+                        .addAlgorithm(new COHypEConfiguration().configure(popSize, maxFitnessEvaluations, problem))
+                        ;
         }
 
         return builder.setName(name).setSelection(selection).setFir(fir)

@@ -103,7 +103,8 @@ public class HHLAConfiguration<S extends Solution> implements AlgorithmConfigura
                         .addAlgorithm(new CONSGAIIIConfiguration().configure(popSize, maxFitnessEvaluations, problem))
                         .addAlgorithm(new COThetaDEAConfiguration().configure(popSize, maxFitnessEvaluations, problem))
                         .addAlgorithm(new COSPEA2SDEConfiguration().configure(popSize, maxFitnessEvaluations, problem))
-                        .addAlgorithm(new COHypEConfiguration().configure(popSize, maxFitnessEvaluations, problem));
+                        .addAlgorithm(new COHypEConfiguration().configure(popSize, maxFitnessEvaluations, problem))
+                        ;
         }
 
         return builder.setName(name).setSelection(selection).setFir(fir)
