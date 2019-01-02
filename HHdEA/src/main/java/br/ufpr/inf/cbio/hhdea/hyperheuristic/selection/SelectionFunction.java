@@ -27,7 +27,10 @@ import java.util.List;
 public abstract class SelectionFunction<T> {
 
     protected List<T> lowlevelheuristics;
-    protected int s; // the last index sent low level heuristic
+    /**
+     * The last index sent low level heuristic
+     */
+    protected int s; 
 
     public SelectionFunction() {
         lowlevelheuristics = new ArrayList<>();
