@@ -98,6 +98,7 @@ public class HHdEA<S extends Solution<?>> extends Observable implements Algorith
 
             // compute reward
             selection.creditAssignment(getFir());
+//            JMetalLogger.logger.log(Level.INFO, "{0}({1})", new Object[]{selected, getFir()});
 
             // move acceptance
             // ALL MOVES

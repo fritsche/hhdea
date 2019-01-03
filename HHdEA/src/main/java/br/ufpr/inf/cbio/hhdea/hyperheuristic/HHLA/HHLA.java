@@ -92,7 +92,11 @@ public class HHLA<S extends Solution<?>> extends Observable implements Algorithm
         }
         List<S> popnext = null;
         selected = selection.getNext(evaluations / populationSize);
-        selected.init(popcurr, populationSize);
+        List<S> copy = new ArrayList<S>();
+        for (S s : popcurr) {
+            copy.add((S) s.copy());
+        }
+        selected.init(copy, populationSize);
         int g = 0;
 
         // 2. while (termination criteria not satisfied) do
@@ -105,8 +109,9 @@ public class HHLA<S extends Solution<?>> extends Observable implements Algorithm
             g++;
 
             setImprovement(calculator.computeFitnessImprovementRate(popcurr, popnext));
-            JMetalLogger.logger.info(selected + "(" + getImprovement() + "):" + (getImprovement() > deltaV));
 
+            // JMetalLogger.logger.log(Level.INFO, "{0}({1})", new Object[]{selected, getImprovement()});
+            
             // 4. Popcurr <- Replace(Popcurr, Popnext);
             popcurr = new ArrayList<>(populationSize);
             popcurr.addAll(popnext);
@@ -124,7 +129,11 @@ public class HHLA<S extends Solution<?>> extends Observable implements Algorithm
                 selection.creditAssignment(getImprovement());
                 // 7. hi <- SelectMetaheuristic(P, A);
                 selected = selection.getNext(evaluations / populationSize);
-                selected.init(popcurr, populationSize);
+                copy.clear();
+                for (S s : popcurr) {
+                    copy.add((S) s.copy());
+                }
+                selected.init(copy, populationSize);
                 g = 0;
             }
 
@@ -144,17 +153,6 @@ public class HHLA<S extends Solution<?>> extends Observable implements Algorithm
     @Override
     public String getDescription() {
         return "Learning Automata based Hyper-heuristic";
-    }
-
-    /**
-     * Section III.D. Switching to Another Meta-heuristic
-     *
-     * @param popcurr
-     * @param popnext
-     * @return
-     */
-    private computeImprovement(List<S> popcurr, List<S> popnext) {
-        return ();
     }
 
     public double getImprovement() {
