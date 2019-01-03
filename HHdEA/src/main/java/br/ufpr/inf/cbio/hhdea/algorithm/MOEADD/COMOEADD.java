@@ -36,6 +36,7 @@ public class COMOEADD<S extends Solution<?>> extends MOEADD<S> implements Cooper
     public COMOEADD(MOEADDBuilder builder) {
         super(builder);
         offspring = new ArrayList<>(builder.getPopulationSize());
+        lambda_ = null;
     }
 
     @Override
@@ -54,8 +55,11 @@ public class COMOEADD<S extends Solution<?>> extends MOEADD<S> implements Cooper
     @Override
     public void init(List<S> initialPopulation, int popSize) {
         populationSize_ = popSize;
-        lambda_ = new double[populationSize_][problem_.getNumberOfObjectives()];
-        initUniformWeight();
+
+        if (lambda_ == null) {
+            lambda_ = new double[populationSize_][problem_.getNumberOfObjectives()];
+            initUniformWeight();
+        }
 
         T_ = 20;
         delta_ = 0.9;
@@ -162,8 +166,7 @@ public class COMOEADD<S extends Solution<?>> extends MOEADD<S> implements Cooper
     }
 
     @Override
-    public void receive(List<S> solutions
-    ) {
+    public void receive(List<S> solutions) {
         for (S s : solutions) {
             updateReference(s, zp_);
             updateNadirPoint(s, nzp_);

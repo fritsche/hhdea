@@ -33,6 +33,7 @@ public class CONSGAIII<S extends Solution<?>> extends NSGAIII<S> implements Coop
 
     public CONSGAIII(NSGAIIIBuilder builder) {
         super(builder);
+        lambda_ = null;
     }
 
     private void environmentalSelection() {
@@ -89,8 +90,10 @@ public class CONSGAIII<S extends Solution<?>> extends NSGAIII<S> implements Coop
 
     @Override
     public void init(List<S> initialPopulation, int populationSize) {
-        initializeUniformWeight();
         this.populationSize_ = populationSize;
+        if (lambda_ == null) {
+            initializeUniformWeight();
+        }
         populationSize_ += (populationSize_ % 2);
         population_ = new ArrayList<>(populationSize_);
         population_.addAll(initialPopulation);

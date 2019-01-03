@@ -31,6 +31,7 @@ public class COThetaDEA<S extends Solution<?>> extends ThetaDEA implements Coope
 
     public COThetaDEA(ThetaDEABuilder builder) {
         super(builder);
+        lambda_ = null;
     }
 
     private void environmentalSelection() {
@@ -62,8 +63,10 @@ public class COThetaDEA<S extends Solution<?>> extends ThetaDEA implements Coope
 
     @Override
     public void init(List<S> initialPopulation, int populationSize) {
-        initializeUniformWeight();
         populationSize_ = populationSize;
+        if (lambda_ == null) {
+            initializeUniformWeight();
+        }
         population_ = initialPopulation;
         // fit populationSize if initialPopulation is larger
         while (population_.size() > populationSize) {
