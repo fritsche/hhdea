@@ -76,16 +76,16 @@ public class CONSGAIII<S extends Solution<?>> extends NSGAIII<S> implements Coop
     }
 
     @Override
-    public void init(int populationSize) {
-        this.populationSize_ = populationSize;
-        populationSize += (populationSize % 2);
-        List<S> initial = new ArrayList<>(populationSize);
-        for (int i = 0; i < populationSize; i++) {
+    public void init(int popSize) {
+        this.populationSize_ = popSize;
+        this.populationSize_ = popSize + (popSize % 2);
+        List<S> initial = new ArrayList<>(this.populationSize_);
+        for (int i = 0; i < this.populationSize_; i++) {
             S newSolution = problem_.createSolution();
             problem_.evaluate(newSolution);
             initial.add(newSolution);
         }
-        init(initial, populationSize);
+        init(initial, popSize);
     }
 
     @Override
