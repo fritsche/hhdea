@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package br.ufpr.inf.cbio.hhdea.hyperheuristic.HHdEA3;
+package br.ufpr.inf.cbio.hhdea.hyperheuristic.HHLA;
 
 import br.ufpr.inf.cbio.hhdea.algorithm.HypE.COHypEConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.MOEAD.COMOEADConfiguration;
@@ -27,7 +27,7 @@ import br.ufpr.inf.cbio.hhdea.algorithm.SPEA2SDE.COSPEA2SDEConfiguration;
 import br.ufpr.inf.cbio.hhdea.algorithm.ThetaDEA.COThetaDEAConfiguration;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.CooperativeAlgorithm;
 import br.ufpr.inf.cbio.hhdea.config.AlgorithmConfiguration;
-import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.ArgMaxSelection;
+import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.LearningAutomaton;
 import br.ufpr.inf.cbio.hhdea.hyperheuristic.selection.SelectionFunction;
 import br.ufpr.inf.cbio.hhdea.metrics.fir.R2TchebycheffFIR;
 import org.uma.jmetal.problem.Problem;
@@ -39,27 +39,31 @@ import br.ufpr.inf.cbio.hhdea.metrics.fir.FitnessImprovementRateCalculator;
  * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
  * @param <S>
  */
-public class HHdEA3Configuration<S extends Solution> implements AlgorithmConfiguration<HHdEA3> {
+public class HHLAConfiguration<S extends Solution> implements AlgorithmConfiguration<HHLA> {
 
     protected final String name;
     protected SelectionFunction<CooperativeAlgorithm> selection;
     protected FitnessImprovementRateCalculator fir;
     protected Problem problem;
     protected int popSize;
+    private int maxFitnessEvaluations;
+    private int k;
+    private double deltaV;
 
-    public HHdEA3Configuration(String name) {
+    public HHLAConfiguration(String name) {
         this.name = name;
     }
 
     @Override
-    public HHdEA3 configure(int popSize, int maxFitnessEvaluations, Problem problem) {
+    public HHLA configure(int popSize, int maxFitnessEvaluations, Problem problem) {
 
         this.problem = problem;
         this.popSize = popSize;
+        this.maxFitnessEvaluations = maxFitnessEvaluations;
 
         setup();
 
-        HHdEA3Builder builder = new HHdEA3Builder(problem);
+        HHLABuilder builder = new HHLABuilder(problem);
 
         switch (name) {
             case "CONSGAII":
@@ -104,13 +108,20 @@ public class HHdEA3Configuration<S extends Solution> implements AlgorithmConfigu
         }
 
         return builder.setName(name).setSelection(selection).setFir(fir)
-                .setMaxEvaluations(maxFitnessEvaluations).setPopulationSize(popSize).build();
+                .setMaxEvaluations(maxFitnessEvaluations).setPopulationSize(popSize).setK(k).setDeltaV(deltaV).build();
     }
 
     @Override
     public void setup() {
-        this.selection = new ArgMaxSelection<>();
+        double m = 2.5;
+        double tau = 0.5;
+        int n = maxFitnessEvaluations / popSize;
+        this.selection = new LearningAutomaton(m, n, tau);
         this.fir = new R2TchebycheffFIR(problem, popSize);
+
+        // The remaining two parameters are not significantly influential on the performance
+        this.k = 3;
+        this.deltaV = 0.0075;
     }
 
 }

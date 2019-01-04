@@ -41,23 +41,24 @@ public class COMOEAD<S extends Solution<?>> extends MOEAD implements Cooperative
     public COMOEAD(Problem<DoubleSolution> problem, int populationSize, int resultPopulationSize, int maxEvaluations, MutationOperator<DoubleSolution> mutation, CrossoverOperator<DoubleSolution> crossover, FunctionType functionType, String dataDirectory, double neighborhoodSelectionProbability, int maximumNumberOfReplacedSolutions, int neighborSize) {
         super(problem, populationSize, resultPopulationSize, maxEvaluations, mutation, crossover, functionType, dataDirectory, neighborhoodSelectionProbability, maximumNumberOfReplacedSolutions, neighborSize);
         offspring = new ArrayList<>(populationSize);
+        initializeUniformWeight();
     }
 
     @Override
     public void init(int populationSize) {
         this.populationSize = populationSize;
-        initializeUniformWeight();
         List<DoubleSolution> initial = new ArrayList<>(populationSize);
         for (int i = 0; i < populationSize; i++) {
             DoubleSolution newSolution = (DoubleSolution) problem.createSolution();
             problem.evaluate(newSolution);
             initial.add(newSolution);
         }
-        init((List<S>) initial);
+        init((List<S>) initial, populationSize);
     }
 
     @Override
-    public void init(List<S> initialPopulation) {
+    public void init(List<S> initialPopulation, int populationSize) {
+        this.populationSize = populationSize;
         population = new ArrayList<>(populationSize);
         population.addAll((Collection<? extends DoubleSolution>) initialPopulation);
         // fit populationSize if initialPopulation is larger

@@ -55,12 +55,12 @@ public class COSPEA2SDE<S extends Solution<?>> extends SPEA2SDE<S> implements Co
         setMaxPopulationSize(populationSize);
         List<S> initial = createInitialPopulation();
         initial = evaluatePopulation(initial);
-        init(initial);
+        init(initial, populationSize);
     }
 
     @Override
-    public void init(List<S> initialPopulation) {
-        setMaxPopulationSize(initialPopulation.size());
+    public void init(List<S> initialPopulation, int popSize) {
+        setMaxPopulationSize(popSize);
         population = initialPopulation;
         this.environmentalSelectionOverride = new EnvironmentalSelectionSDE<>(getMaxPopulationSize());
     }

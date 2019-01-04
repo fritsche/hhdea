@@ -28,7 +28,6 @@ import java.util.logging.Level;
 import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.util.JMetalLogger;
-import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
 /**
  *
@@ -89,10 +88,10 @@ public class HHdEA3<S extends Solution<?>> extends HHdEA<S> {
             Map<CooperativeAlgorithm<S>, List<S>> populations = copyPopulations();
 
             // heuristic selection
-            CooperativeAlgorithm<S> selected = selection.getNext();
+            CooperativeAlgorithm<S> selected = selection.getNext(getEvaluations() / populationSize);
             // set selected to be logged
             setSelected(selected);
-            
+
             // apply selected heuristic
             selected.doIteration();
             // copy the solutions generatedy by selected
@@ -116,10 +115,11 @@ public class HHdEA3<S extends Solution<?>> extends HHdEA<S> {
 
             // compute the improvement of all MOEAs (old vs new pop)
             computeImprovementOfAllMOEAs(populations);
-            
+
             // set reward
             selection.creditAssignment(moeasfir);
-            
+            // JMetalLogger.logger.log(Level.INFO, "{0}({1})", new Object[]{selected, moeasfir.get(0)});
+
             // move acceptance
             // ALL MOVES
             // notify observers
@@ -137,5 +137,5 @@ public class HHdEA3<S extends Solution<?>> extends HHdEA<S> {
     public void setMoeasfir(ArrayList<Double> moeasfir) {
         this.moeasfir = moeasfir;
     }
-    
+
 }

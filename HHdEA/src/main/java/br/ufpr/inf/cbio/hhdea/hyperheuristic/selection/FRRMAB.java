@@ -77,7 +77,7 @@ public class FRRMAB<T> extends SelectionFunction<T> {
 
     // return the next low-level heuristic
     @Override
-    public T getNext() {
+    public T getNext(int it) {
         if (unplayed > 0) { // if has unplayed heuristics
             setS(getRandomHeuristic(count, unplayed - 1, 0)); // get a random heuristic with count equals to zero (0)
             //System.out.println("s: "+s+" unplayed: "+unplayed);

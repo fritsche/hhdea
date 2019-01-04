@@ -89,7 +89,7 @@ public class HHdEA3Runner {
                 System.exit(0);
             }
 
-            String problemName = "MaF01", aux;
+            String problemName = "MaF02", aux;
             int m = 5;
             long seed = System.currentTimeMillis();
             String experimentBaseDirectory = "experiment/";

@@ -80,14 +80,14 @@ public class HHdEA2<S extends Solution<?>> extends HHdEA<S> {
 
         while (getEvaluations() < getMaxEvaluations()) {
 
-            JMetalLogger.logger.log(Level.FINE, "Progress: {0}", 
+            JMetalLogger.logger.log(Level.FINE, "Progress: {0}",
                     String.format("%.2f%%", getEvaluations() / (double) getMaxEvaluations() * 100.0));
 
             // copy the population of every MOEA
             Map<CooperativeAlgorithm<S>, List<S>> populations = copyPopulations();
 
             // heuristic selection
-            CooperativeAlgorithm<S> selected = selection.getNext();
+            CooperativeAlgorithm<S> selected = selection.getNext(getEvaluations() / populationSize);
             // set selected to be logged
             setSelected(selected);
             // apply selected heuristic

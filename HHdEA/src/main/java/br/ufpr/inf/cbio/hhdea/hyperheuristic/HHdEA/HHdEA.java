@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Gian Fritsche <gmfritsche@inf.ufpr.br>
+ * Copyright (C) 2018 Gian Fritsche <gmfritsche at inf.ufpr.br>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ import org.uma.jmetal.algorithm.Algorithm;
 
 /**
  *
- * @author Gian Fritsche <gmfritsche@inf.ufpr.br>
+ * @author Gian Fritsche <gmfritsche at inf.ufpr.br>
  * @param <S>
  */
 public class HHdEA<S extends Solution<?>> extends Observable implements Algorithm<List<S>> {
@@ -76,7 +76,7 @@ public class HHdEA<S extends Solution<?>> extends Observable implements Algorith
         while (evaluations < maxEvaluations) {
 
             // heuristic selection
-            selected = selection.getNext();
+            selected = selection.getNext(evaluations / populationSize);
 
             // apply selected heuristic
             List<S> parents = new ArrayList<>();
@@ -98,6 +98,7 @@ public class HHdEA<S extends Solution<?>> extends Observable implements Algorith
 
             // compute reward
             selection.creditAssignment(getFir());
+//            JMetalLogger.logger.log(Level.INFO, "{0}({1})", new Object[]{selected, getFir()});
 
             // move acceptance
             // ALL MOVES

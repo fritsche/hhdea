@@ -41,7 +41,7 @@ public class ArgMaxSelection<T> extends SelectionFunction<T> {
     }
 
     @Override
-    public T getNext() {
+    public T getNext(int it) {
         if (!first) {
             double max = credits[0];
             s = 0;

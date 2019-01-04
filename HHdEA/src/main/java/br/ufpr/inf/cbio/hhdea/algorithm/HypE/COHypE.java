@@ -34,8 +34,8 @@ public class COHypE<S extends Solution<?>> extends HypE implements CooperativeAl
     }
 
     @Override
-    public void init(List<S> initialPopulation) {
-        populationSize = initialPopulation.size();
+    public void init(List<S> initialPopulation, int popSize) {
+        populationSize = popSize;
         // set populationSize to even
         populationSize += (populationSize % 2);
         // init reference point
@@ -78,7 +78,7 @@ public class COHypE<S extends Solution<?>> extends HypE implements CooperativeAl
             evaluations++;
             initial.add(newSolution);
         }
-        init(initial);
+        init(initial, populationSize);
     }
 
     @Override

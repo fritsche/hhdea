@@ -34,13 +34,14 @@ public interface CooperativeAlgorithm<S extends Solution<?>> {
     public void init(int populationSize);
 
     /**
-     * Initialize the algorithm with {@code initialPopulation}. Used on the
-     * traditional hyper-heuristic framework to keep only one population where
-     * the heuristics are applied.
+     * Initialize the algorithm with {@code initialPopulation}.Used on the
+ traditional hyper-heuristic framework to keep only one population where
+ the heuristics are applied.
      *
      * @param initialPopulation
+     * @param populationSize
      */
-    public void init(List<S> initialPopulation);
+    public void init(List<S> initialPopulation, int populationSize);
 
     public void doIteration();
 

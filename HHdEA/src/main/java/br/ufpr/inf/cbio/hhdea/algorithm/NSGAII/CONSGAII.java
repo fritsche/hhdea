@@ -46,12 +46,12 @@ public class CONSGAII<S extends Solution<?>> extends NSGAII implements Cooperati
         setMaxPopulationSize(populationSize + (populationSize % 2));
         List<S> initial = createInitialPopulation();
         initial = evaluatePopulation(initial);
-        init(initial);
+        init(initial, populationSize);
     }
 
     @Override
-    public void init(List<S> initialPopulation) {
-        int populationSize = initialPopulation.size();
+    public void init(List<S> initialPopulation, int popSize) {
+        int populationSize = popSize;
         setMaxPopulationSize(populationSize + (populationSize % 2));
         population = initialPopulation;
 
