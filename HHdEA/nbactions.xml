@@ -10,7 +10,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>-classpath %classpath br.ufpr.inf.cbio.hhdea.runner.Main -a teste -M NSGAIII -m 3 -p DTLZ2 -o fir firbin count</exec.args>
+                <exec.args>-classpath %classpath br.ufpr.inf.cbio.hhdea.runner.Prune /home/gian/repos/Java/hhdea/experiment/MaFMethodology/5/data/HHdEA3/MaF01/ /home/gian/repos/Java/hhdea/experiment/MaFMethodology/5/data/HHdEA3Pruned/MaF01 5 0</exec.args>
                 <exec.executable>java</exec.executable>
             </properties>
         </action>
@@ -24,7 +24,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -classpath %classpath br.ufpr.inf.cbio.hhdea.runner.Main -a teste -M NSGAIII -m 3 -p DTLZ2 -o fir firbin count</exec.args>
+                <exec.args>-agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address} -classpath %classpath br.ufpr.inf.cbio.hhdea.runner.Prune /home/gian/repos/Java/hhdea/experiment/MaFMethodology/5/data/HHdEA3/MaF01/ /home/gian/repos/Java/hhdea/experiment/MaFMethodology/5/data/HHdEA3Pruned/MaF01 5 0</exec.args>
                 <exec.executable>java</exec.executable>
                 <jpda.listen>true</jpda.listen>
             </properties>
@@ -39,7 +39,7 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.2.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>-classpath %classpath br.ufpr.inf.cbio.hhdea.runner.Main -a teste -M NSGAIII -m 3 -p DTLZ2 -o fir firbin count</exec.args>
+                <exec.args>-classpath %classpath br.ufpr.inf.cbio.hhdea.runner.Prune /home/gian/repos/Java/hhdea/experiment/MaFMethodology/5/data/HHdEA3/MaF01/ /home/gian/repos/Java/hhdea/experiment/MaFMethodology/5/data/HHdEA3Pruned/MaF01 5 0</exec.args>
                 <exec.executable>java</exec.executable>
             </properties>
         </action>

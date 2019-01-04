@@ -16,6 +16,19 @@
  */
 package br.ufpr.inf.cbio.hhdea.runner;
 
+import br.ufpr.inf.cbio.hhdea.runner.methodology.NSGAIIIMethodology;
+import br.ufpr.inf.cbio.hhdea.util.output.Utils;
+import java.io.FileNotFoundException;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.uma.jmetal.algorithm.multiobjective.moead.util.MOEADUtils;
+import org.uma.jmetal.util.fileoutput.SolutionListOutput;
+import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;
+import org.uma.jmetal.util.front.Front;
+import org.uma.jmetal.util.front.imp.ArrayFront;
+import org.uma.jmetal.util.front.util.FrontUtils;
+
 /**
  *
  * @author Gian Fritsche <gmfritsche at inf.ufpr.br>
@@ -23,6 +36,62 @@ package br.ufpr.inf.cbio.hhdea.runner;
 public class Prune {
 
     public static void main(String[] args) {
-        
+
+        try {
+            /**
+             * Parameters.
+             */
+            int i = 0;
+            /**
+             * Input path: args[0]
+             * "experiment/MaFMethodology/5/data/HHdEA3/MaF01/"
+             */
+            String input = args[i++];
+            /**
+             * Output path: args[1]
+             * "experiment/MaFMethodology/5/data/HHdEA3Pruned/MaF01/"
+             */
+            String output = args[i++];
+            /**
+             * Number of objectives: args[2] "5"
+             */
+            int m = Integer.parseInt(args[i++]);
+            /**
+             * FUN file id: args[3] "0"
+             */
+            int id = Integer.parseInt(args[i++]);
+
+            /**
+             * Prune file.
+             */
+            /**
+             * Load input FUN file to a solution set
+             */
+            List population = FrontUtils.convertFrontToSolutionList(new ArrayFront(input + "/FUN" + id + ".tsv"));
+            /**
+             * Get population size from methodology
+             */
+            int popSize = Math.min(240, (new NSGAIIIMethodology("", m)).getPopulationSize());
+            /**
+             * Prune solution set to population size
+             */
+            if (population.size() > popSize) {
+                population = MOEADUtils.getSubsetOfEvenlyDistributedSolutions(population, popSize);
+            }
+            /**
+             * Create output path and file
+             */
+            (new Utils(output)).prepareOutputDirectory();
+            /**
+             * Output solution set to file
+             */
+            new SolutionListOutput(population).setSeparator("\t")
+                    .setFunFileOutputContext(new DefaultFileOutputContext(output + "/FUN" + id + ".tsv"))
+                    .print();
+            
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Prune.class.getName()).log(Level.SEVERE, "Failed to load input FUN file to a solution set.", ex);
+        }
+
     }
 }
