@@ -32,7 +32,6 @@ public class CastroRoulette<T> extends SelectionFunction<T> {
     private final JMetalRandom random;
     private int size;
     private double[] probabilities;
-    private int s; // last lowLeveHeuristic selected
     private final double minProbability = 0.002;
     private final double x = 5.0;
     private double increment;
