@@ -17,6 +17,7 @@
 package br.ufpr.inf.cbio.hhdea.runner;
 
 import br.ufpr.inf.cbio.hhdea.algorithm.SPEA2SDE.EnvironmentalSelectionSDE;
+import br.ufpr.inf.cbio.hhdea.algorithm.SPEA2SDE.StrengthRawFitnessSDE;
 import br.ufpr.inf.cbio.hhdea.runner.methodology.NSGAIIIMethodology;
 import br.ufpr.inf.cbio.hhdea.util.output.Utils;
 import java.io.FileNotFoundException;
@@ -77,6 +78,7 @@ public class Prune {
              * Prune solution set to population size
              */
             if (population.size() > popSize) {
+                (new StrengthRawFitnessSDE()).computeDensityEstimator(population);
                 population = (new EnvironmentalSelectionSDE<>(popSize)).execute(population);
             }
             /**
