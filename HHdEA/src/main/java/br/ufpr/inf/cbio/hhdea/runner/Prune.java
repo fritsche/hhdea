@@ -16,6 +16,7 @@
  */
 package br.ufpr.inf.cbio.hhdea.runner;
 
+import br.ufpr.inf.cbio.hhdea.algorithm.SPEA2SDE.EnvironmentalSelectionSDE;
 import br.ufpr.inf.cbio.hhdea.runner.methodology.NSGAIIIMethodology;
 import br.ufpr.inf.cbio.hhdea.util.output.Utils;
 import java.io.FileNotFoundException;
@@ -76,7 +77,7 @@ public class Prune {
              * Prune solution set to population size
              */
             if (population.size() > popSize) {
-                population = MOEADUtils.getSubsetOfEvenlyDistributedSolutions(population, popSize);
+                population = (new EnvironmentalSelectionSDE<>(popSize)).execute(population);
             }
             /**
              * Create output path and file
@@ -88,7 +89,7 @@ public class Prune {
             new SolutionListOutput(population).setSeparator("\t")
                     .setFunFileOutputContext(new DefaultFileOutputContext(output + "/FUN" + id + ".tsv"))
                     .print();
-            
+
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Prune.class.getName()).log(Level.SEVERE, "Failed to load input FUN file to a solution set.", ex);
         }
